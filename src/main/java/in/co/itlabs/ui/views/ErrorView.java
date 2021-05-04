@@ -1,7 +1,5 @@
 package in.co.itlabs.ui.views;
 
-import javax.annotation.PostConstruct;
-
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -18,17 +16,15 @@ public class ErrorView extends VerticalLayout implements BeforeEnterObserver {
 
 	private Div div;
 
-	@PostConstruct
-	public void init() {
+	public ErrorView() {
 		div = new Div();
-		
 		add(div);
 	}
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
 		String message = (String) VaadinSession.getCurrent().getAttribute("error-message");
-		if(message!=null) {
+		if (message != null) {
 			div.setText(message);
 		}
 	}

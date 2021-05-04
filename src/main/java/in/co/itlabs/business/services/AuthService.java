@@ -20,7 +20,7 @@ public class AuthService {
 	private Argon2 argon2 = Argon2Factory.create();
 
 	public enum Role {
-		Admin, Team_Member
+		Admin, Verifier
 	}
 
 	@Getter
@@ -125,12 +125,20 @@ public class AuthService {
 			User user = con.createQuery(sql).addParameter("username", credentials.username)
 					.executeAndFetchFirst(User.class);
 			if (user != null) {
-				char[] passwordChars = credentials.password.toCharArray();
 
-				boolean success = argon2.verify(user.getPasswordHash(), passwordChars);
+				// check if passwordHash is null or blank
+				if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+					if (credentials.password == null || credentials.password.isBlank()) {
+						authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
+					}
+				} else {
+					char[] passwordChars = credentials.password.toCharArray();
 
-				if (success) {
-					authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
+					boolean success = argon2.verify(user.getPasswordHash(), passwordChars);
+
+					if (success) {
+						authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
+					}
 				}
 			}
 			con.close();

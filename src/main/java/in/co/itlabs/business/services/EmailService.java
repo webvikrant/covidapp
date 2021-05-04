@@ -13,29 +13,36 @@ public class EmailService {
 	private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 	private Mailer mailer = null;
 
-	public EmailService() throws IOException {
+	public EmailService() {
 		logger.info("Reading file \"minierp-config.properties\"...");
 
-		// read properties file
-		String configFile = System.getenv("MINIERP_CONFIG");
+		try {
+			// read properties file
+			String configFile = System.getenv("MINIERP_CONFIG");
 
-		FileReader reader = new FileReader(configFile);
-		Properties props = new Properties();
-		props.load(reader);
+			FileReader reader = new FileReader(configFile);
 
-		String smtpServer = props.getProperty("emailer.smtp_server");
-		String portString = props.getProperty("emailer.port");
-		int port = Integer.valueOf(portString);
-		String login = props.getProperty("emailer.login");
-		String password = props.getProperty("emailer.password");
+			Properties props = new Properties();
+			props.load(reader);
 
-		System.out.println("Properties: " + smtpServer + ", " + port + ", " + login + ", " + password);
+			String smtpServer = props.getProperty("emailer.smtp_server");
+			String portString = props.getProperty("emailer.port");
+			int port = Integer.valueOf(portString);
+			String login = props.getProperty("emailer.login");
+			String password = props.getProperty("emailer.password");
 
-		logger.info("Creating mailer...");
+			System.out.println("Properties: " + smtpServer + ", " + port + ", " + login + ", " + password);
 
-		// initialize a connection pool for H2
-		mailer = MailerBuilder.withSMTPServer(smtpServer, port, login, password).async().buildMailer();
-		logger.info("Mailer created...");
+			logger.info("Creating mailer...");
+
+			// initialize a connection pool for H2
+			mailer = MailerBuilder.withSMTPServer(smtpServer, port, login, password).async().buildMailer();
+			logger.info("Mailer created...");
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		}
 	}
 
 	public Mailer getMailer() {

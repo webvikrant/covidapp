@@ -26,7 +26,7 @@ public class Footer extends HorizontalLayout {
 		copyrightIcon = VaadinIcon.COPYRIGHT.create();
 		copyrightIcon.setSize("10px");
 
-		button = new Button("IT Labs", VaadinIcon.COPYRIGHT.create());
+		button = new Button("Team 100", VaadinIcon.COPYRIGHT.create());
 		button.addThemeVariants(ButtonVariant.LUMO_SMALL);
 		button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 

@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -27,7 +30,7 @@ import in.co.itlabs.business.entities.User;
 import in.co.itlabs.business.services.AuthService;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.AuthService.Role;
-import in.co.itlabs.ui.components.UserEditor;
+import in.co.itlabs.ui.components.UserEditorForm;
 import in.co.itlabs.ui.components.UserFilterForm;
 import in.co.itlabs.ui.layouts.AppLayout;
 
@@ -35,16 +38,18 @@ import in.co.itlabs.ui.layouts.AppLayout;
 @Route(value = "users", layout = AppLayout.class)
 public class UsersView extends VerticalLayout implements BeforeEnterObserver {
 
+	private static final Logger logger = LoggerFactory.getLogger(UsersView.class);
+	
 	// ui
 
-	private UserEditor userEditor;
+	private UserEditorForm userEditor;
 	private UserFilterForm userFilterForm;
 	private Grid<User> grid;
 	private Div resultCount;
 	private Dialog dialog;
 
 	// non-ui
-
+	private AuthenticatedUser authUser;
 	private AuthService authService;
 
 	private String queryString;
@@ -52,6 +57,12 @@ public class UsersView extends VerticalLayout implements BeforeEnterObserver {
 	@PostConstruct
 	public void init() {
 
+		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
+		if (authUser == null) {
+			logger.info("User not logged in.");
+			return;
+		}
+		
 		setPadding(false);
 		setAlignItems(Alignment.CENTER);
 
@@ -62,10 +73,10 @@ public class UsersView extends VerticalLayout implements BeforeEnterObserver {
 		dialog.setModal(true);
 		dialog.setDraggable(true);
 
-		userEditor = new UserEditor();
+		userEditor = new UserEditorForm();
 		userEditor.setUser(new User());
-		userEditor.addListener(UserEditor.SaveEvent.class, this::handleSaveEvent);
-		userEditor.addListener(UserEditor.CancelEvent.class, this::handleCancelEvent);
+		userEditor.addListener(UserEditorForm.SaveEvent.class, this::handleSaveEvent);
+		userEditor.addListener(UserEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		queryString = null;
 
@@ -140,7 +151,7 @@ public class UsersView extends VerticalLayout implements BeforeEnterObserver {
 		reload();
 	}
 
-	public void handleSaveEvent(UserEditor.SaveEvent event) {
+	public void handleSaveEvent(UserEditorForm.SaveEvent event) {
 		List<String> messages = new ArrayList<String>();
 		User user = event.getUser();
 
@@ -155,7 +166,7 @@ public class UsersView extends VerticalLayout implements BeforeEnterObserver {
 		}
 	}
 
-	public void handleCancelEvent(UserEditor.CancelEvent event) {
+	public void handleCancelEvent(UserEditorForm.CancelEvent event) {
 		dialog.close();
 	}
 

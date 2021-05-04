@@ -16,7 +16,7 @@ import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.User;
 
-public class UserEditor extends VerticalLayout {
+public class UserEditorForm extends VerticalLayout {
 
 	// ui
 
@@ -32,7 +32,7 @@ public class UserEditor extends VerticalLayout {
 
 	// non-ui
 
-	public UserEditor() {
+	public UserEditorForm() {
 
 		setAlignItems(Alignment.CENTER);
 
@@ -113,10 +113,10 @@ public class UserEditor extends VerticalLayout {
 		root.expand(blank);
 	}
 
-	public static abstract class NewUserFormEvent extends ComponentEvent<UserEditor> {
+	public static abstract class NewUserFormEvent extends ComponentEvent<UserEditorForm> {
 		private User user;
 
-		protected NewUserFormEvent(UserEditor source, User user) {
+		protected NewUserFormEvent(UserEditorForm source, User user) {
 
 			super(source, false);
 			this.user = user;
@@ -128,13 +128,13 @@ public class UserEditor extends VerticalLayout {
 	}
 
 	public static class SaveEvent extends NewUserFormEvent {
-		SaveEvent(UserEditor source, User user) {
+		SaveEvent(UserEditorForm source, User user) {
 			super(source, user);
 		}
 	}
 
 	public static class CancelEvent extends NewUserFormEvent {
-		CancelEvent(UserEditor source, User user) {
+		CancelEvent(UserEditorForm source, User user) {
 			super(source, user);
 		}
 	}

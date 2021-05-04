@@ -19,11 +19,11 @@ public class Header extends HorizontalLayout {
 		setJustifyContentMode(JustifyContentMode.BETWEEN);
 		setAlignItems(Alignment.CENTER);
 
-		icon = VaadinIcon.DATABASE.create();
+		icon = VaadinIcon.BELL.create();
 		icon.setSize("16px");
 
 		appName = new Span();
-		appName.setText("mini ERP");
+		appName.setText("Covid Support App");
 
 		blank = new Span();
 

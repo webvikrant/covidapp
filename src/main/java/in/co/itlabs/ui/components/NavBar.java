@@ -3,12 +3,8 @@ package in.co.itlabs.ui.components;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -19,7 +15,7 @@ import in.co.itlabs.ui.views.UsersView;
 public class NavBar extends HorizontalLayout {
 
 	// ui
-	private MenuBar menuBar;
+	private HorizontalLayout menuBar;
 	private Button userButton;
 	private Button logoutButton;
 
@@ -37,7 +33,7 @@ public class NavBar extends HorizontalLayout {
 
 		addClassName("navbar");
 
-		menuBar = new MenuBar();
+		menuBar = new HorizontalLayout();
 		configureMenuBar();
 
 		userButton = new Button("", VaadinIcon.USER.create());
@@ -64,23 +60,29 @@ public class NavBar extends HorizontalLayout {
 
 	private void configureMenuBar() {
 
-		menuBar.setOpenOnHover(true);
-		menuBar.addThemeVariants(MenuBarVariant.LUMO_PRIMARY);
-
-		MenuItem mainMenuItem = menuBar.addItem(VaadinIcon.MENU.create());
-		mainMenuItem.add("Menu");
-
-		SubMenu subMenu = mainMenuItem.getSubMenu();
-
 		switch (authUser.getRole()) {
 		case Admin:
-			subMenu.addItem("Users", e -> UI.getCurrent().navigate(UsersView.class));
-			subMenu.addItem("Cities", e -> UI.getCurrent().navigate(UsersView.class));
+			Button usersButton = new Button("Users", VaadinIcon.USERS.create());
+			usersButton.addClickListener(e -> {
+				UI.getCurrent().navigate(UsersView.class);
+			});
+
+			Button citiesButton = new Button("Cities", VaadinIcon.MAP_MARKER.create());
+			citiesButton.addClickListener(e -> {
+//				UI.getCurrent().navigate(UsersView.class);
+			});
+
+			menuBar.add(usersButton, citiesButton);
 
 			break;
 
-		case Team_Member:
-			subMenu.addItem("Resources", e -> UI.getCurrent().navigate(ResourcesView.class));
+		case Verifier:
+			Button resourcesButton = new Button("Resources", VaadinIcon.AMBULANCE.create());
+			resourcesButton.addClickListener(e -> {
+				UI.getCurrent().navigate(ResourcesView.class);
+			});
+
+			menuBar.add(resourcesButton);
 
 			break;
 

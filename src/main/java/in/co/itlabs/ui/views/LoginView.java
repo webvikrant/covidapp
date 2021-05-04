@@ -50,10 +50,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 	private Button forgotPasswordButton = new Button("Forgot your password?");
 
 	private Binder<Credentials> binder;
+
 	// non-ui
 	private AuthenticatedUser authUser;
 	private AuthService authService;
-
 	private EmailService emailService;
 
 	private final List<String> messages = new ArrayList<String>();
@@ -65,6 +65,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 			return;
 		}
 
+		authService = new AuthService();
+		emailService = new EmailService();
+		
+		
 		setAlignItems(Alignment.CENTER);
 
 		// left is graphic
@@ -82,7 +86,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		binder = new Binder<>(Credentials.class);
 
 		binder.forField(userNameField).asRequired("Username can not be blank").bind("username");
-		binder.forField(passwordField).asRequired("Password can not be blank").bind("password");
+		binder.forField(passwordField).bind("password");
 
 		binder.setBean(new Credentials());
 
@@ -104,8 +108,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		root.setMargin(true);
 		root.setAlignItems(Alignment.CENTER);
 
-		H2 appName = new H2("miniERP");
-		H2 clientName = new H2("IEC");
+		H2 appName = new H2("Covid Support App");
 
 		loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		loginButton.addClickShortcut(Key.ENTER);
@@ -130,7 +133,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 						break;
 
-					case Team_Member:
+					case Verifier:
 						UI.getCurrent().navigate(ResourcesView.class);
 
 						break;
@@ -163,7 +166,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		buttonBar.setWidthFull();
 		buttonBar.expand(blank);
 
-		root.add(appName, clientName, userNameField, passwordField, buttonBar);
+		root.add(appName, userNameField, passwordField, buttonBar);
 
 	}
 
@@ -177,7 +180,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 				event.forwardTo(UsersView.class);
 				break;
 
-			case Team_Member:
+			case Verifier:
 				event.forwardTo(ResourcesView.class);
 				break;
 
