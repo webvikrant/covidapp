@@ -4,78 +4,128 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
-import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
-import in.co.itlabs.business.entities.User;
+import in.co.itlabs.business.entities.City;
+import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.services.ResourceService;
 
 public class ResourceEditorForm extends VerticalLayout {
 
 	// ui
 
-	private TextField usernameField;
-	private PasswordField passwordField;
+	private ComboBox<City> cityCombo;
+	private ComboBox<Resource.Type> typeCombo;
 	private TextField nameField;
-	private EmailField emailIdField;
+	private TextArea addressField;
+
+	private TextField phone1Field;
+	private TextField phone2Field;
+	private TextField phone3Field;
+
+	private TextArea remarkField;
+
+	private Checkbox verifiedCheck;
 
 	private Button saveButton;
 	private Button cancelButton;
 
-	private Binder<User> userBinder;
+	private Binder<Resource> binder;
 
 	// non-ui
 
-	public ResourceEditorForm() {
+	private ResourceService resourceService;
 
-		setAlignItems(Alignment.CENTER);
+	public ResourceEditorForm(ResourceService resourceService) {
+
+		this.resourceService = resourceService;
+
+		setAlignItems(Alignment.START);
+
+		cityCombo = new ComboBox<>();
+		configureCityCombo();
+
+		typeCombo = new ComboBox<>();
+		configureTypeCombo();
 
 		nameField = new TextField();
 		configureNameField();
 
-		emailIdField = new EmailField();
-		configureEmailIdField();
+		addressField = new TextArea();
+		configureAddressField();
 
-		usernameField = new TextField();
-		configureUsernameField();
+		phone1Field = new TextField("Phone1");
+		phone1Field.setWidth("140px");
 
-		passwordField = new PasswordField();
-		configurePasswordField();
+		phone2Field = new TextField("Phone2");
+		phone2Field.setWidth("140px");
 
-		userBinder = new Binder<>(User.class);
+		phone3Field = new TextField("Phone3");
+		phone3Field.setWidth("140px");
 
-		userBinder.forField(nameField).asRequired("Name can not be blank").bind("name");
-		userBinder.forField(emailIdField).asRequired("Email id can not be blank").bind("emailId");
-		userBinder.forField(usernameField).asRequired("Username can not be blank").bind("username");
-		userBinder.forField(passwordField).asRequired("Password can not be blank").bind("password");
+		FlexLayout phoneBar = new FlexLayout();
+		configurePhoneBar(phoneBar);
+		phoneBar.add(phone1Field, phone2Field, phone3Field);
+
+		remarkField = new TextArea();
+		configureRemarkField();
+
+		verifiedCheck = new Checkbox("Verified");
+
+		binder = new Binder<>(Resource.class);
+
+		binder.forField(cityCombo).asRequired("City can not be blank").bind("city");
+		binder.forField(typeCombo).asRequired("Type can not be blank").bind("type");
+		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
+		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
+		binder.forField(phone1Field).asRequired("Phone1 can not be blank").bind("phone1");
+		binder.forField(phone2Field).bind("phone2");
+		binder.forField(phone3Field).bind("phone3");
+		binder.forField(remarkField).asRequired("Remark can not be blank").bind("remark");
+		binder.forField(verifiedCheck).bind("verified");
 
 		saveButton = new Button("OK", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
+
+		HorizontalLayout topBar = new HorizontalLayout();
+		topBar.setWidthFull();
+		topBar.add(cityCombo, typeCombo);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buildButtonBar(buttonBar);
 
 		buttonBar.setWidthFull();
 
-		add(nameField, emailIdField, usernameField, passwordField, buttonBar);
+		add(topBar, nameField, addressField, phoneBar, remarkField, verifiedCheck, buttonBar);
 
 	}
 
-	private void configureUsernameField() {
-		usernameField.setWidthFull();
-		usernameField.setLabel("Username");
-		usernameField.setPlaceholder("Type username");
+	private void configureCityCombo() {
+		cityCombo.setLabel("City");
+		cityCombo.setPlaceholder("Select a city");
+		cityCombo.setWidthFull();
+		cityCombo.setItemLabelGenerator(city -> {
+			return city.getName();
+		});
+		cityCombo.setItems(resourceService.getAllCities());
 	}
 
-	private void configurePasswordField() {
-		passwordField.setWidthFull();
-		passwordField.setLabel("Password");
+	private void configureTypeCombo() {
+		typeCombo.setLabel("Resource-type");
+		typeCombo.setPlaceholder("Select a resource-type");
+		typeCombo.setWidthFull();
+		typeCombo.setItems(Resource.Type.values());
 	}
 
 	private void configureNameField() {
@@ -84,27 +134,38 @@ public class ResourceEditorForm extends VerticalLayout {
 		nameField.setPlaceholder("Type name");
 	}
 
-	private void configureEmailIdField() {
-		emailIdField.setWidthFull();
-		emailIdField.setLabel("Email Id");
-		emailIdField.setPlaceholder("Type email id");
+	private void configureAddressField() {
+		addressField.setWidthFull();
+		addressField.setLabel("Address");
+		addressField.setPlaceholder("Type address");
 	}
 
-	public void setUser(User user) {
-		userBinder.setBean(user);
+	private void configurePhoneBar(FlexLayout root) {
+		root.setFlexWrap(FlexWrap.WRAP);
+		root.getStyle().set("gap", "8px");
+	}
+
+	private void configureRemarkField() {
+		remarkField.setWidthFull();
+		remarkField.setLabel("Remark");
+		remarkField.setPlaceholder("Type remark");
+	}
+
+	public void setResource(Resource resource) {
+		binder.setBean(resource);
 	}
 
 	private void buildButtonBar(HorizontalLayout root) {
 
 		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		saveButton.addClickListener(e -> {
-			if (userBinder.validate().isOk()) {
-				fireEvent(new SaveEvent(this, userBinder.getBean()));
+			if (binder.validate().isOk()) {
+				fireEvent(new SaveEvent(this, binder.getBean()));
 			}
 		});
 
 		cancelButton.addClickListener(e -> {
-			fireEvent(new CancelEvent(this, userBinder.getBean()));
+			fireEvent(new CancelEvent(this, binder.getBean()));
 		});
 
 		Span blank = new Span();
@@ -113,29 +174,29 @@ public class ResourceEditorForm extends VerticalLayout {
 		root.expand(blank);
 	}
 
-	public static abstract class NewUserFormEvent extends ComponentEvent<ResourceEditorForm> {
-		private User user;
+	public static abstract class ResourceEditorFormFormEvent extends ComponentEvent<ResourceEditorForm> {
+		private Resource resource;
 
-		protected NewUserFormEvent(ResourceEditorForm source, User user) {
+		protected ResourceEditorFormFormEvent(ResourceEditorForm source, Resource resource) {
 
 			super(source, false);
-			this.user = user;
+			this.resource = resource;
 		}
 
-		public User getUser() {
-			return user;
-		}
-	}
-
-	public static class SaveEvent extends NewUserFormEvent {
-		SaveEvent(ResourceEditorForm source, User user) {
-			super(source, user);
+		public Resource getResource() {
+			return resource;
 		}
 	}
 
-	public static class CancelEvent extends NewUserFormEvent {
-		CancelEvent(ResourceEditorForm source, User user) {
-			super(source, user);
+	public static class SaveEvent extends ResourceEditorFormFormEvent {
+		SaveEvent(ResourceEditorForm source, Resource resource) {
+			super(source, resource);
+		}
+	}
+
+	public static class CancelEvent extends ResourceEditorFormFormEvent {
+		CancelEvent(ResourceEditorForm source, Resource resource) {
+			super(source, resource);
 		}
 	}
 

@@ -2,33 +2,48 @@ package in.co.itlabs.ui.components;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.services.ResourceService;
+import in.co.itlabs.util.AdvancedResourceFilterParams;
 
 public class AdvancedResourceFilterForm extends VerticalLayout {
 
-	public enum status {
-		Not_Verified, Verified_12_Hrs_Ago, Verified_24_Hrs_Ago
-	}
-
+	// ui
 	private ComboBox<City> cityCombo;
-	private ComboBox<Resource> resourceCombo;
-	private ComboBox<status> statusCombo;
+	private ComboBox<Resource.Type> typeCombo;
+	private ComboBox<Resource.Status> statusCombo;
 
 	private TextField queryField;
 
+	private Button okButton;
+	private Button cancelButton;
+
+	// non-ui
+	private Binder<AdvancedResourceFilterParams> binder;
+
+	private ResourceService resourceService;
+
 	public AdvancedResourceFilterForm() {
+
+		resourceService = new ResourceService();
 
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
 
-		resourceCombo = new ComboBox<>();
-		configureResourceCombo();
+		typeCombo = new ComboBox<>();
+		configureTypeCombo();
 
 		statusCombo = new ComboBox<>();
 		configureStatusCombo();
@@ -36,25 +51,57 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		queryField = new TextField();
 		configureQueryField();
 
-		add(cityCombo, resourceCombo, statusCombo, queryField);
+		okButton = new Button("Filter", VaadinIcon.FILTER.create());
+		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
+
+		binder = new Binder<>(AdvancedResourceFilterParams.class);
+
+		binder.forField(queryField).bind("query");
+
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setWidthFull();
+		buildButtonBar(buttonBar);
+
+		add(cityCombo, typeCombo, statusCombo, queryField, buttonBar);
+	}
+
+	private void buildButtonBar(HorizontalLayout root) {
+		okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		okButton.addClickListener(e -> {
+
+		});
+
+		cancelButton.addClickListener(e -> {
+
+		});
+
+		Span blank = new Span();
+		root.add(okButton, blank, cancelButton);
+		root.expand(blank);
 	}
 
 	private void configureCityCombo() {
 		cityCombo.setLabel("City");
 		cityCombo.setPlaceholder("Select a city");
 		cityCombo.setWidthFull();
+		cityCombo.setItemLabelGenerator(city -> {
+			return city.getName();
+		});
+		cityCombo.setItems(resourceService.getAllCities());
 	}
 
-	private void configureResourceCombo() {
-		resourceCombo.setLabel("Resource-type");
-		resourceCombo.setPlaceholder("Select a resource-type");
-		resourceCombo.setWidthFull();
+	private void configureTypeCombo() {
+		typeCombo.setLabel("Resource-type");
+		typeCombo.setPlaceholder("Select a resource-type");
+		typeCombo.setWidthFull();
+		typeCombo.setItems(Resource.Type.values());
 	}
 
 	private void configureStatusCombo() {
 		statusCombo.setLabel("Status");
 		statusCombo.setPlaceholder("Select a status");
 		statusCombo.setWidthFull();
+		statusCombo.setItems(Resource.Status.values());
 	}
 
 	private void configureQueryField() {
@@ -62,27 +109,35 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		queryField.setPlaceholder("Type name or address");
 		queryField.setWidthFull();
 		queryField.setClearButtonVisible(true);
-		queryField.addValueChangeListener(e -> {
-			fireEvent(new FilterEvent(this, e.getValue()));
-		});
 	}
 
-	public static abstract class UserFilterFormEvent extends ComponentEvent<AdvancedResourceFilterForm> {
-		private String queryString;
+	public void setFilterParams(AdvancedResourceFilterParams filterParams) {
+		binder.setBean(filterParams);
+	}
 
-		protected UserFilterFormEvent(AdvancedResourceFilterForm source, String queryString) {
+	public static abstract class AdvancedResourceFilterFormEvent extends ComponentEvent<AdvancedResourceFilterForm> {
+		private AdvancedResourceFilterParams filterParams;
+
+		protected AdvancedResourceFilterFormEvent(AdvancedResourceFilterForm source,
+				AdvancedResourceFilterParams filterParams) {
 			super(source, false);
-			this.queryString = queryString;
+			this.filterParams = filterParams;
 		}
 
-		public String getQueryString() {
-			return queryString;
+		public AdvancedResourceFilterParams getFilterParams() {
+			return filterParams;
 		}
 	}
 
-	public static class FilterEvent extends UserFilterFormEvent {
-		FilterEvent(AdvancedResourceFilterForm source, String queryQuery) {
-			super(source, queryQuery);
+	public static class FilterEvent extends AdvancedResourceFilterFormEvent {
+		FilterEvent(AdvancedResourceFilterForm source, AdvancedResourceFilterParams filterParams) {
+			super(source, filterParams);
+		}
+	}
+
+	public static class CancelEvent extends AdvancedResourceFilterFormEvent {
+		CancelEvent(AdvancedResourceFilterForm source, AdvancedResourceFilterParams filterParams) {
+			super(source, filterParams);
 		}
 	}
 

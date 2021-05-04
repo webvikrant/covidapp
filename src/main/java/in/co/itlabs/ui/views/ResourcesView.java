@@ -1,5 +1,6 @@
 package in.co.itlabs.ui.views;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -26,14 +27,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.User;
-import in.co.itlabs.business.services.AuthService;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
+import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.ResourceEditorForm;
 import in.co.itlabs.ui.components.AdvancedResourceFilterForm;
-import in.co.itlabs.ui.components.UserEditorForm;
-import in.co.itlabs.ui.components.UserFilterForm;
 import in.co.itlabs.ui.layouts.AppLayout;
+import in.co.itlabs.util.AdvancedResourceFilterParams;
 
 @PageTitle(value = "Resources")
 @Route(value = "resources", layout = AppLayout.class)
@@ -52,9 +51,10 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 	// non-ui
 	private AuthenticatedUser authUser;
-	private AuthService authService;
+	private ResourceService resourceService;
 
-	private String queryString;
+	private AdvancedResourceFilterParams filterParams;
+	private Resource resource;
 
 	public ResourcesView() {
 		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
@@ -63,6 +63,8 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 			return;
 		}
 
+		resourceService = new ResourceService();
+		
 		setAlignItems(Alignment.CENTER);
 
 		titleDiv = new Div();
@@ -72,15 +74,17 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		dialog.setModal(true);
 		dialog.setDraggable(true);
 
-		editorForm = new ResourceEditorForm();
-		editorForm.setUser(new User());
-		editorForm.addListener(UserEditorForm.SaveEvent.class, this::handleSaveEvent);
-		editorForm.addListener(UserEditorForm.CancelEvent.class, this::handleCancelEvent);
+		resource = new Resource();
+		
+		editorForm = new ResourceEditorForm(resourceService);
+		editorForm.addListener(ResourceEditorForm.SaveEvent.class, this::handleSaveEvent);
+		editorForm.addListener(ResourceEditorForm.CancelEvent.class, this::handleCancelEvent);
 
-//		queryString = null;
+		filterParams = new AdvancedResourceFilterParams();
 
 		filterForm = new AdvancedResourceFilterForm();
-		filterForm.addListener(UserFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.setFilterParams(filterParams);
+		filterForm.addListener(AdvancedResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCount = new Div();
 		recordCount.addClassName("small-text");
@@ -131,10 +135,11 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		createButton.setWidth("100px");
 		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 		createButton.addClickListener(e -> {
-			dialog.setWidth("400px");
+			dialog.setWidth("500px");
 			dialog.removeAll();
 			dialog.open();
 			dialog.add(editorForm);
+			editorForm.setResource(resource);
 		});
 
 		Span blank = new Span();
@@ -150,34 +155,38 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		titleDiv.add("Resources");
 	}
 
-	public void handleFilterEvent(UserFilterForm.FilterEvent event) {
-		queryString = event.getQueryString();
+	public void handleFilterEvent(AdvancedResourceFilterForm.FilterEvent event) {
+		filterParams = event.getFilterParams();
 		reload();
 	}
 
-	public void handleSaveEvent(UserEditorForm.SaveEvent event) {
+	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {
 		List<String> messages = new ArrayList<String>();
-		User user = event.getUser();
+		resource = event.getResource();
 
-		int userId = authService.createUser(messages, user);
-		if (userId > 0) {
-			Notification.show("Student created successfully", 3000, Position.TOP_CENTER);
+		resource.setCreatedBy(authUser.getId());
+		resource.setCreatedAt(LocalDateTime.now());
+		
+		int resourceId = resourceService.createResource(messages, resource);
+		if (resourceId > 0) {
+			Notification.show("Resource created successfully", 3000, Position.TOP_CENTER);
 			reload();
 //			user.clear();
-			editorForm.setUser(user);
+			resource = new Resource();
+			editorForm.setResource(resource);
 		} else {
 			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
 		}
 	}
 
-	public void handleCancelEvent(UserEditorForm.CancelEvent event) {
+	public void handleCancelEvent(ResourceEditorForm.CancelEvent event) {
 		dialog.close();
 	}
 
 	public void reload() {
-//		List<User> users = authService.getAllUsers(queryString);
-//		resultCount.setText("Record(s) found: " + users.size());
-//		grid.setItems(users);
+		List<Resource> resources = resourceService.getResources();
+		recordCount.setText("Record(s) found: " + resources.size());
+		grid.setItems(resources);
 	}
 
 	@Override
