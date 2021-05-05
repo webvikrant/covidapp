@@ -4,26 +4,23 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.User;
 
-public class UserEditorForm extends VerticalLayout {
+public class PasswordEditorForm extends VerticalLayout {
 
 	// ui
-
-	private TextField usernameField;
+	private Div nameDiv;
 	private PasswordField passwordField;
-	private TextField nameField;
-	private EmailField emailIdField;
+	private PasswordField confirmPasswordField;
 
 	private Button saveButton;
 	private Button cancelButton;
@@ -32,28 +29,24 @@ public class UserEditorForm extends VerticalLayout {
 
 	// non-ui
 
-	public UserEditorForm() {
+	public PasswordEditorForm() {
 
 		setAlignItems(Alignment.CENTER);
 
-		nameField = new TextField();
-		configureNameField();
-
-		emailIdField = new EmailField();
-		configureEmailIdField();
-
-		usernameField = new TextField();
-		configureUsernameField();
+		nameDiv = new Div();
 
 		passwordField = new PasswordField();
 		configurePasswordField();
 
+		confirmPasswordField = new PasswordField();
+		configureConfirmPasswordField();
+
 		userBinder = new Binder<>(User.class);
 
-		userBinder.forField(nameField).asRequired("Name can not be blank").bind("name");
-		userBinder.forField(emailIdField).asRequired("Email id can not be blank").bind("emailId");
-		userBinder.forField(usernameField).asRequired("Username can not be blank").bind("username");
 		userBinder.forField(passwordField).asRequired("Password can not be blank").bind("password");
+		userBinder.forField(confirmPasswordField).asRequired("Confirm password can not be blank")
+				.withValidator(value -> value.equals(passwordField.getValue()), "Passwords do not match")
+				.bind("confirmPassword");
 
 		saveButton = new Button("OK", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
@@ -63,34 +56,22 @@ public class UserEditorForm extends VerticalLayout {
 
 		buttonBar.setWidthFull();
 
-		add(nameField, emailIdField, usernameField, passwordField, buttonBar);
+		add(nameDiv, passwordField, confirmPasswordField, buttonBar);
 
-	}
-
-	private void configureUsernameField() {
-		usernameField.setWidthFull();
-		usernameField.setLabel("Username");
-		usernameField.setPlaceholder("Type username");
 	}
 
 	private void configurePasswordField() {
 		passwordField.setWidthFull();
-		passwordField.setLabel("Password");
+		passwordField.setLabel("New password");
 	}
 
-	private void configureNameField() {
-		nameField.setWidthFull();
-		nameField.setLabel("Name");
-		nameField.setPlaceholder("Type name");
-	}
-
-	private void configureEmailIdField() {
-		emailIdField.setWidthFull();
-		emailIdField.setLabel("Email Id");
-		emailIdField.setPlaceholder("Type email id");
+	private void configureConfirmPasswordField() {
+		confirmPasswordField.setWidthFull();
+		confirmPasswordField.setLabel("Confrm password");
 	}
 
 	public void setUser(User user) {
+		nameDiv.setText(user.getName());
 		userBinder.setBean(user);
 	}
 
@@ -113,10 +94,10 @@ public class UserEditorForm extends VerticalLayout {
 		root.expand(blank);
 	}
 
-	public static abstract class UserEditorFormEvent extends ComponentEvent<UserEditorForm> {
+	public static abstract class PasswordEditorFormEvent extends ComponentEvent<PasswordEditorForm> {
 		private User user;
 
-		protected UserEditorFormEvent(UserEditorForm source, User user) {
+		protected PasswordEditorFormEvent(PasswordEditorForm source, User user) {
 
 			super(source, false);
 			this.user = user;
@@ -127,14 +108,14 @@ public class UserEditorForm extends VerticalLayout {
 		}
 	}
 
-	public static class SaveEvent extends UserEditorFormEvent {
-		SaveEvent(UserEditorForm source, User user) {
+	public static class SaveEvent extends PasswordEditorFormEvent {
+		SaveEvent(PasswordEditorForm source, User user) {
 			super(source, user);
 		}
 	}
 
-	public static class CancelEvent extends UserEditorFormEvent {
-		CancelEvent(UserEditorForm source, User user) {
+	public static class CancelEvent extends PasswordEditorFormEvent {
+		CancelEvent(PasswordEditorForm source, User user) {
 			super(source, user);
 		}
 	}

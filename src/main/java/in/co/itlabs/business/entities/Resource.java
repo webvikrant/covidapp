@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Resource {
 
 	public enum Type {
-		Ambulance, Hospital_Beds, Oxygen, Plasma, Medicine, Doctor_On_Call
+		Ambulance, Hospital_Beds, Oxygen, Plasma_Donor, Medicine, Doctor_On_Call
 	}
 
 	public enum Status {

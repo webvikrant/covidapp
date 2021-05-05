@@ -138,8 +138,12 @@ public class AuthService {
 
 					if (success) {
 						authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
+					}else {
+						messages.add("Invalid username or password");
 					}
 				}
+			}else {
+				messages.add("Invalid username or password");
 			}
 			con.close();
 		} catch (Exception e) {
@@ -149,6 +153,29 @@ public class AuthService {
 		}
 
 		return authUser;
+	}
+
+	// update password
+	public boolean updateUserPassword(List<String> messages, AuthenticatedUser authUser, String password) {
+
+		boolean success = false;
+		Sql2o sql2o = databaseService.getSql2o();
+		String updateSql = "update user set passwordHash = :passwordHash where id = :id";
+
+		char[] passwordChars = password.toCharArray();
+		String passwordHash = argon2.hash(4, 16 * 1024, 1, passwordChars);
+
+		try (Connection con = sql2o.beginTransaction()) {
+			con.createQuery(updateSql).addParameter("passwordHash", passwordHash).addParameter("id", authUser.getId())
+					.executeUpdate().getKey(Integer.class);
+
+			con.commit();
+			success = true;
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			messages.add(e.getMessage());
+		}
+		return success;
 	}
 
 }

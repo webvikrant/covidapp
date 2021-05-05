@@ -5,6 +5,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -39,6 +40,9 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 
 		resourceService = new ResourceService();
 
+		Div titleDiv = new Div();
+		titleDiv.setText("Filter");
+
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
 
@@ -52,7 +56,7 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		configureQueryField();
 
 		okButton = new Button("Filter", VaadinIcon.FILTER.create());
-		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
+		cancelButton = new Button("Clear", VaadinIcon.CLOSE.create());
 
 		binder = new Binder<>(ResourceFilterParams.class);
 
@@ -65,7 +69,7 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(cityCombo, typeCombo, statusCombo, queryField, buttonBar);
+		add(titleDiv, cityCombo, typeCombo, statusCombo, queryField, buttonBar);
 	}
 
 	private void buildButtonBar(HorizontalLayout root) {
