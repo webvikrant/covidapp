@@ -31,7 +31,7 @@ import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.ResourceEditorForm;
-import in.co.itlabs.ui.components.AdvancedResourceFilterForm;
+import in.co.itlabs.ui.components.ResourceFilterForm;
 import in.co.itlabs.ui.layouts.AppLayout;
 import in.co.itlabs.util.ResourceDataProvider;
 import in.co.itlabs.util.ResourceFilterParams;
@@ -45,7 +45,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 	// ui
 	private Div titleDiv;
 	private ResourceEditorForm editorForm;
-	private AdvancedResourceFilterForm filterForm;
+	private ResourceFilterForm filterForm;
 	private HorizontalLayout toolBar;
 	private Grid<Resource> grid;
 	private Div recordCount;
@@ -87,9 +87,9 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 		filterParams = new ResourceFilterParams();
 
-		filterForm = new AdvancedResourceFilterForm();
+		filterForm = new ResourceFilterForm();
 		filterForm.setFilterParams(filterParams);
-		filterForm.addListener(AdvancedResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.addListener(ResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCount = new Div();
 		recordCount.addClassName("small-text");
@@ -181,7 +181,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		titleDiv.add("Resources");
 	}
 
-	public void handleFilterEvent(AdvancedResourceFilterForm.FilterEvent event) {
+	public void handleFilterEvent(ResourceFilterForm.FilterEvent event) {
 		filterParams = event.getFilterParams();
 		dataProvider.setFilterParams(filterParams);
 		reload();

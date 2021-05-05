@@ -22,7 +22,7 @@ import in.co.itlabs.ui.components.PasswordEditorForm.CancelEvent;
 import in.co.itlabs.ui.views.ResourcesView;
 import in.co.itlabs.ui.views.UsersView;
 
-public class NavBar extends HorizontalLayout {
+public class GuestNavBar extends HorizontalLayout {
 
 	// ui
 	private HorizontalLayout menuBar;
@@ -38,7 +38,7 @@ public class NavBar extends HorizontalLayout {
 	private AuthenticatedUser authUser;
 	private final List<String> messages = new ArrayList<>();
 
-	public NavBar() {
+	public GuestNavBar() {
 
 		authService = new AuthService();
 		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);

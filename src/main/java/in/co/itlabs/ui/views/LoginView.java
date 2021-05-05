@@ -14,7 +14,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -67,15 +66,14 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 		authService = new AuthService();
 		emailService = new EmailService();
-		
-		
+
 		setAlignItems(Alignment.CENTER);
 
 		// left is graphic
-		Image image = new Image("images/login-view-image.jpeg", "miniERP");
+//		Image image = new Image("images/login-view-image.jpeg", "miniERP");
 //		image.getStyle().set("objectFit", "contain");
-		image.addClassName("card-photo");
-		image.setWidth("650px");
+//		image.addClassName("card-photo");
+//		image.setWidth("650px");
 
 		userNameField = new TextField("Username");
 		userNameField.setWidthFull();
@@ -92,14 +90,15 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 		// right id form
 		VerticalLayout loginForm = new VerticalLayout();
-		loginForm.setWidth("350px");
+//		loginForm.setWidth("350px");
+		loginForm.setWidthFull();
 		buildLogin(loginForm);
 
 		HorizontalLayout main = new HorizontalLayout();
 		main.setWidthFull();
 		main.addClassName("card");
 		main.setSpacing(false);
-		main.add(image, loginForm);
+		main.add(loginForm);
 
 		add(main);
 	}

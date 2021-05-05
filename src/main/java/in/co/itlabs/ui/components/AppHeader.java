@@ -8,14 +8,14 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class Header extends HorizontalLayout {
+public class AppHeader extends HorizontalLayout {
 
 	private Icon icon;
 	private Span appName;
 	private Span blank;
 	private Span date;
 
-	public Header() {
+	public AppHeader() {
 		setJustifyContentMode(JustifyContentMode.BETWEEN);
 		setAlignItems(Alignment.CENTER);
 

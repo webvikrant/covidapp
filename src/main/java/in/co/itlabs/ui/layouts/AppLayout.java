@@ -18,9 +18,9 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
-import in.co.itlabs.ui.components.Footer;
-import in.co.itlabs.ui.components.Header;
-import in.co.itlabs.ui.components.NavBar;
+import in.co.itlabs.ui.components.AppFooter;
+import in.co.itlabs.ui.components.AppHeader;
+import in.co.itlabs.ui.components.AppNavBar;
 import in.co.itlabs.ui.views.LoginView;
 
 @JsModule("@vaadin/vaadin-lumo-styles/presets/compact.js")
@@ -31,21 +31,24 @@ public class AppLayout extends VerticalLayout implements RouterLayout, BeforeEnt
 
 	// ui
 
-	private Header header;
-	private NavBar navBar;
+	private AppHeader header;
+	private AppNavBar navBar;
 	private VerticalLayout content;
-	private Footer footer;
+	private AppFooter footer;
 
 	// non-ui
 	private static final Logger logger = LoggerFactory.getLogger(AppLayout.class);
 
 	public AppLayout() {
-		logger.info("init() invoked...");
 
-		header = new Header();
+		logger.info("AppLayout() invoked...");
+
+		addClassName("app-layout");
+		
+		header = new AppHeader();
 		header.setWidthFull();
 
-		navBar = new NavBar();
+		navBar = new AppNavBar();
 		navBar.setWidthFull();
 
 		content = new VerticalLayout();
@@ -53,7 +56,7 @@ public class AppLayout extends VerticalLayout implements RouterLayout, BeforeEnt
 		content.setWidthFull();
 		content.addClassName("card");
 
-		footer = new Footer();
+		footer = new AppFooter();
 		footer.setWidthFull();
 
 		VerticalLayout root = new VerticalLayout();

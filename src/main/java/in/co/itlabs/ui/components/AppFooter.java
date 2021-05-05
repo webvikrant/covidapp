@@ -8,14 +8,14 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class Footer extends HorizontalLayout {
+public class AppFooter extends HorizontalLayout {
 
 	private Icon copyrightIcon;
 	private Anchor link;
 	private Button button;
-	private Span email = new Span("webvikrant@gmail.com");
+	private Span email = new Span("team100@gmail.com");
 
-	public Footer() {
+	public AppFooter() {
 		setMargin(false);
 		setPadding(false);
 		setSpacing(false);

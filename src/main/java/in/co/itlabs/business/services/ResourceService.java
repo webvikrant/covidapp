@@ -121,6 +121,8 @@ public class ResourceService {
 		List<Resource> resources = null;
 
 		String sql = generateResourceSql(filterParams, false);
+
+		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
