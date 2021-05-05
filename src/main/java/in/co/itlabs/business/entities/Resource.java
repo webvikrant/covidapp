@@ -14,7 +14,7 @@ public class Resource {
 	}
 
 	public enum Status {
-		Not_Verified, Verified_12_Hrs_Ago, Verified_24_Hrs_Ago
+		Not_Verified, Verified, Stale
 	}
 
 	private int id;
@@ -32,6 +32,7 @@ public class Resource {
 	private String remark;
 
 	private boolean verified;
+	private Status status;
 
 	private int createdBy;
 	private LocalDateTime createdAt;

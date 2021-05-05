@@ -16,7 +16,7 @@ import com.vaadin.flow.shared.Registration;
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.services.ResourceService;
-import in.co.itlabs.util.AdvancedResourceFilterParams;
+import in.co.itlabs.util.ResourceFilterParams;
 
 public class AdvancedResourceFilterForm extends VerticalLayout {
 
@@ -31,7 +31,7 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 	private Button cancelButton;
 
 	// non-ui
-	private Binder<AdvancedResourceFilterParams> binder;
+	private Binder<ResourceFilterParams> binder;
 
 	private ResourceService resourceService;
 
@@ -54,8 +54,11 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		okButton = new Button("Filter", VaadinIcon.FILTER.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
 
-		binder = new Binder<>(AdvancedResourceFilterParams.class);
+		binder = new Binder<>(ResourceFilterParams.class);
 
+		binder.forField(cityCombo).bind("city");
+		binder.forField(typeCombo).bind("type");
+		binder.forField(statusCombo).bind("status");
 		binder.forField(queryField).bind("query");
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -68,11 +71,14 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 	private void buildButtonBar(HorizontalLayout root) {
 		okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		okButton.addClickListener(e -> {
-
+			if (binder.validate().isOk()) {
+				fireEvent(new FilterEvent(this, binder.getBean()));
+			}
 		});
 
 		cancelButton.addClickListener(e -> {
-
+			clearForm();
+			fireEvent(new FilterEvent(this, binder.getBean()));
 		});
 
 		Span blank = new Span();
@@ -80,10 +86,18 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		root.expand(blank);
 	}
 
+	private void clearForm() {
+		cityCombo.clear();
+		typeCombo.clear();
+		statusCombo.clear();
+		queryField.clear();
+	}
+
 	private void configureCityCombo() {
 		cityCombo.setLabel("City");
 		cityCombo.setPlaceholder("Select a city");
 		cityCombo.setWidthFull();
+		cityCombo.setClearButtonVisible(true);
 		cityCombo.setItemLabelGenerator(city -> {
 			return city.getName();
 		});
@@ -93,6 +107,7 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 	private void configureTypeCombo() {
 		typeCombo.setLabel("Resource-type");
 		typeCombo.setPlaceholder("Select a resource-type");
+		typeCombo.setClearButtonVisible(true);
 		typeCombo.setWidthFull();
 		typeCombo.setItems(Resource.Type.values());
 	}
@@ -100,6 +115,7 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 	private void configureStatusCombo() {
 		statusCombo.setLabel("Status");
 		statusCombo.setPlaceholder("Select a status");
+		statusCombo.setClearButtonVisible(true);
 		statusCombo.setWidthFull();
 		statusCombo.setItems(Resource.Status.values());
 	}
@@ -111,35 +127,35 @@ public class AdvancedResourceFilterForm extends VerticalLayout {
 		queryField.setClearButtonVisible(true);
 	}
 
-	public void setFilterParams(AdvancedResourceFilterParams filterParams) {
+	public void setFilterParams(ResourceFilterParams filterParams) {
 		binder.setBean(filterParams);
 	}
 
 	public static abstract class AdvancedResourceFilterFormEvent extends ComponentEvent<AdvancedResourceFilterForm> {
-		private AdvancedResourceFilterParams filterParams;
+		private ResourceFilterParams filterParams;
 
 		protected AdvancedResourceFilterFormEvent(AdvancedResourceFilterForm source,
-				AdvancedResourceFilterParams filterParams) {
+				ResourceFilterParams filterParams) {
 			super(source, false);
 			this.filterParams = filterParams;
 		}
 
-		public AdvancedResourceFilterParams getFilterParams() {
+		public ResourceFilterParams getFilterParams() {
 			return filterParams;
 		}
 	}
 
 	public static class FilterEvent extends AdvancedResourceFilterFormEvent {
-		FilterEvent(AdvancedResourceFilterForm source, AdvancedResourceFilterParams filterParams) {
+		FilterEvent(AdvancedResourceFilterForm source, ResourceFilterParams filterParams) {
 			super(source, filterParams);
 		}
 	}
 
-	public static class CancelEvent extends AdvancedResourceFilterFormEvent {
-		CancelEvent(AdvancedResourceFilterForm source, AdvancedResourceFilterParams filterParams) {
-			super(source, filterParams);
-		}
-	}
+//	public static class CancelEvent extends AdvancedResourceFilterFormEvent {
+//		CancelEvent(AdvancedResourceFilterForm source, ResourceFilterParams filterParams) {
+//			super(source, filterParams);
+//		}
+//	}
 
 	public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
 			ComponentEventListener<T> listener) {

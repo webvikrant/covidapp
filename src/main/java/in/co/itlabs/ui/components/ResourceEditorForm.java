@@ -130,7 +130,7 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private void configureNameField() {
 		nameField.setWidthFull();
-		nameField.setLabel("Name");
+		nameField.setLabel("Provider");
 		nameField.setPlaceholder("Type name");
 	}
 
@@ -152,6 +152,8 @@ public class ResourceEditorForm extends VerticalLayout {
 	}
 
 	public void setResource(Resource resource) {
+		City city = resourceService.getCityById(resource.getCityId());
+		resource.setCity(city);
 		binder.setBean(resource);
 	}
 
@@ -160,6 +162,7 @@ public class ResourceEditorForm extends VerticalLayout {
 		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		saveButton.addClickListener(e -> {
 			if (binder.validate().isOk()) {
+				binder.getBean().setCityId(binder.getBean().getCity().getId());
 				fireEvent(new SaveEvent(this, binder.getBean()));
 			}
 		});
