@@ -72,7 +72,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		setAlignItems(Alignment.CENTER);
 
 		// left is graphic
-		Image image = new Image("https://picsum.photos/800/600", "miniERP");
+		Image image = new Image("images/login-view-image.jpeg", "miniERP");
 //		image.getStyle().set("objectFit", "contain");
 		image.addClassName("card-photo");
 		image.setWidth("650px");

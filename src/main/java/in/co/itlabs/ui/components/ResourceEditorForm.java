@@ -95,7 +95,7 @@ public class ResourceEditorForm extends VerticalLayout {
 		binder.forField(remarkField).asRequired("Remark can not be blank").bind("remark");
 		binder.forField(verifiedCheck).bind("verified");
 
-		saveButton = new Button("OK", VaadinIcon.CHECK.create());
+		saveButton = new Button("Save", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
 
 		HorizontalLayout topBar = new HorizontalLayout();

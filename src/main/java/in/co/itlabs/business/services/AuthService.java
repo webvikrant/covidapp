@@ -127,8 +127,8 @@ public class AuthService {
 			if (user != null) {
 
 				// check if passwordHash is null or blank
-				if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
-					if (credentials.password == null || credentials.password.isBlank()) {
+				if (user.getPasswordHash() == null || user.getPasswordHash().isEmpty()) {
+					if (credentials.password == null || credentials.password.isEmpty()) {
 						authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
 					}
 				} else {
