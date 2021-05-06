@@ -20,6 +20,7 @@ import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.GuestResourceFilterForm;
 import in.co.itlabs.ui.components.ResourceEditorForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
+import in.co.itlabs.util.DateUtil;
 import in.co.itlabs.util.ResourceDataProvider;
 import in.co.itlabs.util.ResourceFilterParams;
 
@@ -91,7 +92,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			root.setWidthFull();
 			root.addClassName("card");
 
-			Button updatedAtButton = new Button("Verified " + resource.getUpdatedAtString());
+			Button updatedAtButton = new Button("Verified " + DateUtil.humanize(resource.getUpdatedAt()));
 			updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			TextField nameField = new TextField(resource.getType().toString());

@@ -9,28 +9,24 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import in.co.itlabs.business.services.ResourceService;
+import in.co.itlabs.ui.components.PlasmaDonorEditorForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
 
 @PageTitle(value = "Ghaziabad Covid Support")
-@Route(value = "plasma-seeker", layout = GuestLayout.class)
+@Route(value = "plasma-donor-form", layout = GuestLayout.class)
 @CssImport("./styles/shared-styles.css")
-public class PlasmaSeekerView extends VerticalLayout implements BeforeEnterObserver {
+public class PlasmaDonorFormView extends VerticalLayout implements BeforeEnterObserver {
 
 //	private static final Logger logger = LoggerFactory.getLogger(IndexView.class);
 
 	// ui
 	private Div titleDiv;
+	private PlasmaDonorEditorForm editorForm;
 
 	// non-ui
 	private ResourceService resourceService;
 
-	public PlasmaSeekerView() {
-
-//		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
-//		if (authUser == null) {
-//			logger.info("User not logged in.");
-//			return;
-//		}
+	public PlasmaDonorFormView() {
 
 		resourceService = new ResourceService();
 
@@ -41,12 +37,15 @@ public class PlasmaSeekerView extends VerticalLayout implements BeforeEnterObser
 		titleDiv = new Div();
 		buildTitle();
 
-		add(titleDiv);
+		editorForm = new PlasmaDonorEditorForm();
+		editorForm.addClassName("card");
+
+		add(titleDiv, editorForm);
 	}
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Plasma Seeker");
+		titleDiv.add("Plasma Donor");
 	}
 
 	@Override

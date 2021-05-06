@@ -10,8 +10,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import in.co.itlabs.ui.views.IndexView;
 import in.co.itlabs.ui.views.LoginView;
-import in.co.itlabs.ui.views.PlasmaDonorView;
-import in.co.itlabs.ui.views.PlasmaSeekerView;
+import in.co.itlabs.ui.views.PlasmaDonorFormView;
+import in.co.itlabs.ui.views.PlasmaSeekerFormView;
 
 public class GuestNavBar extends VerticalLayout {
 
@@ -54,12 +54,12 @@ public class GuestNavBar extends VerticalLayout {
 
 		Button plasmaSeekersButton = new Button("Need Plasma?");
 		plasmaSeekersButton.addClickListener(e -> {
-			UI.getCurrent().navigate(PlasmaSeekerView.class);
+			UI.getCurrent().navigate(PlasmaSeekerFormView.class);
 		});
 
 		Button plasmaDonorsButton = new Button("Donate Plasma");
 		plasmaDonorsButton.addClickListener(e -> {
-			UI.getCurrent().navigate(PlasmaDonorView.class);
+			UI.getCurrent().navigate(PlasmaDonorFormView.class);
 		});
 
 		menuBar.add(indexButton, plasmaSeekersButton, plasmaDonorsButton);

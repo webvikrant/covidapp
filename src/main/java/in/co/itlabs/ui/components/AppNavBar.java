@@ -19,6 +19,7 @@ import in.co.itlabs.business.services.AuthService;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.ui.components.PasswordEditorForm.SaveEvent;
 import in.co.itlabs.ui.components.PasswordEditorForm.CancelEvent;
+import in.co.itlabs.ui.views.PlasmaDonorsView;
 import in.co.itlabs.ui.views.ResourcesView;
 import in.co.itlabs.ui.views.UsersView;
 
@@ -55,12 +56,12 @@ public class AppNavBar extends HorizontalLayout {
 
 		User user = new User();
 		user.setName(authUser.getName());
-		
+
 		passwordEditorForm = new PasswordEditorForm();
 		passwordEditorForm.setUser(user);
 		passwordEditorForm.addListener(SaveEvent.class, this::handleSaveEvent);
 		passwordEditorForm.addListener(CancelEvent.class, this::handleCancelEvent);
-		
+
 		dialog = new Dialog();
 		dialog.setModal(true);
 		dialog.setDraggable(true);
@@ -119,12 +120,17 @@ public class AppNavBar extends HorizontalLayout {
 				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			Button plasmaSeekersButton = new Button("Plasma seekers & donors", VaadinIcon.AMBULANCE.create());
+			Button plasmaDonorsButton = new Button("Plasma donors", VaadinIcon.AMBULANCE.create());
+			plasmaDonorsButton.addClickListener(e -> {
+				UI.getCurrent().navigate(PlasmaDonorsView.class);
+			});
+
+			Button plasmaSeekersButton = new Button("Plasma requests", VaadinIcon.AMBULANCE.create());
 			plasmaSeekersButton.addClickListener(e -> {
 //				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			menuBar.add(resourcesButton, plasmaSeekersButton);
+			menuBar.add(resourcesButton, plasmaDonorsButton, plasmaSeekersButton);
 
 			break;
 

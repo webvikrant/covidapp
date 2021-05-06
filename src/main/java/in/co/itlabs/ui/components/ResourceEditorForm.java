@@ -22,6 +22,7 @@ import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.ResourceService;
+import in.co.itlabs.util.DateUtil;
 
 public class ResourceEditorForm extends VerticalLayout {
 
@@ -118,9 +119,8 @@ public class ResourceEditorForm extends VerticalLayout {
 		cityTypeBar.add(cityCombo, typeCombo);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buildButtonBar(buttonBar);
-
 		buttonBar.setWidthFull();
+		buildButtonBar(buttonBar);
 
 		add(topBar, cityTypeBar, nameField, addressField, phoneBar, remarkField, verifiedCheck, buttonBar);
 
@@ -175,7 +175,7 @@ public class ResourceEditorForm extends VerticalLayout {
 		statusButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		if (resource.getId() > 0) {
-			updatedDiv.setText("Last updated " + resource.getUpdatedAtString());
+			updatedDiv.setText("Last updated " + DateUtil.humanize(resource.getUpdatedAt()));
 			
 			if (resource.getStatus() == Status.Not_Verified) {
 				statusButton.setText("Not verified");

@@ -1,7 +1,6 @@
 package in.co.itlabs.business.entities;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,54 +58,5 @@ public class Resource {
 
 		return phones;
 	}
-
-	public String getUpdatedAtString() {
-		String string = "";
-
-		LocalDateTime then = updatedAt.plusSeconds(0);
-		LocalDateTime now = LocalDateTime.now();
-
-		long years = then.until(now, ChronoUnit.YEARS);
-		then = then.plusYears(years);
-
-		long months = then.until(now, ChronoUnit.MONTHS);
-		then = then.plusMonths(months);
-
-		long days = then.until(now, ChronoUnit.DAYS);
-		then = then.plusDays(days);
-
-		long hours = then.until(now, ChronoUnit.HOURS);
-		then = then.plusHours(hours);
-
-		long minutes = then.until(now, ChronoUnit.MINUTES);
-		then = then.plusMinutes(minutes);
-
-		if (years > 0) {
-			string = string + years + "yrs";
-		}
-
-		if (months > 0) {
-			string = string + "  " + months + "mths";
-		}
-
-		if (days > 0) {
-			string = string + "  " + days + "days";
-		}
-
-		if (hours > 0) {
-			string = string + "  " + hours + "hrs";
-		}
-
-		if (minutes > 0) {
-			string = string + "  " + minutes + "mins";
-		}
-
-		if(!string.isEmpty()) {
-			string = string + " ago";	
-		}else {
-			string = "Just now";
-		}
-
-		return string;
-	}
+	
 }
