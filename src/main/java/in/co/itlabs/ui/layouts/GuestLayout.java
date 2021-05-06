@@ -12,6 +12,7 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
@@ -24,6 +25,7 @@ import in.co.itlabs.ui.components.GuestNavBar;
 @Theme(Lumo.class)
 @CssImport("./styles/shared-styles.css")
 @Push(PushMode.MANUAL)
+@PWA(name = "Covid Support App", shortName = "CovidApp", enableInstallPrompt = true)
 public class GuestLayout extends VerticalLayout implements RouterLayout, BeforeEnterObserver {
 
 	// ui

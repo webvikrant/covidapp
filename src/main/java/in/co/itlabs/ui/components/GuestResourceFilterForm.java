@@ -1,9 +1,15 @@
 package in.co.itlabs.ui.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -11,6 +17,7 @@ import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.entities.Resource.Type;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.util.ResourceFilterParams;
 
@@ -21,7 +28,8 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	private ComboBox<Resource.Type> typeCombo;
 
 	private TextField queryField;
-
+	private Button filterButton;
+	
 	// non-ui
 	private Binder<ResourceFilterParams> binder;
 
@@ -32,7 +40,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		resourceService = new ResourceService();
 
 		setAlignItems(Alignment.CENTER);
-		
+
 		Div titleDiv = new Div();
 		titleDiv.setText("Filter");
 
@@ -44,6 +52,9 @@ public class GuestResourceFilterForm extends VerticalLayout {
 
 		queryField = new TextField();
 		configureQueryField();
+		
+		filterButton = new Button("Filter", VaadinIcon.FILTER.create());
+		configureFilterButton();
 
 		binder = new Binder<>(ResourceFilterParams.class);
 
@@ -51,32 +62,24 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		binder.forField(typeCombo).bind("type");
 		binder.forField(queryField).bind("query");
 
-		add(titleDiv, cityCombo, typeCombo, queryField);
+		add(titleDiv, cityCombo, typeCombo, queryField, filterButton);
 	}
 
-//	private void buildButtonBar(HorizontalLayout root) {
-//		okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-//		okButton.addClickListener(e -> {
-//			if (binder.validate().isOk()) {
-//				fireEvent(new FilterEvent(this, binder.getBean()));
-//			}
-//		});
-//
-//		cancelButton.addClickListener(e -> {
-//			clearForm();
-//			fireEvent(new FilterEvent(this, binder.getBean()));
-//		});
-//
-//		Span blank = new Span();
-//		root.add(okButton, blank, cancelButton);
-//		root.expand(blank);
+	private void configureFilterButton() {
+		filterButton.setWidthFull();
+		filterButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		filterButton.addClickListener(e -> {
+			if (binder.validate().isOk()) {
+				fireEvent(new FilterEvent(this, binder.getBean()));
+			}
+		});
+	}
+
+//	private void clearForm() {
+//		cityCombo.clear();
+//		typeCombo.clear();
+//		queryField.clear();
 //	}
-
-	private void clearForm() {
-		cityCombo.clear();
-		typeCombo.clear();
-		queryField.clear();
-	}
 
 	private void configureCityCombo() {
 		cityCombo.setLabel("City");
@@ -94,7 +97,15 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		typeCombo.setPlaceholder("Select a resource");
 		typeCombo.setClearButtonVisible(true);
 		typeCombo.setWidthFull();
-		typeCombo.setItems(Resource.Type.values());
+
+		List<Type> types = new ArrayList<>();
+		types.add(Type.Ambulance);
+		types.add(Type.Doctor_On_Call);
+		types.add(Type.Hospital_Beds);
+		types.add(Type.Medicine);
+		types.add(Type.Oxygen);
+
+		typeCombo.setItems(types);
 	}
 
 	private void configureQueryField() {

@@ -99,9 +99,9 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		toolBar.setWidthFull();
 		buildToolBar();
 
-		dataProvider = new ResourceDataProvider(resourceService);
+		dataProvider = new ResourceDataProvider(resourceService, false);// guest = false
 		dataProvider.setFilterParams(filterParams);
-		
+
 		grid = new Grid<>(Resource.class);
 		configureGrid();
 

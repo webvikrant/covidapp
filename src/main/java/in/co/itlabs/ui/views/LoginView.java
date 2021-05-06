@@ -13,7 +13,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -42,7 +42,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 	private static final Logger logger = LoggerFactory.getLogger(LoginView.class);
 
 	// ui
-
+	private Div titleDiv;
 	private TextField userNameField = new TextField("User name");
 	private PasswordField passwordField = new PasswordField("Password");
 	private Button loginButton = new Button("Login", VaadinIcon.SIGN_IN.create());
@@ -68,6 +68,9 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		emailService = new EmailService();
 
 		setAlignItems(Alignment.CENTER);
+
+		titleDiv = new Div();
+		buildTitle();
 
 		// left is graphic
 //		Image image = new Image("images/login-view-image.jpeg", "miniERP");
@@ -100,14 +103,17 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		main.setSpacing(false);
 		main.add(loginForm);
 
-		add(main);
+		add(titleDiv, main);
+	}
+
+	private void buildTitle() {
+		titleDiv.addClassName("view-title");
+		titleDiv.add("Login");
 	}
 
 	private void buildLogin(VerticalLayout root) {
 		root.setMargin(true);
 		root.setAlignItems(Alignment.CENTER);
-
-		H2 appName = new H2("Covid Support App");
 
 		loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		loginButton.addClickShortcut(Key.ENTER);
@@ -165,7 +171,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		buttonBar.setWidthFull();
 		buttonBar.expand(blank);
 
-		root.add(appName, userNameField, passwordField, buttonBar);
+		root.add(userNameField, passwordField, buttonBar);
 
 	}
 

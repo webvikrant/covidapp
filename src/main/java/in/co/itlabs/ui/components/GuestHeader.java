@@ -14,11 +14,12 @@ public class GuestHeader extends HorizontalLayout {
 		setJustifyContentMode(JustifyContentMode.CENTER);
 		setAlignItems(Alignment.CENTER);
 
-		icon = VaadinIcon.MENU.create();
-		icon.setSize("16px");
+		icon = VaadinIcon.AMBULANCE.create();
+		icon.setSize("18px");
 
 		appName = new Span();
 		appName.setText("Ghaziabad Covid Support");
+		appName.getStyle().set("fontSize", "16pt");
 
 		add(icon, appName);
 	}

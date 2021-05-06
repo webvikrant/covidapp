@@ -12,9 +12,11 @@ public class ResourceDataProvider extends AbstractBackEndDataProvider<Resource, 
 
 	private ResourceService resourceService;
 	private ResourceFilterParams filterParams;
+	private boolean guest;
 
-	public ResourceDataProvider(ResourceService resourceService) {
+	public ResourceDataProvider(ResourceService resourceService, boolean guest) {
 		this.resourceService = resourceService;
+		this.guest = guest;
 	}
 
 	public void setFilterParams(ResourceFilterParams filterParams) {
@@ -27,7 +29,7 @@ public class ResourceDataProvider extends AbstractBackEndDataProvider<Resource, 
 
 	@Override
 	protected Stream<Resource> fetchFromBackEnd(Query<Resource, Void> query) {
-		return resourceService.getResources(query.getOffset(), query.getLimit(), filterParams).stream();
+		return resourceService.getResources(query.getOffset(), query.getLimit(), filterParams, guest).stream();
 	}
 
 	@Override

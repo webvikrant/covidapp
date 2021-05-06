@@ -1,12 +1,5 @@
 package in.co.itlabs.ui.views;
 
-import java.util.ArrayList;
-
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -21,34 +14,30 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.PWA;
 
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.GuestResourceFilterForm;
 import in.co.itlabs.ui.components.ResourceEditorForm;
-import in.co.itlabs.ui.components.ResourceFilterForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
 import in.co.itlabs.util.ResourceDataProvider;
 import in.co.itlabs.util.ResourceFilterParams;
 
 @PageTitle(value = "Ghaziabad Covid Support")
 @Route(value = "", layout = GuestLayout.class)
-@PWA(name = "Covid Support App", shortName = "CovidApp", enableInstallPrompt = true)
 @CssImport("./styles/shared-styles.css")
 public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 
-	private static final Logger logger = LoggerFactory.getLogger(IndexView.class);
+//	private static final Logger logger = LoggerFactory.getLogger(IndexView.class);
 
 	// ui
-//	private Div titleDiv;
+	private Div titleDiv;
 	private GuestResourceFilterForm filterForm;
 	private ListBox<Resource> listBox;
 	private Div recordCount;
 	private Dialog dialog;
 
 	// non-ui
-//	private AuthenticatedUser authUser;
 	private ResourceService resourceService;
 
 	private ResourceFilterParams filterParams;
@@ -56,20 +45,14 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 
 	public IndexView() {
 
-//		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
-//		if (authUser == null) {
-//			logger.info("User not logged in.");
-//			return;
-//		}
-
 		resourceService = new ResourceService();
 
 		setMargin(false);
 		setPadding(false);
 		setAlignItems(Alignment.CENTER);
 
-//		titleDiv = new Div();
-//		buildTitle();
+		titleDiv = new Div();
+		buildTitle();
 
 		dialog = new Dialog();
 		dialog.setModal(true);
@@ -82,19 +65,19 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		filterForm.setWidth("87%");
 		filterForm.addClassName("card");
 		filterForm.setFilterParams(filterParams);
-		filterForm.addListener(ResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.addListener(GuestResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCount = new Div();
 		recordCount.addClassName("small-text");
 //		recordCount.setWidth("150px");
 
-		dataProvider = new ResourceDataProvider(resourceService);
+		dataProvider = new ResourceDataProvider(resourceService, true);// guest = true
 		dataProvider.setFilterParams(filterParams);
 
 		listBox = new ListBox<Resource>();
 		configureListBox();
 
-		add(filterForm, recordCount, listBox);
+		add(titleDiv, filterForm, recordCount, listBox);
 
 		reload();
 	}
@@ -108,7 +91,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			root.setWidthFull();
 			root.addClassName("card");
 
-			Button updatedAtButton = new Button("Verified "+ resource.getUpdatedAtString());
+			Button updatedAtButton = new Button("Verified " + resource.getUpdatedAtString());
 			updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			TextField nameField = new TextField(resource.getType().toString());
@@ -134,19 +117,19 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		listBox.setDataProvider(dataProvider);
 	}
 
-//	private void buildTitle() {
-//		titleDiv.addClassName("view-title");
-//		titleDiv.add("Resources");
-//	}
+	private void buildTitle() {
+		titleDiv.addClassName("view-title");
+		titleDiv.add("Home");
+	}
 
-	public void handleFilterEvent(ResourceFilterForm.FilterEvent event) {
+	public void handleFilterEvent(GuestResourceFilterForm.FilterEvent event) {
 		filterParams = event.getFilterParams();
 		dataProvider.setFilterParams(filterParams);
 		reload();
 	}
 
 	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {
-		List<String> messages = new ArrayList<String>();
+//		List<String> messages = new ArrayList<String>();
 //		resource = event.getResource();
 
 //		if (resource.getId() > 0) {
@@ -191,10 +174,6 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 	}
 
 	public void reload() {
-//		List<Resource> resources = resourceService.getResources();
-// 		recordCount.setText("Record(s) found: " + resources.size());
-//		grid.setItems(resources);
-
 		dataProvider.refreshAll();
 		recordCount.setText("Record(s) found: " + dataProvider.getCount());
 	}
