@@ -83,7 +83,7 @@ public class AppNavBar extends HorizontalLayout {
 
 		userButton.setText(authUser.getName());
 
-		passwordButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+//		passwordButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		passwordButton.addClickListener(e -> {
 			dialog.open();
 		});
@@ -119,7 +119,7 @@ public class AppNavBar extends HorizontalLayout {
 				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			Button plasmaSeekersButton = new Button("Plasma-seekers", VaadinIcon.AMBULANCE.create());
+			Button plasmaSeekersButton = new Button("Plasma seekers & donors", VaadinIcon.AMBULANCE.create());
 			plasmaSeekersButton.addClickListener(e -> {
 //				UI.getCurrent().navigate(ResourcesView.class);
 			});

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class Resource {
 
 	public enum Type {
-		Ambulance, Hospital_Beds, Oxygen, Plasma_Donor, Medicine, Doctor_On_Call
+		Ambulance, Hospital_Beds, Oxygen, Plasma, Medicine, Doctor_On_Call
 	}
 
 	public enum Status {
@@ -101,7 +101,11 @@ public class Resource {
 			string = string + "  " + minutes + "mins";
 		}
 
-		string = string + " ago";
+		if(!string.isEmpty()) {
+			string = string + " ago";	
+		}else {
+			string = "Just now";
+		}
 
 		return string;
 	}

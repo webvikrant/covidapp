@@ -71,7 +71,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		recordCount.addClassName("small-text");
 //		recordCount.setWidth("150px");
 
-		dataProvider = new ResourceDataProvider(resourceService, true);// guest = true
+		dataProvider = new ResourceDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
 
 		listBox = new ListBox<Resource>();

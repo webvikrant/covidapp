@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -19,11 +20,15 @@ import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.ResourceService;
 
 public class ResourceEditorForm extends VerticalLayout {
 
 	// ui
+
+	private Button statusButton;
+	private Div updatedDiv;
 
 	private ComboBox<City> cityCombo;
 	private ComboBox<Resource.Type> typeCombo;
@@ -52,6 +57,9 @@ public class ResourceEditorForm extends VerticalLayout {
 		this.resourceService = resourceService;
 
 		setAlignItems(Alignment.START);
+
+		statusButton = new Button();
+		updatedDiv = new Div();
 
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
@@ -100,14 +108,21 @@ public class ResourceEditorForm extends VerticalLayout {
 
 		HorizontalLayout topBar = new HorizontalLayout();
 		topBar.setWidthFull();
-		topBar.add(cityCombo, typeCombo);
+		topBar.setAlignItems(Alignment.CENTER);
+		Span blank = new Span();
+		topBar.add(statusButton, blank, updatedDiv);
+		topBar.expand(blank);
+
+		HorizontalLayout cityTypeBar = new HorizontalLayout();
+		cityTypeBar.setWidthFull();
+		cityTypeBar.add(cityCombo, typeCombo);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buildButtonBar(buttonBar);
 
 		buttonBar.setWidthFull();
 
-		add(topBar, nameField, addressField, phoneBar, remarkField, verifiedCheck, buttonBar);
+		add(topBar, cityTypeBar, nameField, addressField, phoneBar, remarkField, verifiedCheck, buttonBar);
 
 	}
 
@@ -154,6 +169,27 @@ public class ResourceEditorForm extends VerticalLayout {
 	public void setResource(Resource resource) {
 		City city = resourceService.getCityById(resource.getCityId());
 		resource.setCity(city);
+
+		statusButton.removeThemeVariants(ButtonVariant.LUMO_SUCCESS);
+		statusButton.removeThemeVariants(ButtonVariant.LUMO_ERROR);
+		statusButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+		if (resource.getId() > 0) {
+			updatedDiv.setText("Last updated " + resource.getUpdatedAtString());
+			
+			if (resource.getStatus() == Status.Not_Verified) {
+				statusButton.setText("Not verified");
+				statusButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+			} else if (resource.getStatus() == Status.Verified) {
+				statusButton.setText("Verified");
+				statusButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+			} else if (resource.getStatus() == Status.Stale) {
+				statusButton.setText("Stale");
+			}
+		}
+
 		binder.setBean(resource);
 	}
 

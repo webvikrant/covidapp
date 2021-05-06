@@ -46,7 +46,7 @@ public class PlasmaSeekerView extends VerticalLayout implements BeforeEnterObser
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Plasma Seeker Form");
+		titleDiv.add("Plasma Seeker");
 	}
 
 	@Override

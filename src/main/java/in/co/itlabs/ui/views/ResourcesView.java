@@ -99,7 +99,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		toolBar.setWidthFull();
 		buildToolBar();
 
-		dataProvider = new ResourceDataProvider(resourceService, false);// guest = false
+		dataProvider = new ResourceDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
 
 		grid = new Grid<>(Resource.class);
@@ -123,8 +123,8 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		grid.removeAllColumns();
 
 		grid.addColumn("type").setHeader("Type").setWidth("100px");
-		grid.addColumn("name").setHeader("Provider").setWidth("150px");
-		grid.addColumn("address").setHeader("Address").setWidth("150px");
+		grid.addColumn("name").setHeader("Provider").setWidth("140px");
+		grid.addColumn("address").setHeader("Address").setWidth("140px");
 
 		grid.addComponentColumn(resource -> {
 			Button button = new Button();
@@ -138,10 +138,14 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 
 			} else if (resource.getStatus() == Status.Stale) {
-				button.setText("Stale (Verified >24 hrs ago)");
+				button.setText("Stale");
 			}
 			return button;
-		}).setHeader("Status").setWidth("160px");
+		}).setHeader("Status").setWidth("90px");
+
+		grid.addColumn(resource -> {
+			return resource.getUpdatedAtString();
+		}).setHeader("Last updated");
 
 		grid.addComponentColumn(resource -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
@@ -165,6 +169,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 		createButton.addClickListener(e -> {
 			dialog.open();
+//			resource = new Resource();
 			editorForm.setResource(resource);
 		});
 
@@ -201,6 +206,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 			if (success) {
 				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER);
 				reload();
+				resource = new Resource();
 				dialog.close();
 			} else {
 				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);

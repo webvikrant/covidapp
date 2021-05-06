@@ -14,7 +14,6 @@ import in.co.itlabs.Application;
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.entities.Resource.Status;
-import in.co.itlabs.business.entities.Resource.Type;
 import in.co.itlabs.util.ResourceFilterParams;
 
 public class ResourceService {
@@ -116,7 +115,7 @@ public class ResourceService {
 		return count;
 	}
 
-	public List<Resource> getResources(int offset, int limit, ResourceFilterParams filterParams, boolean guest) {
+	public List<Resource> getResources(int offset, int limit, ResourceFilterParams filterParams) {
 		List<Resource> resources = null;
 
 		String sql = generateResourceSql(filterParams, false);
@@ -130,12 +129,6 @@ public class ResourceService {
 
 			LocalDateTime now = LocalDateTime.now();
 			for (Resource resource : resources) {
-				if (guest) {
-					if (resource.getType() == Type.Plasma_Donor) {
-						resources.remove(resource);
-						continue;
-					}
-				}
 				if (resource.isVerified()) {
 					LocalDateTime updatedAt = resource.getUpdatedAt();
 					long hours = updatedAt.until(now, ChronoUnit.HOURS);

@@ -1,8 +1,5 @@
 package in.co.itlabs.ui.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -97,15 +94,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		typeCombo.setPlaceholder("Select a resource");
 		typeCombo.setClearButtonVisible(true);
 		typeCombo.setWidthFull();
-
-		List<Type> types = new ArrayList<>();
-		types.add(Type.Ambulance);
-		types.add(Type.Doctor_On_Call);
-		types.add(Type.Hospital_Beds);
-		types.add(Type.Medicine);
-		types.add(Type.Oxygen);
-
-		typeCombo.setItems(types);
+		typeCombo.setItems(Type.values());
 	}
 
 	private void configureQueryField() {
