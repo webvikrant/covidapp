@@ -13,7 +13,7 @@ public class GuestFooter extends HorizontalLayout {
 	private Icon copyrightIcon;
 	private Anchor link;
 	private Button button;
-	private Span email = new Span("team100@gmail.com");
+	private Span email = new Span("team100tech@gmail.com");
 
 	public GuestFooter() {
 		setMargin(false);

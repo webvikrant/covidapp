@@ -23,10 +23,6 @@ public class DatabaseService {
 		Properties props = new Properties();
 		props.load(getClass().getResourceAsStream("/config.properties"));
 
-//		String mysqlUrl = "jdbc:mysql://localhost:3306/covidapp";
-//		String mysqlUser = "user";
-//		String mysqlPassword = "password";
-
 		String mysqlUrl = props.getProperty("mysql.url");
 		String mysqlUser = props.getProperty("mysql.user");
 		String mysqlPassword = props.getProperty("mysql.password");

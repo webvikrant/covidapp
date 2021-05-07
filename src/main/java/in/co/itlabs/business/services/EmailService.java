@@ -1,6 +1,5 @@
 package in.co.itlabs.business.services;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -14,16 +13,12 @@ public class EmailService {
 	private Mailer mailer = null;
 
 	public EmailService() {
-		logger.info("Reading file \"minierp-config.properties\"...");
+		
 
 		try {
 			// read properties file
-			String configFile = System.getenv("MINIERP_CONFIG");
-
-			FileReader reader = new FileReader(configFile);
-
 			Properties props = new Properties();
-			props.load(reader);
+			props.load(getClass().getResourceAsStream("/config.properties"));
 
 			String smtpServer = props.getProperty("emailer.smtp_server");
 			String portString = props.getProperty("emailer.port");

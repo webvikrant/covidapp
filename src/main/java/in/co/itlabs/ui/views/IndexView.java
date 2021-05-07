@@ -15,7 +15,9 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.entities.Resource.Type;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.GuestResourceFilterForm;
 import in.co.itlabs.ui.components.ResourceEditorForm;
@@ -62,8 +64,14 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 
 		filterParams = new ResourceFilterParams();
 
+		City city = resourceService.getCityById(1);
+		Type type = Type.Oxygen;
+
+		filterParams.setCity(city);
+		filterParams.setType(type);
+
 		filterForm = new GuestResourceFilterForm();
-		filterForm.setWidth("87%");
+//		filterForm.setWidth("87%");
 		filterForm.addClassName("card");
 		filterForm.setFilterParams(filterParams);
 		filterForm.addListener(GuestResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
@@ -88,6 +96,11 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		listBox.setWidthFull();
 		listBox.setRenderer(new ComponentRenderer<VerticalLayout, Resource>(resource -> {
 			VerticalLayout root = new VerticalLayout();
+
+			root.setMargin(false);
+			root.setPadding(true);
+			root.setSpacing(false);
+
 			root.setAlignItems(Alignment.CENTER);
 			root.setWidthFull();
 			root.addClassName("card");
@@ -110,7 +123,12 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			addressField.setWidthFull();
 			addressField.setReadOnly(true);
 
-			root.add(updatedAtButton, nameField, phonesField, addressField);
+			TextArea remarkField = new TextArea("Remark");
+			remarkField.setValue(resource.getRemark());
+			remarkField.setWidthFull();
+			remarkField.setReadOnly(true);
+
+			root.add(updatedAtButton, nameField, phonesField, addressField, remarkField);
 			return root;
 
 		}));

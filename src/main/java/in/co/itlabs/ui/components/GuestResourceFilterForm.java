@@ -5,7 +5,6 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -38,9 +37,6 @@ public class GuestResourceFilterForm extends VerticalLayout {
 
 		setAlignItems(Alignment.CENTER);
 
-		Div titleDiv = new Div();
-		titleDiv.setText("Filter");
-
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
 
@@ -50,7 +46,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		queryField = new TextField();
 		configureQueryField();
 		
-		filterButton = new Button("Filter", VaadinIcon.FILTER.create());
+		filterButton = new Button("Search", VaadinIcon.SEARCH.create());
 		configureFilterButton();
 
 		binder = new Binder<>(ResourceFilterParams.class);
@@ -59,7 +55,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		binder.forField(typeCombo).bind("type");
 		binder.forField(queryField).bind("query");
 
-		add(titleDiv, cityCombo, typeCombo, queryField, filterButton);
+		add(cityCombo, typeCombo, queryField, filterButton);
 	}
 
 	private void configureFilterButton() {
@@ -98,8 +94,8 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	}
 
 	private void configureQueryField() {
-		queryField.setLabel("Provider");
-		queryField.setPlaceholder("Type provider name or address");
+		queryField.setLabel("Quick search");
+		queryField.setPlaceholder("Type name or address or phone");
 		queryField.setWidthFull();
 		queryField.setClearButtonVisible(true);
 	}
