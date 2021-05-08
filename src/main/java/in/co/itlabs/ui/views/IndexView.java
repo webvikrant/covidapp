@@ -148,44 +148,6 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 	}
 
 	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {
-//		List<String> messages = new ArrayList<String>();
-//		resource = event.getResource();
-
-//		if (resource.getId() > 0) {
-//			// existing resource, hence update it
-//
-//			resource.setUpdatedBy(authUser.getId());
-//			resource.setUpdatedAt(LocalDateTime.now());
-//
-//			boolean success = resourceService.updateResource(messages, resource);
-//			if (success) {
-//				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER);
-//				reload();
-//				dialog.close();
-//			} else {
-//				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
-//			}
-//		} else {
-//			// new resource, hence create it
-//
-//			LocalDateTime now = LocalDateTime.now();
-//
-//			resource.setCreatedBy(authUser.getId());
-//			resource.setCreatedAt(now);
-//
-//			resource.setUpdatedBy(authUser.getId());
-//			resource.setUpdatedAt(now);
-//
-//			int resourceId = resourceService.createResource(messages, resource);
-//			if (resourceId > 0) {
-//				Notification.show("Resource created successfully", 3000, Position.TOP_CENTER);
-//				reload();
-//				resource = new Resource();
-//				editorForm.setResource(resource);
-//			} else {
-//				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
-//			}
-//		}
 	}
 
 	public void handleCancelEvent(ResourceEditorForm.CancelEvent event) {

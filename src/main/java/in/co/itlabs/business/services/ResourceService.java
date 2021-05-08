@@ -1,8 +1,5 @@
 package in.co.itlabs.business.services;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,7 +11,7 @@ import in.co.itlabs.Application;
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.PlasmaDonor;
 import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.Resource.Status;
+import in.co.itlabs.business.entities.User;
 import in.co.itlabs.util.PlasmaDonorFilterParams;
 import in.co.itlabs.util.ResourceFilterParams;
 
@@ -75,7 +72,7 @@ public class ResourceService {
 		int newResourceId = 0;
 		Sql2o sql2o = databaseService.getSql2o();
 		String insertSql = "insert into resource (cityId, type, name, address, phone1, phone2, phone3,"
-				+ " remark, verified, createdBy, createdAt, updatedBy, updatedAt)"
+				+ " remark, status, createdBy, createdAt, updatedBy, updatedAt)"
 				+ " values(:cityId, :type, :name, :address, :phone1, :phone2, :phone3,"
 				+ " :remark, :verified, :createdBy, :createdAt, :updatedBy, :updatedAt)";
 
@@ -84,7 +81,7 @@ public class ResourceService {
 					.addParameter("type", resource.getType()).addParameter("name", resource.getName())
 					.addParameter("address", resource.getAddress()).addParameter("phone1", resource.getPhone1())
 					.addParameter("phone2", resource.getPhone2()).addParameter("phone3", resource.getPhone3())
-					.addParameter("remark", resource.getRemark()).addParameter("verified", resource.isVerified())
+					.addParameter("remark", resource.getRemark()).addParameter("status", resource.getStatus())
 					.addParameter("createdBy", resource.getCreatedBy())
 					.addParameter("createdAt", resource.getCreatedAt())
 					.addParameter("updatedBy", resource.getUpdatedBy())
@@ -121,27 +118,26 @@ public class ResourceService {
 		List<Resource> resources = null;
 
 		String sql = generateResourceSql(filterParams, false);
-
 		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
+
+		String citySql = "select * from city where id=:id";
+		String userSql = "select * from user where id=:id";
+
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
 			resources = con.createQuery(sql).executeAndFetch(Resource.class);
 			con.close();
 
-			LocalDateTime now = LocalDateTime.now();
 			for (Resource resource : resources) {
-				if (resource.isVerified()) {
-					LocalDateTime updatedAt = resource.getUpdatedAt();
-					long hours = updatedAt.until(now, ChronoUnit.HOURS);
-					if (hours > 24) {
-						resource.setStatus(Status.Stale);
-					} else {
-						resource.setStatus(Status.Verified);
-					}
-				} else {
-					resource.setStatus(Status.Not_Verified);
-				}
+				City city = con.createQuery(citySql).addParameter("id", resource.getCityId())
+						.executeAndFetchFirst(City.class);
+
+				User user = con.createQuery(userSql).addParameter("id", resource.getUpdatedBy())
+						.executeAndFetchFirst(User.class);
+				
+				resource.setCity(city);
+				resource.setUpdatedByUser(user);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -180,18 +176,19 @@ public class ResourceService {
 				if (clauseCount > 0) {
 					sql = sql + " and";
 				}
+				sql = sql + " status='" + filterParams.getStatus() + "'";
 
-				LocalDateTime now = LocalDateTime.now();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				String nowString = now.format(formatter);
+//				LocalDateTime now = LocalDateTime.now();
+//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//				String nowString = now.format(formatter);
 
-				if (filterParams.getStatus() == Status.Not_Verified) {
-					sql = sql + " verified=false";
-				} else if (filterParams.getStatus() == Status.Verified) {
-					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 <=24";
-				} else if (filterParams.getStatus() == Status.Stale) {
-					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 >24";
-				}
+//				if (filterParams.getStatus() == Status.Not_Verified) {
+//					sql = sql + " verified=false";
+//				} else if (filterParams.getStatus() == Status.Verified) {
+//					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 <=24";
+//				} else if (filterParams.getStatus() == Status.Stale) {
+//					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 >24";
+//				}
 				clauseCount++;
 			}
 
@@ -215,7 +212,7 @@ public class ResourceService {
 		boolean success = false;
 		Sql2o sql2o = databaseService.getSql2o();
 		String insertSql = "update resource set cityId=:cityId, type=:type, name=:name, address=:address,"
-				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, verified=:verified,"
+				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, status=:status,"
 				+ " createdBy=:createdBy, createdAt=:createdAt, updatedBy=:updatedBy, updatedAt=:updatedAt"
 				+ " where id=:id";
 
@@ -224,7 +221,7 @@ public class ResourceService {
 					.addParameter("type", resource.getType()).addParameter("name", resource.getName())
 					.addParameter("address", resource.getAddress()).addParameter("phone1", resource.getPhone1())
 					.addParameter("phone2", resource.getPhone2()).addParameter("phone3", resource.getPhone3())
-					.addParameter("remark", resource.getRemark()).addParameter("verified", resource.isVerified())
+					.addParameter("remark", resource.getRemark()).addParameter("status", resource.getStatus())
 					.addParameter("createdBy", resource.getCreatedBy())
 					.addParameter("createdAt", resource.getCreatedAt())
 					.addParameter("updatedBy", resource.getUpdatedBy())
@@ -262,8 +259,7 @@ public class ResourceService {
 					.addParameter("infectionDate", plasmaDonor.getInfectionDate())
 					.addParameter("recoveryDate", plasmaDonor.getRecoveryDate())
 					.addParameter("available", plasmaDonor.isAvailable())
-					.addParameter("verified", plasmaDonor.isVerified())
-					.addParameter("remark", plasmaDonor.getRemark())
+					.addParameter("verified", plasmaDonor.isVerified()).addParameter("remark", plasmaDonor.getRemark())
 					.addParameter("createdAt", plasmaDonor.getCreatedAt())
 					.addParameter("updatedAt", plasmaDonor.getUpdatedAt()).executeUpdate().getKey(Integer.class);
 
@@ -348,13 +344,13 @@ public class ResourceService {
 	public boolean updatePlasmaDonor(List<String> messages, PlasmaDonor plasmaDonor) {
 
 		boolean success = false;
-		Sql2o sql2o = databaseService.getSql2o();
-		String insertSql = "update resource set cityId=:cityId, type=:type, name=:name, address=:address,"
-				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, verified=:verified,"
-				+ " createdBy=:createdBy, createdAt=:createdAt, updatedBy=:updatedBy, updatedAt=:updatedAt"
-				+ " where id=:id";
+//		Sql2o sql2o = databaseService.getSql2o();
+//		String insertSql = "update resource set cityId=:cityId, type=:type, name=:name, address=:address,"
+//				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, verified=:verified,"
+//				+ " createdBy=:createdBy, createdAt=:createdAt, updatedBy=:updatedBy, updatedAt=:updatedAt"
+//				+ " where id=:id";
 
-		try (Connection con = sql2o.beginTransaction()) {
+//		try (Connection con = sql2o.beginTransaction()) {
 //			con.createQuery(insertSql).addParameter("cityId", plasmaDonor.getCityId())
 //					.addParameter("type", plasmaDonor.getType()).addParameter("name", plasmaDonor.getName())
 //					.addParameter("address", plasmaDonor.getAddress()).addParameter("phone1", plasmaDonor.getPhone1())
@@ -366,12 +362,12 @@ public class ResourceService {
 //					.addParameter("updatedAt", plasmaDonor.getUpdatedAt()).addParameter("id", plasmaDonor.getId())
 //					.executeUpdate();
 
-			con.commit();
-			success = true;
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			messages.add(e.getMessage());
-		}
+//			con.commit();
+//			success = true;
+//		} catch (Exception e) {
+//			logger.debug(e.getMessage());
+//			messages.add(e.getMessage());
+//		}
 		return success;
 	}
 }

@@ -1,8 +1,5 @@
 package in.co.itlabs.ui.components;
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -10,30 +7,29 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class GuestFooter extends HorizontalLayout {
 
-	private Icon copyrightIcon;
-	private Anchor link;
-	private Button button;
+	private Icon icon;
+	private Span copyright = new Span("Team100");
 	private Span email = new Span("team100tech@gmail.com");
 
 	public GuestFooter() {
-		setMargin(false);
-		setPadding(false);
+
 		setSpacing(false);
 
-		setJustifyContentMode(JustifyContentMode.BETWEEN);
 		setAlignItems(Alignment.CENTER);
 
-		copyrightIcon = VaadinIcon.COPYRIGHT.create();
-		copyrightIcon.setSize("10px");
+		icon = VaadinIcon.COPYRIGHT.create();
+		icon.setSize("11px");
 
-		button = new Button("Team 100", VaadinIcon.COPYRIGHT.create());
-		button.addThemeVariants(ButtonVariant.LUMO_SMALL);
-		button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		icon.getStyle().set("color", "gray");
 
-		link = new Anchor("https://itlabs.co.in", button);
+		copyright.getStyle().set("fontSize", "small");
+		copyright.getStyle().set("color", "gray");
 
-		email.addClassName("small-text");
+		email.getStyle().set("fontSize", "small");
+		email.getStyle().set("color", "gray");
 
-		add(link, email);
+		Span blank = new Span();
+		add(icon, copyright, blank, email);
+		expand(blank);
 	}
 }

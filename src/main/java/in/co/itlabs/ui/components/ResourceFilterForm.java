@@ -5,11 +5,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
@@ -19,7 +16,7 @@ import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.util.ResourceFilterParams;
 
-public class ResourceFilterForm extends VerticalLayout {
+public class ResourceFilterForm extends HorizontalLayout {
 
 	// ui
 	private ComboBox<City> cityCombo;
@@ -40,8 +37,10 @@ public class ResourceFilterForm extends VerticalLayout {
 
 		resourceService = new ResourceService();
 
-		Div titleDiv = new Div();
-		titleDiv.setText("Filter");
+		setAlignItems(Alignment.END);
+
+//		Div titleDiv = new Div();
+//		titleDiv.setText("Filter");
 
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
@@ -57,6 +56,7 @@ public class ResourceFilterForm extends VerticalLayout {
 
 		okButton = new Button("Filter", VaadinIcon.FILTER.create());
 		cancelButton = new Button("Clear", VaadinIcon.CLOSE.create());
+		configureButtons();
 
 		binder = new Binder<>(ResourceFilterParams.class);
 
@@ -65,14 +65,10 @@ public class ResourceFilterForm extends VerticalLayout {
 		binder.forField(statusCombo).bind("status");
 		binder.forField(queryField).bind("query");
 
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidthFull();
-		buildButtonBar(buttonBar);
-
-		add(titleDiv, cityCombo, typeCombo, statusCombo, queryField, buttonBar);
+		add(typeCombo, cityCombo, queryField, statusCombo, okButton, cancelButton);
 	}
 
-	private void buildButtonBar(HorizontalLayout root) {
+	private void configureButtons() {
 		okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		okButton.addClickListener(e -> {
 			if (binder.validate().isOk()) {
@@ -84,10 +80,6 @@ public class ResourceFilterForm extends VerticalLayout {
 			clearForm();
 			fireEvent(new FilterEvent(this, binder.getBean()));
 		});
-
-		Span blank = new Span();
-		root.add(okButton, blank, cancelButton);
-		root.expand(blank);
 	}
 
 	private void clearForm() {
@@ -100,7 +92,7 @@ public class ResourceFilterForm extends VerticalLayout {
 	private void configureCityCombo() {
 		cityCombo.setLabel("City");
 		cityCombo.setPlaceholder("Select a city");
-		cityCombo.setWidthFull();
+		cityCombo.setWidth("130px");
 		cityCombo.setClearButtonVisible(true);
 		cityCombo.setItemLabelGenerator(city -> {
 			return city.getName();
@@ -112,7 +104,7 @@ public class ResourceFilterForm extends VerticalLayout {
 		typeCombo.setLabel("Resource-type");
 		typeCombo.setPlaceholder("Select a resource-type");
 		typeCombo.setClearButtonVisible(true);
-		typeCombo.setWidthFull();
+		typeCombo.setWidth("190px");
 		typeCombo.setItems(Resource.Type.values());
 	}
 
@@ -120,14 +112,14 @@ public class ResourceFilterForm extends VerticalLayout {
 		statusCombo.setLabel("Status");
 		statusCombo.setPlaceholder("Select a status");
 		statusCombo.setClearButtonVisible(true);
-		statusCombo.setWidthFull();
+		statusCombo.setWidth("150px");
 		statusCombo.setItems(Resource.Status.values());
 	}
 
 	private void configureQueryField() {
 		queryField.setLabel("Provider");
 		queryField.setPlaceholder("Type name or address");
-		queryField.setWidthFull();
+		queryField.setWidth("150px");
 		queryField.setClearButtonVisible(true);
 	}
 
@@ -138,8 +130,7 @@ public class ResourceFilterForm extends VerticalLayout {
 	public static abstract class AdvancedResourceFilterFormEvent extends ComponentEvent<ResourceFilterForm> {
 		private ResourceFilterParams filterParams;
 
-		protected AdvancedResourceFilterFormEvent(ResourceFilterForm source,
-				ResourceFilterParams filterParams) {
+		protected AdvancedResourceFilterFormEvent(ResourceFilterForm source, ResourceFilterParams filterParams) {
 			super(source, false);
 			this.filterParams = filterParams;
 		}

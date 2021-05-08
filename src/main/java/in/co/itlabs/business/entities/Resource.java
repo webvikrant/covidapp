@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 public class Resource {
 
 	public enum Type {
-		Ambulance, Doctor_On_Call, Hospital_Beds, Medicine, Oxygen, Plasma_BloodBank
+		Ambulance, Doctor_On_Call, Hospital_Beds, Home_Nursing_and_ICU, Medicine, Oxygen, Plasma_BloodBank,
+		Food_Services, Funeral_Services
 	}
 
 	public enum Status {
-		Not_Verified, Verified, Stale
+		Pending, Unreachable, Verified, Scam
 	}
 
 	private int id;
@@ -31,7 +32,6 @@ public class Resource {
 
 	private String remark;
 
-	private boolean verified;
 	private Status status;
 
 	private int createdBy;
@@ -42,6 +42,7 @@ public class Resource {
 
 	// transient
 	private City city;
+	private User updatedByUser;
 
 	public String getPhones() {
 		String phones = "";

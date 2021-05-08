@@ -4,17 +4,22 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import in.co.itlabs.ui.views.AboutUsView;
 import in.co.itlabs.ui.views.ContactUsView;
 import in.co.itlabs.ui.views.IndexView;
 
-public class GuestNavBar extends HorizontalLayout {
+public class GuestNavBar extends VerticalLayout {
 
 	// ui
 	private Button homeButton;
 	private Button aboutButton;
 	private Button contactButton;
+
+	private Button leadsButton;
+	private Button donorsButton;
+	private Button seekersButton;
 
 	// non-ui
 
@@ -26,11 +31,21 @@ public class GuestNavBar extends HorizontalLayout {
 
 		homeButton = new Button(VaadinIcon.HOME.create());
 		aboutButton = new Button("About us", VaadinIcon.INFO_CIRCLE.create());
-		contactButton = new Button("Conatact us", VaadinIcon.ENVELOPE.create());
-		
+		contactButton = new Button("Contact us", VaadinIcon.ENVELOPE.create());
+
+		leadsButton = new Button("Leads", VaadinIcon.HAND.create());
+		donorsButton = new Button("Donors", VaadinIcon.DROP.create());
+		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
+
 		configureButtons();
 
-		add(homeButton, aboutButton, contactButton);
+		HorizontalLayout topBar = new HorizontalLayout();
+		HorizontalLayout bottomBar = new HorizontalLayout();
+
+		topBar.add(homeButton, aboutButton, contactButton);
+		bottomBar.add(leadsButton, donorsButton, seekersButton);
+
+		add(topBar, bottomBar);
 	}
 
 	private void configureButtons() {
@@ -45,6 +60,18 @@ public class GuestNavBar extends HorizontalLayout {
 
 		contactButton.addClickListener(e -> {
 			UI.getCurrent().navigate(ContactUsView.class);
+		});
+
+		leadsButton.addClickListener(e -> {
+//			UI.getCurrent().navigate(ContactUsView.class);
+		});
+
+		donorsButton.addClickListener(e -> {
+//			UI.getCurrent().navigate(ContactUsView.class);
+		});
+
+		seekersButton.addClickListener(e -> {
+//			UI.getCurrent().navigate(ContactUsView.class);
 		});
 	}
 }

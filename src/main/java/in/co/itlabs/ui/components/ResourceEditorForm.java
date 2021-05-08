@@ -4,7 +4,6 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -20,7 +19,6 @@ import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.util.DateUtil;
 
@@ -28,7 +26,6 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	// ui
 
-	private Button statusButton;
 	private Div updatedDiv;
 
 	private ComboBox<City> cityCombo;
@@ -42,7 +39,8 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private TextArea remarkField;
 
-	private Checkbox verifiedCheck;
+//	private Checkbox verifiedCheck;
+	private ComboBox<Resource.Status> statusCombo;
 
 	private Button saveButton;
 	private Button cancelButton;
@@ -59,7 +57,6 @@ public class ResourceEditorForm extends VerticalLayout {
 
 		setAlignItems(Alignment.START);
 
-		statusButton = new Button();
 		updatedDiv = new Div();
 
 		cityCombo = new ComboBox<>();
@@ -90,7 +87,9 @@ public class ResourceEditorForm extends VerticalLayout {
 		remarkField = new TextArea();
 		configureRemarkField();
 
-		verifiedCheck = new Checkbox("Verified");
+//		verifiedCheck = new Checkbox("Verified");
+		statusCombo = new ComboBox<>();
+		configureStatusCombo();
 
 		binder = new Binder<>(Resource.class);
 
@@ -101,18 +100,12 @@ public class ResourceEditorForm extends VerticalLayout {
 		binder.forField(phone1Field).asRequired("Phone1 can not be blank").bind("phone1");
 		binder.forField(phone2Field).bind("phone2");
 		binder.forField(phone3Field).bind("phone3");
-		binder.forField(remarkField).asRequired("Remark can not be blank").bind("remark");
-		binder.forField(verifiedCheck).bind("verified");
+		binder.forField(remarkField).bind("remark");
+//		binder.forField(verifiedCheck).bind("verified");
+		binder.forField(statusCombo).asRequired("Status can not be blank").bind("status");
 
 		saveButton = new Button("Save", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
-
-		HorizontalLayout topBar = new HorizontalLayout();
-		topBar.setWidthFull();
-		topBar.setAlignItems(Alignment.CENTER);
-		Span blank = new Span();
-		topBar.add(statusButton, blank, updatedDiv);
-		topBar.expand(blank);
 
 		HorizontalLayout cityTypeBar = new HorizontalLayout();
 		cityTypeBar.setWidthFull();
@@ -122,7 +115,7 @@ public class ResourceEditorForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(topBar, cityTypeBar, nameField, addressField, phoneBar, remarkField, verifiedCheck, buttonBar);
+		add(updatedDiv, cityTypeBar, nameField, addressField, phoneBar, remarkField, statusCombo, buttonBar);
 
 	}
 
@@ -141,6 +134,13 @@ public class ResourceEditorForm extends VerticalLayout {
 		typeCombo.setPlaceholder("Select a resource-type");
 		typeCombo.setWidthFull();
 		typeCombo.setItems(Resource.Type.values());
+	}
+
+	private void configureStatusCombo() {
+		statusCombo.setLabel("Status");
+		statusCombo.setPlaceholder("Select a status");
+		statusCombo.setWidthFull();
+		statusCombo.setItems(Resource.Status.values());
 	}
 
 	private void configureNameField() {
@@ -170,26 +170,9 @@ public class ResourceEditorForm extends VerticalLayout {
 		City city = resourceService.getCityById(resource.getCityId());
 		resource.setCity(city);
 
-		statusButton.removeThemeVariants(ButtonVariant.LUMO_SUCCESS);
-		statusButton.removeThemeVariants(ButtonVariant.LUMO_ERROR);
-		statusButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
 		if (resource.getId() > 0) {
 			updatedDiv.setText("Last updated " + DateUtil.humanize(resource.getUpdatedAt()));
-			
-			if (resource.getStatus() == Status.Not_Verified) {
-				statusButton.setText("Not verified");
-				statusButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-
-			} else if (resource.getStatus() == Status.Verified) {
-				statusButton.setText("Verified");
-				statusButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-
-			} else if (resource.getStatus() == Status.Stale) {
-				statusButton.setText("Stale");
-			}
 		}
-
 		binder.setBean(resource);
 	}
 

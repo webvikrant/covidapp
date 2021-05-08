@@ -25,7 +25,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 
 	private TextField queryField;
 	private Button filterButton;
-	
+
 	// non-ui
 	private Binder<ResourceFilterParams> binder;
 
@@ -45,7 +45,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 
 		queryField = new TextField();
 		configureQueryField();
-		
+
 		filterButton = new Button("Search", VaadinIcon.SEARCH.create());
 		configureFilterButton();
 
@@ -55,7 +55,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 		binder.forField(typeCombo).bind("type");
 		binder.forField(queryField).bind("query");
 
-		add(cityCombo, typeCombo, queryField, filterButton);
+		add(typeCombo, cityCombo, queryField, filterButton);
 	}
 
 	private void configureFilterButton() {
@@ -75,7 +75,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 //	}
 
 	private void configureCityCombo() {
-		cityCombo.setLabel("City");
+		cityCombo.setLabel("City (Optional)");
 		cityCombo.setPlaceholder("Select a city");
 		cityCombo.setWidthFull();
 		cityCombo.setClearButtonVisible(true);
@@ -86,7 +86,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	}
 
 	private void configureTypeCombo() {
-		typeCombo.setLabel("Resource");
+		typeCombo.setLabel("Resource (Optional)");
 		typeCombo.setPlaceholder("Select a resource");
 		typeCombo.setClearButtonVisible(true);
 		typeCombo.setWidthFull();
@@ -94,8 +94,8 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	}
 
 	private void configureQueryField() {
-		queryField.setLabel("Quick search");
-		queryField.setPlaceholder("Type name or address or phone");
+		queryField.setLabel("Service provider's details (optional)");
+		queryField.setPlaceholder("Type provider's name or address or phone");
 		queryField.setWidthFull();
 		queryField.setClearButtonVisible(true);
 	}

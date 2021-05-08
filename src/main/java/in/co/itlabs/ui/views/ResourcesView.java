@@ -19,7 +19,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -27,7 +26,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.ResourceEditorForm;
@@ -45,6 +43,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 	// ui
 	private Div titleDiv;
+	private Button createButton;
 	private ResourceEditorForm editorForm;
 	private ResourceFilterForm filterForm;
 	private HorizontalLayout toolBar;
@@ -96,9 +95,20 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		recordCount.addClassName("small-text");
 		recordCount.setWidth("150px");
 
+		createButton = new Button("New", VaadinIcon.PLUS.create());
+		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+		createButton.addClickListener(e -> {
+			dialog.open();
+			editorForm.setResource(resource);
+		});
+
 		toolBar = new HorizontalLayout();
 		toolBar.setWidthFull();
-		buildToolBar();
+		toolBar.setAlignItems(Alignment.END);
+
+		Span blank = new Span();
+		toolBar.add(filterForm, blank, createButton);
+		toolBar.expand(blank);
 
 		dataProvider = new ResourceDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
@@ -106,16 +116,14 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		grid = new Grid<>(Resource.class);
 		configureGrid();
 
-		VerticalLayout main = new VerticalLayout();
-		main.add(toolBar, grid);
+//		SplitLayout splitLayout = new SplitLayout();
+//		splitLayout.setWidthFull();
+//		splitLayout.setSplitterPosition(25);
+//		splitLayout.addToPrimary(filterForm);
+//		splitLayout.addToSecondary(main);
 
-		SplitLayout splitLayout = new SplitLayout();
-		splitLayout.setWidthFull();
-		splitLayout.setSplitterPosition(25);
-		splitLayout.addToPrimary(filterForm);
-		splitLayout.addToSecondary(main);
-
-		add(titleDiv, splitLayout);
+		add(titleDiv, toolBar, grid, recordCount);
+		setAlignSelf(Alignment.START, recordCount);
 
 		reload();
 	}
@@ -123,26 +131,47 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 	private void configureGrid() {
 		grid.removeAllColumns();
 
-		grid.addColumn("type").setHeader("Type").setWidth("100px");
-		grid.addColumn("name").setHeader("Provider").setWidth("140px");
-		grid.addColumn("address").setHeader("Address").setWidth("140px");
+		grid.addColumn("type").setHeader("Type").setWidth("120px");
+		grid.addColumn(resource -> {
+			return resource.getCity().getName();
+		}).setHeader("City").setWidth("80px");
+
+		grid.addColumn("name").setHeader("Provider name").setWidth("100px");
+		grid.addColumn("address").setHeader("Provider address").setWidth("120px");
 
 		grid.addComponentColumn(resource -> {
-			Button button = new Button();
-			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-			if (resource.getStatus() == Status.Not_Verified) {
-				button.setText("Not verified");
-				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			Div div = new Div();
+			div.getStyle().set("fontWeight", "600");
 
-			} else if (resource.getStatus() == Status.Verified) {
-				button.setText("Verified");
-				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+			switch (resource.getStatus()) {
+			case Pending:
+				div.setText("Pending");
+				div.getStyle().set("color", "gray");
+				break;
 
-			} else if (resource.getStatus() == Status.Stale) {
-				button.setText("Stale");
+			case Verified:
+				div.setText("Verified");
+				div.getStyle().set("color", "green");
+				break;
+
+			case Unreachable:
+				div.setText("Unreachable");
+				div.getStyle().set("color", "orange");
+				break;
+
+			case Scam:
+				div.setText("Scam");
+				div.getStyle().set("color", "red");
+				break;
+
+			default:
+				break;
 			}
-			return button;
+
+			return div;
 		}).setHeader("Status").setWidth("90px");
+
+		grid.addColumn("updatedByUser.username").setHeader("User").setWidth("80px");
 
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getUpdatedAt());
@@ -162,24 +191,24 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		grid.setDataProvider(dataProvider);
 	}
 
-	private void buildToolBar() {
-		toolBar.setAlignItems(Alignment.END);
-
-		Button createButton = new Button("New", VaadinIcon.PLUS.create());
-		createButton.setWidth("100px");
-		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-		createButton.addClickListener(e -> {
-			dialog.open();
-			editorForm.setResource(resource);
-		});
-
-		Span blank = new Span();
-
-		toolBar.add(recordCount, blank, createButton);
-		toolBar.setAlignItems(Alignment.CENTER);
-		toolBar.expand(blank);
-
-	}
+//	private void buildToolBar() {
+//		toolBar.setAlignItems(Alignment.END);
+//
+//		Button createButton = new Button("New", VaadinIcon.PLUS.create());
+//		createButton.setWidth("100px");
+//		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+//		createButton.addClickListener(e -> {
+//			dialog.open();
+//			editorForm.setResource(resource);
+//		});
+//
+//		Span blank = new Span();
+//
+//		toolBar.add(recordCount, blank, createButton);
+//		toolBar.setAlignItems(Alignment.CENTER);
+//		toolBar.expand(blank);
+//
+//	}
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");

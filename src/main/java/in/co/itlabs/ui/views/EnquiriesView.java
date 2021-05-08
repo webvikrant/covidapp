@@ -27,7 +27,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.ResourceEditorForm;
@@ -130,17 +129,17 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		grid.addComponentColumn(resource -> {
 			Button button = new Button();
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-			if (resource.getStatus() == Status.Not_Verified) {
-				button.setText("Not verified");
-				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
-
-			} else if (resource.getStatus() == Status.Verified) {
-				button.setText("Verified");
-				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-
-			} else if (resource.getStatus() == Status.Stale) {
-				button.setText("Stale");
-			}
+//			if (resource.getStatus() == Status.Not_Verified) {
+//				button.setText("Not verified");
+//				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//
+//			} else if (resource.getStatus() == Status.Verified) {
+//				button.setText("Verified");
+//				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+//
+//			} else if (resource.getStatus() == Status.Stale) {
+//				button.setText("Stale");
+//			}
 			return button;
 		}).setHeader("Status").setWidth("90px");
 
