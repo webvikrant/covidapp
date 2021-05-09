@@ -1,5 +1,9 @@
 package in.co.itlabs.ui.components;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Locale;
+
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -16,6 +20,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
@@ -29,7 +34,6 @@ import in.co.itlabs.util.Gender;
 public class PlasmaDonorEditorForm extends VerticalLayout {
 
 	// ui
-
 	private ComboBox<City> cityCombo;
 	private RadioButtonGroup<BloodGroup> bloodGroupRadio;
 	private RadioButtonGroup<Gender> genderRadio;
@@ -59,6 +63,7 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 	public PlasmaDonorEditorForm(ResourceService resourceService) {
 
 		this.resourceService = resourceService;
+
 		AuthenticatedUser authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
 
 		setAlignItems(Alignment.START);
@@ -79,7 +84,7 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 		configureAgeField();
 
 		phoneField = new TextField("Phone");
-		phoneField.setWidthFull();
+		phoneField.setWidth("100px");
 
 		pincodeField = new TextField("Pincode");
 		pincodeField.setWidth("100px");
@@ -102,34 +107,59 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 		binder = new Binder<>(PlasmaDonor.class);
 
 		binder.forField(bloodGroupRadio).asRequired("Blood group can not be blank").bind("bloodGroup");
-		binder.forField(genderRadio).asRequired("Gender can not be blank").bind("gender");
-		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
-		binder.forField(ageField).asRequired("Age can not be blank").bind("age");
-		binder.forField(phoneField).asRequired("Phone can not be blank").bind("phone");
-		binder.forField(cityCombo).asRequired("City can not be blank").bind("city");
-		binder.forField(pincodeField).asRequired("Pincode can not be blank").bind("pincode");
-		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
-		binder.forField(infectionDatePicker).asRequired("Infection date can not be blank").bind("infectionDate");
-		binder.forField(recoveryDatePicker).asRequired("Recovery date can not be blank").bind("recoveryDate");
-		binder.forField(availableCheck).bind("available");
-		binder.forField(availableCheck).bind("verified");
 
-		HorizontalLayout nameAgeBar = new HorizontalLayout();
-		nameAgeBar.setWidthFull();
+		binder.forField(genderRadio).asRequired("Gender can not be blank").bind("gender");
+
+		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
+
+		binder.forField(ageField).asRequired("Age can not be blank")
+				.withValidator(age -> (age >= 18 && age <= 60), "Min age is 18 and max age is 60").bind("age");
+
+		binder.forField(phoneField).asRequired("Phone can not be blank")
+				.withValidator(phone -> phone.length() == 10, "Phone number must have 10 digits")
+				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone");
+
+		binder.forField(cityCombo).asRequired("City can not be blank").bind("city");
+
+		binder.forField(pincodeField).asRequired("Pincode can not be blank")
+				.withValidator(pincode -> pincode.length() == 6, "Pincode must have 6 digits")
+				.withValidator(new RegexpValidator("Only 0-9 allowed", "^\\d{6}$")).bind("pincode");
+
+		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
+
+		binder.forField(infectionDatePicker).asRequired("Infection date can not be blank")
+				.withValidator(date -> date.isBefore(LocalDate.now()), "Infection date can not be in future")
+				.withValidator(date -> ChronoUnit.MONTHS.between(date, LocalDate.now()) <= 6,
+						"Infection date can not be more than 6 months old")
+				.bind("infectionDate");
+
+		binder.forField(recoveryDatePicker).asRequired("Recovery date can not be blank")
+				.withValidator(date -> date.isBefore(LocalDate.now()), "Recovery date can not be in future")
+				.withValidator(date -> ChronoUnit.DAYS.between(infectionDatePicker.getValue(), date) >= 15,
+						"Recovery date must be 15 days or more than infection date")
+				.bind("recoveryDate");
+
+		if (authUser != null) {
+			binder.forField(availableCheck).bind("available");
+			binder.forField(availableCheck).bind("verified");
+		}
+
+		HorizontalLayout namePhoneBar = new HorizontalLayout();
+		namePhoneBar.setWidthFull();
 		Span blank = new Span();
-		nameAgeBar.add(nameField, blank, ageField);
-		nameAgeBar.expand(blank);
+		namePhoneBar.add(nameField, blank, phoneField);
+		namePhoneBar.expand(blank);
 
 		HorizontalLayout datesBar = new HorizontalLayout();
 		datesBar.setWidthFull();
 		Span blank2 = new Span();
-		datesBar.add(infectionDatePicker, blank, recoveryDatePicker);
+		datesBar.add(infectionDatePicker, blank2, recoveryDatePicker);
 		datesBar.expand(blank2);
 
 		HorizontalLayout cityBar = new HorizontalLayout();
 		cityBar.setWidthFull();
 		Span blank3 = new Span();
-		cityBar.add(cityCombo, blank, pincodeField);
+		cityBar.add(cityCombo, blank3, pincodeField);
 		cityBar.expand(blank3);
 
 		HorizontalLayout checksBar = new HorizontalLayout();
@@ -138,23 +168,20 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 		checksBar.add(verifiedCheck, blank4, availableCheck);
 		checksBar.expand(blank4);
 
+		HorizontalLayout genderAgeBar = new HorizontalLayout();
+		genderAgeBar.setWidthFull();
+		Span blank5 = new Span();
+		genderAgeBar.add(genderRadio, blank5, ageField);
+		genderAgeBar.expand(blank5);
+
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		if (authUser == null) {
-			// ui for smartphone
-			HorizontalLayout genderAgeBar = new HorizontalLayout();
-			genderAgeBar.setWidthFull();
-			Span blank5 = new Span();
-			genderAgeBar.add(genderRadio, blank, ageField);
-			genderAgeBar.expand(blank5);
-
-			add(genderAgeBar, bloodGroupRadio, nameField, addressField, cityBar, infectionDatePicker,
-					recoveryDatePicker, checksBar, buttonBar);
+		if (authUser != null) {
+			add(genderAgeBar, bloodGroupRadio, namePhoneBar, addressField, cityBar, datesBar, checksBar, buttonBar);
 		} else {
-			// ui for desktop
-			add(genderRadio, bloodGroupRadio, nameAgeBar, addressField, cityBar, datesBar, checksBar, buttonBar);
+			add(genderAgeBar, bloodGroupRadio, namePhoneBar, addressField, cityBar, datesBar, buttonBar);
 		}
 	}
 
@@ -169,11 +196,13 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 	}
 
 	private void configureInfectionDatePicker() {
-		infectionDatePicker.setWidthFull();
+		infectionDatePicker.setWidth("130px");
+		infectionDatePicker.setLocale(new Locale("in"));
 	}
 
 	private void configureRecoveryDatePicker() {
-		recoveryDatePicker.setWidthFull();
+		recoveryDatePicker.setWidth("150px");
+		recoveryDatePicker.setLocale(new Locale("in"));
 	}
 
 	private void configureAgeField() {
@@ -200,6 +229,7 @@ public class PlasmaDonorEditorForm extends VerticalLayout {
 		addressField.setWidthFull();
 		addressField.setLabel("Address");
 		addressField.setPlaceholder("Type address");
+		addressField.setHeight("100px");
 	}
 
 	public void setPlasmaDonor(PlasmaDonor plasmaDonor) {
