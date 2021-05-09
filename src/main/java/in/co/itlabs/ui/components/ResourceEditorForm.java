@@ -15,11 +15,13 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.services.ResourceService;
+import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.util.DateUtil;
 
 public class ResourceEditorForm extends VerticalLayout {
@@ -28,8 +30,9 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private Div updatedDiv;
 
-	private ComboBox<City> cityCombo;
 	private ComboBox<Resource.Type> typeCombo;
+	private ComboBox<City> cityCombo;
+
 	private TextField nameField;
 	private TextArea addressField;
 
@@ -39,7 +42,6 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private TextArea remarkField;
 
-//	private Checkbox verifiedCheck;
 	private ComboBox<Resource.Status> statusCombo;
 
 	private Button saveButton;
@@ -54,6 +56,8 @@ public class ResourceEditorForm extends VerticalLayout {
 	public ResourceEditorForm(ResourceService resourceService) {
 
 		this.resourceService = resourceService;
+
+		AuthenticatedUser authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
 
 		setAlignItems(Alignment.START);
 
@@ -71,23 +75,18 @@ public class ResourceEditorForm extends VerticalLayout {
 		addressField = new TextArea();
 		configureAddressField();
 
-		phone1Field = new TextField("Phone1");
+		phone1Field = new TextField("Mobile1");
 		phone1Field.setWidth("140px");
 
-		phone2Field = new TextField("Phone2");
+		phone2Field = new TextField("Mobile2 (Optional)");
 		phone2Field.setWidth("140px");
 
-		phone3Field = new TextField("Phone3");
+		phone3Field = new TextField("Mobile3 (Optional)");
 		phone3Field.setWidth("140px");
-
-		FlexLayout phoneBar = new FlexLayout();
-		configurePhoneBar(phoneBar);
-		phoneBar.add(phone1Field, phone2Field, phone3Field);
 
 		remarkField = new TextArea();
 		configureRemarkField();
 
-//		verifiedCheck = new Checkbox("Verified");
 		statusCombo = new ComboBox<>();
 		configureStatusCombo();
 
@@ -97,26 +96,42 @@ public class ResourceEditorForm extends VerticalLayout {
 		binder.forField(typeCombo).asRequired("Type can not be blank").bind("type");
 		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
 		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
-		binder.forField(phone1Field).asRequired("Phone1 can not be blank").bind("phone1");
+		binder.forField(phone1Field).asRequired("Mobile1 can not be blank").bind("phone1");
 		binder.forField(phone2Field).bind("phone2");
 		binder.forField(phone3Field).bind("phone3");
 		binder.forField(remarkField).bind("remark");
-//		binder.forField(verifiedCheck).bind("verified");
-		binder.forField(statusCombo).asRequired("Status can not be blank").bind("status");
+		if (authUser != null) {
+			binder.forField(statusCombo).asRequired("Status can not be blank").bind("status");
+		}
 
 		saveButton = new Button("Save", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
-
-		HorizontalLayout cityTypeBar = new HorizontalLayout();
-		cityTypeBar.setWidthFull();
-		cityTypeBar.add(cityCombo, typeCombo);
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(updatedDiv, cityTypeBar, nameField, addressField, phoneBar, remarkField, statusCombo, buttonBar);
+		if (authUser == null) {
+			// smartphone ui
 
+			phone1Field.setWidthFull();
+			phone2Field.setWidthFull();
+			phone3Field.setWidthFull();
+
+			add(typeCombo, cityCombo, nameField, addressField, phone1Field, phone2Field, phone3Field, remarkField,
+					buttonBar);
+		} else {
+			// desktop ui
+			HorizontalLayout cityTypeBar = new HorizontalLayout();
+			cityTypeBar.setWidthFull();
+			cityTypeBar.add(cityCombo, typeCombo);
+
+			FlexLayout phoneBar = new FlexLayout();
+			configurePhoneBar(phoneBar);
+			phoneBar.add(phone1Field, phone2Field, phone3Field);
+
+			add(updatedDiv, cityTypeBar, nameField, addressField, phoneBar, remarkField, statusCombo, buttonBar);
+		}
 	}
 
 	private void configureCityCombo() {
@@ -162,7 +177,7 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private void configureRemarkField() {
 		remarkField.setWidthFull();
-		remarkField.setLabel("Remark");
+		remarkField.setLabel("Remark (Optional)");
 		remarkField.setPlaceholder("Type remark");
 	}
 
@@ -171,8 +186,12 @@ public class ResourceEditorForm extends VerticalLayout {
 		resource.setCity(city);
 
 		if (resource.getId() > 0) {
+			updatedDiv.setVisible(true);
 			updatedDiv.setText("Last updated " + DateUtil.humanize(resource.getUpdatedAt()));
+		} else {
+			updatedDiv.setVisible(false);
 		}
+
 		binder.setBean(resource);
 	}
 

@@ -26,6 +26,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.ResourceEditorForm;
@@ -171,7 +172,13 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 			return div;
 		}).setHeader("Status").setWidth("90px");
 
-		grid.addColumn("updatedByUser.username").setHeader("User").setWidth("80px");
+		grid.addColumn(resource -> {
+			if (resource.getUpdatedByUser() != null) {
+				return resource.getUpdatedByUser().getName();
+			} else {
+				return "Guest";
+			}
+		}).setHeader("User").setWidth("80px");
 
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getUpdatedAt());
@@ -190,25 +197,6 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 		grid.setDataProvider(dataProvider);
 	}
-
-//	private void buildToolBar() {
-//		toolBar.setAlignItems(Alignment.END);
-//
-//		Button createButton = new Button("New", VaadinIcon.PLUS.create());
-//		createButton.setWidth("100px");
-//		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-//		createButton.addClickListener(e -> {
-//			dialog.open();
-//			editorForm.setResource(resource);
-//		});
-//
-//		Span blank = new Span();
-//
-//		toolBar.add(recordCount, blank, createButton);
-//		toolBar.setAlignItems(Alignment.CENTER);
-//		toolBar.expand(blank);
-//
-//	}
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
@@ -250,6 +238,8 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 			resource.setUpdatedBy(authUser.getId());
 			resource.setUpdatedAt(now);
+
+			resource.setStatus(Status.Pending);
 
 			int resourceId = resourceService.createResource(messages, resource);
 			if (resourceId > 0) {

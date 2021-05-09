@@ -9,6 +9,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import in.co.itlabs.ui.views.AboutUsView;
 import in.co.itlabs.ui.views.ContactUsView;
 import in.co.itlabs.ui.views.IndexView;
+import in.co.itlabs.ui.views.PlasmaDonorFormView;
+import in.co.itlabs.ui.views.PlasmaSeekerFormView;
+import in.co.itlabs.ui.views.ResourceFormView;
 
 public class GuestNavBar extends VerticalLayout {
 
@@ -63,15 +66,15 @@ public class GuestNavBar extends VerticalLayout {
 		});
 
 		leadsButton.addClickListener(e -> {
-//			UI.getCurrent().navigate(ContactUsView.class);
+			UI.getCurrent().navigate(ResourceFormView.class);
 		});
 
 		donorsButton.addClickListener(e -> {
-//			UI.getCurrent().navigate(ContactUsView.class);
+			UI.getCurrent().navigate(PlasmaDonorFormView.class);
 		});
 
 		seekersButton.addClickListener(e -> {
-//			UI.getCurrent().navigate(ContactUsView.class);
+			UI.getCurrent().navigate(PlasmaSeekerFormView.class);
 		});
 	}
 }

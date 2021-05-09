@@ -74,7 +74,7 @@ public class ResourceService {
 		String insertSql = "insert into resource (cityId, type, name, address, phone1, phone2, phone3,"
 				+ " remark, status, createdBy, createdAt, updatedBy, updatedAt)"
 				+ " values(:cityId, :type, :name, :address, :phone1, :phone2, :phone3,"
-				+ " :remark, :verified, :createdBy, :createdAt, :updatedBy, :updatedAt)";
+				+ " :remark, :status, :createdBy, :createdAt, :updatedBy, :updatedAt)";
 
 		try (Connection con = sql2o.beginTransaction()) {
 			int resourceId = con.createQuery(insertSql).addParameter("cityId", resource.getCityId())

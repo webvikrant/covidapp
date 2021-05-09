@@ -17,6 +17,7 @@ import com.vaadin.flow.router.Route;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.business.entities.Resource.Status;
 import in.co.itlabs.business.entities.Resource.Type;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.GuestResourceFilterForm;
@@ -69,6 +70,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 
 		filterParams.setCity(city);
 		filterParams.setType(type);
+		filterParams.setStatus(Status.Verified);
 
 		filterForm = new GuestResourceFilterForm();
 //		filterForm.setWidth("87%");

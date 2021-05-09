@@ -12,7 +12,7 @@ import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.ui.components.PlasmaDonorEditorForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
 
-@PageTitle(value = "Ghaziabad Covid Support")
+@PageTitle(value = "Plasma Donor Form - Ghaziabad Covid Support")
 @Route(value = "plasma-donor-form", layout = GuestLayout.class)
 @CssImport("./styles/shared-styles.css")
 public class PlasmaDonorFormView extends VerticalLayout implements BeforeEnterObserver {
