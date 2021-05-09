@@ -83,7 +83,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		dialog = new Dialog();
 		dialog.setModal(true);
 		dialog.setDraggable(true);
-		dialog.setWidth("500px");
+		dialog.setWidth("450px");
 		dialog.add(editorForm);
 
 		filterParams = new ResourceFilterParams();

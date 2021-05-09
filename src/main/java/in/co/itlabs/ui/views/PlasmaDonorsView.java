@@ -75,14 +75,14 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 
 		plasmaDonor = new PlasmaDonor();
 
-		editorForm = new PlasmaDonorEditorForm();
+		editorForm = new PlasmaDonorEditorForm(resourceService);
 		editorForm.addListener(PlasmaDonorEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(PlasmaDonorEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();
 		dialog.setModal(true);
 		dialog.setDraggable(true);
-		dialog.setWidth("500px");
+		dialog.setWidth("400px");
 		dialog.add(editorForm);
 
 		filterParams = new PlasmaDonorFilterParams();

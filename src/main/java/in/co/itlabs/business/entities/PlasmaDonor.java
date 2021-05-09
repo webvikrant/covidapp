@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class PlasmaDonor {
 
 	private int id;
+	private int cityId;
 	private BloodGroup bloodGroup;
 	private Gender gender;
 	private String name;
@@ -27,4 +28,7 @@ public class PlasmaDonor {
 	private String remark;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
+	// transient
+	private City city;
 }

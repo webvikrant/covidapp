@@ -37,7 +37,7 @@ public class PlasmaDonorFormView extends VerticalLayout implements BeforeEnterOb
 		titleDiv = new Div();
 		buildTitle();
 
-		editorForm = new PlasmaDonorEditorForm();
+		editorForm = new PlasmaDonorEditorForm(resourceService);
 		editorForm.addClassName("card");
 
 		add(titleDiv, editorForm);
