@@ -107,13 +107,11 @@ public class ResourceEditorForm extends VerticalLayout {
 				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone1");
 
 //		binder.forField(phone2Field).bind("phone2");
-		binder.forField(phone2Field).asRequired("Mobile2 can not be blank")
-				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
+		binder.forField(phone2Field).withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
 				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone2");
 
 //		binder.forField(phone3Field).bind("phone3");
-		binder.forField(phone3Field).asRequired("Mobile3 can not be blank")
-				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
+		binder.forField(phone3Field).withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
 				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone3");
 
 		binder.forField(remarkField).bind("remark");
