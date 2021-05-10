@@ -103,16 +103,20 @@ public class ResourceEditorForm extends VerticalLayout {
 
 //		binder.forField(phone1Field).asRequired("Mobile1 can not be blank").bind("phone1");
 		binder.forField(phone1Field).asRequired("Mobile1 can not be blank")
-				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
-				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone1");
+				.withValidator(new RegexpValidator("Only 0-9 allowed", "^\\d{10}$"))
+				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits").bind("phone1");
 
 //		binder.forField(phone2Field).bind("phone2");
-		binder.forField(phone2Field).withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
-				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone2");
+		binder.forField(phone2Field)
+				.withValidator(phone -> phone.length() == 10 || phone.length() == 0,
+						"Mobile number must have 10 digits or none")
+				.withValidator(new RegexpValidator("Only 0-9 allowed", "^$|^\\d{10}$")).bind("phone2");
 
 //		binder.forField(phone3Field).bind("phone3");
-		binder.forField(phone3Field).withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
-				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone3");
+		binder.forField(phone3Field)
+				.withValidator(phone -> phone.length() == 10 || phone.length() == 0,
+						"Mobile number must have 10 digits or none")
+				.withValidator(new RegexpValidator("Only 0-9 allowed", "^$|^\\d{10}$")).bind("phone3");
 
 		binder.forField(remarkField).bind("remark");
 
