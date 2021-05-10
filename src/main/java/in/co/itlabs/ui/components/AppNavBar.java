@@ -120,12 +120,12 @@ public class AppNavBar extends HorizontalLayout {
 				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			Button plasmaDonorsButton = new Button("Plasma donors", VaadinIcon.AMBULANCE.create());
+			Button plasmaDonorsButton = new Button("Plasma donors", VaadinIcon.DROP.create());
 			plasmaDonorsButton.addClickListener(e -> {
 				UI.getCurrent().navigate(PlasmaDonorsView.class);
 			});
 
-			Button plasmaSeekersButton = new Button("Plasma requests", VaadinIcon.AMBULANCE.create());
+			Button plasmaSeekersButton = new Button("Plasma requests", VaadinIcon.DROP.create());
 			plasmaSeekersButton.addClickListener(e -> {
 //				UI.getCurrent().navigate(ResourcesView.class);
 			});

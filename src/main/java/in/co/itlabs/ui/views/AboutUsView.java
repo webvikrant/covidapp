@@ -2,10 +2,7 @@ package in.co.itlabs.ui.views;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -23,9 +20,9 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 
 	// ui
 	private Div titleDiv;
-	private Image image;
-	private Span name;
-	private Span post;
+//	private Image image;
+//	private Span name;
+//	private Span post;
 	private Div bodyDiv;
 
 	// non-ui
@@ -45,18 +42,18 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 		bodyDiv.getStyle().set("textAlign", "justify");
 		bodyDiv.getStyle().set("color", "gray");
 
-		image = new Image("images/nagar-ayukt-shri-mahender-singh-tanwar.jpeg",
-				"Nagar Ayukt, Shri Mahender Singh Tanwar, IAS");
-		image.setHeight("100px");
-		image.addClassName("photo");
-
-		name = new Span("Shri Mahender Singh Tanwar, IAS");
-		name.getStyle().set("fontSize", "small");
-		name.getStyle().set("color", "dark-gray");
-
-		post = new Span("(Nagar Ayukt, Ghaziabad Nagar Nigam)");
-		post.getStyle().set("fontSize", "small");
-		post.getStyle().set("color", "gray");
+//		image = new Image("images/nagar-ayukt-shri-mahender-singh-tanwar.jpeg",
+//				"Nagar Ayukt, Shri Mahender Singh Tanwar, IAS");
+//		image.setHeight("100px");
+//		image.addClassName("photo");
+//
+//		name = new Span("Shri Mahender Singh Tanwar, IAS");
+//		name.getStyle().set("fontSize", "small");
+//		name.getStyle().set("color", "dark-gray");
+//
+//		post = new Span("(Nagar Ayukt, Ghaziabad Nagar Nigam)");
+//		post.getStyle().set("fontSize", "small");
+//		post.getStyle().set("color", "gray");
 
 		Paragraph para1 = new Paragraph(
 				"World is passing through pandemic and everyone is facing a different challenge of life and struggling for survival.");
@@ -70,7 +67,7 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 		VerticalLayout main = new VerticalLayout();
 		main.setAlignItems(Alignment.CENTER);
 		main.addClassName("card");
-		main.add(image, name, post, new Hr(), bodyDiv);
+		main.add(bodyDiv);
 
 		add(titleDiv, main);
 	}

@@ -15,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
@@ -93,13 +94,30 @@ public class ResourceEditorForm extends VerticalLayout {
 		binder = new Binder<>(Resource.class);
 
 		binder.forField(cityCombo).asRequired("City can not be blank").bind("city");
+
 		binder.forField(typeCombo).asRequired("Type can not be blank").bind("type");
+
 		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
+
 		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
-		binder.forField(phone1Field).asRequired("Mobile1 can not be blank").bind("phone1");
-		binder.forField(phone2Field).bind("phone2");
-		binder.forField(phone3Field).bind("phone3");
+
+//		binder.forField(phone1Field).asRequired("Mobile1 can not be blank").bind("phone1");
+		binder.forField(phone1Field).asRequired("Mobile1 can not be blank")
+				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
+				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone1");
+
+//		binder.forField(phone2Field).bind("phone2");
+		binder.forField(phone2Field).asRequired("Mobile2 can not be blank")
+				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
+				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone2");
+
+//		binder.forField(phone3Field).bind("phone3");
+		binder.forField(phone3Field).asRequired("Mobile3 can not be blank")
+				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
+				.withValidator(new RegexpValidator("Only 1-9 allowed", "^\\d{10}$")).bind("phone3");
+
 		binder.forField(remarkField).bind("remark");
+
 		if (authUser != null) {
 			binder.forField(statusCombo).asRequired("Status can not be blank").bind("status");
 		}
@@ -166,6 +184,7 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private void configureAddressField() {
 		addressField.setWidthFull();
+		addressField.setHeight("100px");
 		addressField.setLabel("Address");
 		addressField.setPlaceholder("Type address");
 	}

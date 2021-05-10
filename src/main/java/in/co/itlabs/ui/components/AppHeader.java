@@ -19,7 +19,7 @@ public class AppHeader extends HorizontalLayout {
 		setJustifyContentMode(JustifyContentMode.BETWEEN);
 		setAlignItems(Alignment.CENTER);
 
-		icon = VaadinIcon.BELL.create();
+		icon = VaadinIcon.AMBULANCE.create();
 		icon.setSize("16px");
 
 		appName = new Span();
