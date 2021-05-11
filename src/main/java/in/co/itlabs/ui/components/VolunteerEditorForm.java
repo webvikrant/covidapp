@@ -50,7 +50,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 		phoneField.setWidthFull();
 
 		hoursField = new IntegerField("How many hours can you devote per day?");
-		hoursField.setWidth("100px");
+		hoursField.setWidthFull();
 
 		serviceRadio = new RadioButtonGroup<Volunteer.Service>();
 		configureServiceRadio();
@@ -76,6 +76,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 				.withValidator(hours -> (hours >= 1 && hours <= 8), "Min hours is 1 and max hours are 8").bind("hours");
 
 		binder.forField(serviceRadio).asRequired("Service can not be blank").bind("service");
+		binder.forField(otherServiceField).bind("otherService");
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidthFull();
@@ -136,6 +137,18 @@ public class VolunteerEditorForm extends VerticalLayout {
 
 		root.add(saveButton, blank, cancelButton);
 		root.expand(blank);
+	}
+
+	public void setReadOnly() {
+
+		nameField.setReadOnly(true);
+		ageField.setReadOnly(true);
+		phoneField.setReadOnly(true);
+		hoursField.setReadOnly(true);
+		serviceRadio.setReadOnly(true);
+		otherServiceField.setReadOnly(true);
+
+		saveButton.setVisible(false);
 	}
 
 	public static abstract class VolunteerEditorFormEvent extends ComponentEvent<VolunteerEditorForm> {

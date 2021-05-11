@@ -40,6 +40,9 @@ public class Resource {
 	private int updatedBy;
 	private LocalDateTime updatedAt;
 
+	private String guestName;
+	private String guestPhone;
+
 	// transient
 	private City city;
 	private User updatedByUser;

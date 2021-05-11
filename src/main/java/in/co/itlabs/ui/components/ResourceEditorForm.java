@@ -43,6 +43,9 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private TextArea remarkField;
 
+	private TextField guestNameField;
+	private TextField guestPhoneField;
+
 	private ComboBox<Resource.Status> statusCombo;
 
 	private Button saveButton;
@@ -88,6 +91,12 @@ public class ResourceEditorForm extends VerticalLayout {
 		remarkField = new TextArea();
 		configureRemarkField();
 
+		guestNameField = new TextField();
+		configureGuestNameField();
+
+		guestPhoneField = new TextField();
+		configureGuestPhoneField();
+
 		statusCombo = new ComboBox<>();
 		configureStatusCombo();
 
@@ -119,6 +128,13 @@ public class ResourceEditorForm extends VerticalLayout {
 
 		binder.forField(remarkField).bind("remark");
 
+		binder.forField(guestNameField).bind("guestName");
+
+		binder.forField(guestPhoneField)
+				.withValidator(phone -> phone.length() == 10 || phone.length() == 0,
+						"Mobile number must have 10 digits or none")
+				.withValidator(new RegexpValidator("Only 0-9 allowed", "^$|^\\d{10}$")).bind("guestPhone");
+
 		if (authUser != null) {
 			binder.forField(statusCombo).asRequired("Status can not be blank").bind("status");
 		}
@@ -137,8 +153,8 @@ public class ResourceEditorForm extends VerticalLayout {
 			phone2Field.setWidthFull();
 			phone3Field.setWidthFull();
 
-			add(typeCombo, cityCombo, nameField, addressField, phone1Field, phone2Field, phone3Field, remarkField,
-					buttonBar);
+			add(typeCombo, cityCombo, nameField, addressField, remarkField, phone1Field, phone2Field, phone3Field,
+					guestNameField, guestPhoneField, buttonBar);
 		} else {
 			// desktop ui
 			HorizontalLayout cityTypeBar = new HorizontalLayout();
@@ -149,7 +165,12 @@ public class ResourceEditorForm extends VerticalLayout {
 			configurePhoneBar(phoneBar);
 			phoneBar.add(phone1Field, phone2Field, phone3Field);
 
-			add(updatedDiv, cityTypeBar, nameField, addressField, phoneBar, remarkField, statusCombo, buttonBar);
+			add(updatedDiv, cityTypeBar, nameField, addressField, remarkField, phoneBar, statusCombo, guestNameField,
+					guestPhoneField, buttonBar);
+			guestNameField.setReadOnly(true);
+			guestPhoneField.setReadOnly(true);
+			guestNameField.setLabel("Guest submitter's name");
+			guestPhoneField.setLabel("Guest submitter's phone");
 		}
 	}
 
@@ -179,7 +200,7 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private void configureNameField() {
 		nameField.setWidthFull();
-		nameField.setLabel("Provider");
+		nameField.setLabel("Resource provider organization or person's name");
 		nameField.setPlaceholder("Type name");
 	}
 
@@ -197,8 +218,21 @@ public class ResourceEditorForm extends VerticalLayout {
 
 	private void configureRemarkField() {
 		remarkField.setWidthFull();
+		remarkField.setHeight("100px");
 		remarkField.setLabel("Remark (Optional)");
 		remarkField.setPlaceholder("Type remark");
+	}
+
+	private void configureGuestNameField() {
+		guestNameField.setWidthFull();
+		guestNameField.setLabel("Your name (optional)");
+		guestNameField.setPlaceholder("Type name");
+	}
+
+	private void configureGuestPhoneField() {
+		guestPhoneField.setWidthFull();
+		guestPhoneField.setLabel("Your phone (optional)");
+		guestPhoneField.setPlaceholder("Type mobile");
 	}
 
 	public void setResource(Resource resource) {
@@ -211,7 +245,6 @@ public class ResourceEditorForm extends VerticalLayout {
 		} else {
 			updatedDiv.setVisible(false);
 		}
-
 		binder.setBean(resource);
 	}
 

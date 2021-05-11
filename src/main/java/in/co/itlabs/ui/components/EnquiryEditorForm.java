@@ -115,6 +115,16 @@ public class EnquiryEditorForm extends VerticalLayout {
 		root.expand(blank);
 	}
 
+	public void setReadOnly() {
+
+		nameField.setReadOnly(true);
+		phoneField.setReadOnly(true);
+		emailIdField.setReadOnly(true);
+		messageField.setReadOnly(true);
+
+		saveButton.setVisible(false);
+	}
+
 	public static abstract class EnquiryEditorFormEvent extends ComponentEvent<EnquiryEditorForm> {
 		private Enquiry enquiry;
 
@@ -147,13 +157,4 @@ public class EnquiryEditorForm extends VerticalLayout {
 		return getEventBus().addListener(eventType, listener);
 	}
 
-	public void setReadOnly() {
-
-		nameField.setReadOnly(true);
-		phoneField.setReadOnly(true);
-		emailIdField.setReadOnly(true);
-		messageField.setReadOnly(true);
-
-		saveButton.setVisible(false);
-	}
 }

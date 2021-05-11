@@ -72,9 +72,9 @@ public class ResourceService {
 		int newResourceId = 0;
 		Sql2o sql2o = databaseService.getSql2o();
 		String insertSql = "insert into resource (cityId, type, name, address, phone1, phone2, phone3,"
-				+ " remark, status, createdBy, createdAt, updatedBy, updatedAt)"
+				+ " remark, status, createdBy, createdAt, updatedBy, updatedAt, guestName, guestPhone)"
 				+ " values(:cityId, :type, :name, :address, :phone1, :phone2, :phone3,"
-				+ " :remark, :status, :createdBy, :createdAt, :updatedBy, :updatedAt)";
+				+ " :remark, :status, :createdBy, :createdAt, :updatedBy, :updatedAt, :guestName, :guestPhone)";
 
 		try (Connection con = sql2o.beginTransaction()) {
 			int resourceId = con.createQuery(insertSql).addParameter("cityId", resource.getCityId())
@@ -85,7 +85,9 @@ public class ResourceService {
 					.addParameter("createdBy", resource.getCreatedBy())
 					.addParameter("createdAt", resource.getCreatedAt())
 					.addParameter("updatedBy", resource.getUpdatedBy())
-					.addParameter("updatedAt", resource.getUpdatedAt()).executeUpdate().getKey(Integer.class);
+					.addParameter("updatedAt", resource.getUpdatedAt())
+					.addParameter("guestName", resource.getGuestName())
+					.addParameter("guestPhone", resource.getGuestPhone()).executeUpdate().getKey(Integer.class);
 
 			con.commit();
 			newResourceId = resourceId;
@@ -278,7 +280,7 @@ public class ResourceService {
 		int count = 0;
 
 		String sql = generatePlasmaDonorSql(filterParams, true);
-		
+
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
@@ -298,19 +300,19 @@ public class ResourceService {
 
 		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
 		String citySql = "select * from city where id=:id";
-		
+
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
 			plasmaDonors = con.createQuery(sql).executeAndFetch(PlasmaDonor.class);
-			
+
 			for (PlasmaDonor plasmaDonor : plasmaDonors) {
 				City city = con.createQuery(citySql).addParameter("id", plasmaDonor.getCityId())
 						.executeAndFetchFirst(City.class);
 
 				plasmaDonor.setCity(city);
 			}
-			
+
 			con.close();
 		} catch (Exception e) {
 			logger.error(e.getMessage());

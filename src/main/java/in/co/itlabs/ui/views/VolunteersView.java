@@ -5,9 +5,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -35,8 +32,6 @@ import in.co.itlabs.util.VolunteerFilterParams;
 @PageTitle(value = "Volunteers - Ghaziabad Covid Support")
 @Route(value = "volunteers", layout = AppLayout.class)
 public class VolunteersView extends VerticalLayout implements BeforeEnterObserver {
-
-	private static final Logger logger = LoggerFactory.getLogger(VolunteersView.class);
 
 	// ui
 	private Div titleDiv;
@@ -123,7 +118,7 @@ public class VolunteersView extends VerticalLayout implements BeforeEnterObserve
 		
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getCreatedAt());
-		}).setHeader("Created");
+		}).setHeader("Submitted");
 
 		grid.addComponentColumn(volunteer -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
@@ -131,7 +126,7 @@ public class VolunteersView extends VerticalLayout implements BeforeEnterObserve
 			button.addClickListener(e -> {
 				dialog.open();
 				editorForm.setVolunteer(volunteer);
-//				editorForm.setReadOnly();
+				editorForm.setReadOnly();
 			});
 
 			return button;

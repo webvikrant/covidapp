@@ -5,9 +5,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -35,8 +32,6 @@ import in.co.itlabs.util.EnquiryFilterParams;
 @PageTitle(value = "Enquiries")
 @Route(value = "enquiries", layout = AppLayout.class)
 public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver {
-
-	private static final Logger logger = LoggerFactory.getLogger(EnquiriesView.class);
 
 	// ui
 	private Div titleDiv;
