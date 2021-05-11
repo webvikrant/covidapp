@@ -12,6 +12,7 @@ import in.co.itlabs.ui.views.IndexView;
 import in.co.itlabs.ui.views.PlasmaDonorFormView;
 import in.co.itlabs.ui.views.PlasmaSeekerFormView;
 import in.co.itlabs.ui.views.ResourceFormView;
+import in.co.itlabs.ui.views.VolunteerFormView;
 
 public class GuestNavBar extends VerticalLayout {
 
@@ -24,6 +25,8 @@ public class GuestNavBar extends VerticalLayout {
 	private Button donorsButton;
 	private Button seekersButton;
 
+	private Button volunteersButton;
+	
 	// non-ui
 
 	public GuestNavBar() {
@@ -40,15 +43,19 @@ public class GuestNavBar extends VerticalLayout {
 		donorsButton = new Button("Donors", VaadinIcon.DROP.create());
 		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
 
+		volunteersButton = new Button("Volunteer", VaadinIcon.HANDS_UP.create());
+		
 		configureButtons();
 
 		HorizontalLayout topBar = new HorizontalLayout();
+		HorizontalLayout middleBar = new HorizontalLayout();
 		HorizontalLayout bottomBar = new HorizontalLayout();
-
+		
 		topBar.add(homeButton, aboutButton, contactButton);
-		bottomBar.add(leadsButton, donorsButton, seekersButton);
+		middleBar.add(leadsButton, donorsButton, seekersButton);
+		bottomBar.add(volunteersButton);
 
-		add(topBar, bottomBar);
+		add(topBar, middleBar, bottomBar);
 	}
 
 	private void configureButtons() {
@@ -76,5 +83,10 @@ public class GuestNavBar extends VerticalLayout {
 		seekersButton.addClickListener(e -> {
 			UI.getCurrent().navigate(PlasmaSeekerFormView.class);
 		});
+		
+		volunteersButton.addClickListener(e -> {
+			UI.getCurrent().navigate(VolunteerFormView.class);
+		});
+		
 	}
 }

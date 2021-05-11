@@ -97,22 +97,21 @@ public class ResourceEditorForm extends VerticalLayout {
 
 		binder.forField(typeCombo).asRequired("Type can not be blank").bind("type");
 
-		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
+		binder.forField(nameField).asRequired("Name can not be blank").withValidator(name -> name.length() < 250, "")
+				.bind("name");
 
-		binder.forField(addressField).asRequired("Address can not be blank").bind("address");
+		binder.forField(addressField).asRequired("Address can not be blank")
+				.withValidator(address -> address.length() < 1000, "").bind("address");
 
-//		binder.forField(phone1Field).asRequired("Mobile1 can not be blank").bind("phone1");
 		binder.forField(phone1Field).asRequired("Mobile1 can not be blank")
 				.withValidator(new RegexpValidator("Only 0-9 allowed", "^\\d{10}$"))
 				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits").bind("phone1");
 
-//		binder.forField(phone2Field).bind("phone2");
 		binder.forField(phone2Field)
 				.withValidator(phone -> phone.length() == 10 || phone.length() == 0,
 						"Mobile number must have 10 digits or none")
 				.withValidator(new RegexpValidator("Only 0-9 allowed", "^$|^\\d{10}$")).bind("phone2");
 
-//		binder.forField(phone3Field).bind("phone3");
 		binder.forField(phone3Field)
 				.withValidator(phone -> phone.length() == 10 || phone.length() == 0,
 						"Mobile number must have 10 digits or none")
