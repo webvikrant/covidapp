@@ -19,6 +19,7 @@ import in.co.itlabs.business.services.AuthService;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.ui.components.PasswordEditorForm.SaveEvent;
 import in.co.itlabs.ui.components.PasswordEditorForm.CancelEvent;
+import in.co.itlabs.ui.views.EnquiriesView;
 import in.co.itlabs.ui.views.PlasmaDonorsView;
 import in.co.itlabs.ui.views.ResourcesView;
 import in.co.itlabs.ui.views.UsersView;
@@ -130,7 +131,12 @@ public class AppNavBar extends HorizontalLayout {
 //				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			menuBar.add(resourcesButton, plasmaDonorsButton, plasmaSeekersButton);
+			Button enquiriesButton = new Button("Enquiries", VaadinIcon.ENVELOPE.create());
+			enquiriesButton.addClickListener(e -> {
+				UI.getCurrent().navigate(EnquiriesView.class);
+			});
+
+			menuBar.add(resourcesButton, plasmaDonorsButton, plasmaSeekersButton, enquiriesButton);
 
 			break;
 

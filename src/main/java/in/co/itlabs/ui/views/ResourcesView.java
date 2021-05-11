@@ -117,12 +117,6 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		grid = new Grid<>(Resource.class);
 		configureGrid();
 
-//		SplitLayout splitLayout = new SplitLayout();
-//		splitLayout.setWidthFull();
-//		splitLayout.setSplitterPosition(25);
-//		splitLayout.addToPrimary(filterForm);
-//		splitLayout.addToSecondary(main);
-
 		add(titleDiv, toolBar, grid, recordCount);
 		setAlignSelf(Alignment.START, recordCount);
 

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -29,7 +30,7 @@ public class ContactUsView extends VerticalLayout implements BeforeEnterObserver
 	private TextField nameField;;
 	private TextField phoneField;
 	private TextField emailIdField;
-	private TextField messageField;
+	private TextArea messageField;
 
 	private Button submitButton = new Button("Send", VaadinIcon.PAPERPLANE.create());
 
@@ -57,7 +58,7 @@ public class ContactUsView extends VerticalLayout implements BeforeEnterObserver
 		emailIdField = new TextField("Your email");
 		configureEmailField();
 
-		messageField = new TextField("Your message");
+		messageField = new TextArea("Your message");
 		configureMessageField();
 
 		submitButton = new Button("Send", VaadinIcon.PAPERPLANE.create());
@@ -96,6 +97,7 @@ public class ContactUsView extends VerticalLayout implements BeforeEnterObserver
 
 	private void configureMessageField() {
 		messageField.setWidthFull();
+		messageField.setHeight("100px");
 	}
 
 	private void configureSubmitButton() {

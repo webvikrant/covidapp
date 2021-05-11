@@ -19,22 +19,19 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
 
-import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
-import in.co.itlabs.business.services.ResourceService;
-import in.co.itlabs.ui.components.ResourceEditorForm;
-import in.co.itlabs.ui.components.ResourceFilterForm;
+import in.co.itlabs.business.entities.Enquiry;
+import in.co.itlabs.business.services.EnquiryService;
+import in.co.itlabs.ui.components.EnquiryEditorForm;
+import in.co.itlabs.ui.components.EnquiryFilterForm;
 import in.co.itlabs.ui.layouts.AppLayout;
 import in.co.itlabs.util.DateUtil;
-import in.co.itlabs.util.ResourceDataProvider;
-import in.co.itlabs.util.ResourceFilterParams;
+import in.co.itlabs.util.EnquiryDataProvider;
+import in.co.itlabs.util.EnquiryFilterParams;
 
 @PageTitle(value = "Enquiries")
 @Route(value = "enquiries", layout = AppLayout.class)
@@ -44,40 +41,34 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 
 	// ui
 	private Div titleDiv;
-	private ResourceEditorForm editorForm;
-	private ResourceFilterForm filterForm;
+	private Button createButton;
+	private EnquiryEditorForm editorForm;
+	private EnquiryFilterForm filterForm;
 	private HorizontalLayout toolBar;
-	private Grid<Resource> grid;
+	private Grid<Enquiry> grid;
 	private Div recordCount;
 	private Dialog dialog;
 
 	// non-ui
-	private AuthenticatedUser authUser;
-	private ResourceService resourceService;
+	private EnquiryService enquiryService;
 
-	private ResourceFilterParams filterParams;
-	private ResourceDataProvider dataProvider;
-	private Resource resource;
+	private EnquiryFilterParams filterParams;
+	private EnquiryDataProvider dataProvider;
+	private Enquiry enquiry;
 
 	public EnquiriesView() {
-		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
-		if (authUser == null) {
-			logger.info("User not logged in.");
-			return;
-		}
-
-		resourceService = new ResourceService();
+		enquiryService = new EnquiryService();
 
 		setAlignItems(Alignment.CENTER);
 
 		titleDiv = new Div();
 		buildTitle();
 
-		resource = new Resource();
+		enquiry = new Enquiry();
 
-		editorForm = new ResourceEditorForm(resourceService);
-		editorForm.addListener(ResourceEditorForm.SaveEvent.class, this::handleSaveEvent);
-		editorForm.addListener(ResourceEditorForm.CancelEvent.class, this::handleCancelEvent);
+		editorForm = new EnquiryEditorForm();
+		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
+		editorForm.addListener(EnquiryEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();
 		dialog.setModal(true);
@@ -85,36 +76,42 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		dialog.setWidth("500px");
 		dialog.add(editorForm);
 
-		filterParams = new ResourceFilterParams();
+		filterParams = new EnquiryFilterParams();
 
-		filterForm = new ResourceFilterForm();
+		filterForm = new EnquiryFilterForm();
 		filterForm.setFilterParams(filterParams);
-		filterForm.addListener(ResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.addListener(EnquiryFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCount = new Div();
 		recordCount.addClassName("small-text");
 		recordCount.setWidth("150px");
 
+		createButton = new Button("New", VaadinIcon.PLUS.create());
+		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+		createButton.addClickListener(e -> {
+			dialog.open();
+			editorForm.setEnquiry(enquiry);
+		});
+		
 		toolBar = new HorizontalLayout();
 		toolBar.setWidthFull();
-		buildToolBar();
+		toolBar.setAlignItems(Alignment.END);
 
-		dataProvider = new ResourceDataProvider(resourceService);
+		Span blank = new Span();
+		toolBar.add(filterForm, blank, createButton);
+		toolBar.expand(blank);
+		
+		dataProvider = new EnquiryDataProvider(enquiryService);
 		dataProvider.setFilterParams(filterParams);
 
-		grid = new Grid<>(Resource.class);
+		grid = new Grid<>(Enquiry.class);
 		configureGrid();
 
 		VerticalLayout main = new VerticalLayout();
 		main.add(toolBar, grid);
 
-		SplitLayout splitLayout = new SplitLayout();
-		splitLayout.setWidthFull();
-		splitLayout.setSplitterPosition(25);
-		splitLayout.addToPrimary(filterForm);
-		splitLayout.addToSecondary(main);
-
-		add(titleDiv, splitLayout);
+		add(titleDiv, toolBar, grid, recordCount);
+		setAlignSelf(Alignment.START, recordCount);
 
 		reload();
 	}
@@ -122,37 +119,22 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 	private void configureGrid() {
 		grid.removeAllColumns();
 
-		grid.addColumn("type").setHeader("Type").setWidth("100px");
-		grid.addColumn("name").setHeader("Provider").setWidth("140px");
-		grid.addColumn("address").setHeader("Address").setWidth("140px");
-
-		grid.addComponentColumn(resource -> {
-			Button button = new Button();
-			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-//			if (resource.getStatus() == Status.Not_Verified) {
-//				button.setText("Not verified");
-//				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
-//
-//			} else if (resource.getStatus() == Status.Verified) {
-//				button.setText("Verified");
-//				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-//
-//			} else if (resource.getStatus() == Status.Stale) {
-//				button.setText("Stale");
-//			}
-			return button;
-		}).setHeader("Status").setWidth("90px");
-
+		grid.addColumn("name").setHeader("Name").setWidth("120px");
+		grid.addColumn("phone").setHeader("Mobile").setWidth("80px");
+		grid.addColumn("emailId").setHeader("Email").setWidth("120px");
+		grid.addColumn("message").setHeader("Message").setWidth("300px");
+		
 		grid.addColumn(resource -> {
-			return DateUtil.humanize(resource.getUpdatedAt());
-		}).setHeader("Last updated");
+			return DateUtil.humanize(resource.getCreatedAt());
+		}).setHeader("Submitted");
 
-		grid.addComponentColumn(resource -> {
+		grid.addComponentColumn(enquiry -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL);
 			button.addClickListener(e -> {
 				dialog.open();
-				editorForm.setResource(resource);
+				editorForm.setEnquiry(enquiry);
+				editorForm.setReadOnly();
 			});
 
 			return button;
@@ -161,79 +143,39 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		grid.setDataProvider(dataProvider);
 	}
 
-	private void buildToolBar() {
-		toolBar.setAlignItems(Alignment.END);
-
-		Button createButton = new Button("New", VaadinIcon.PLUS.create());
-		createButton.setWidth("100px");
-		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-		createButton.addClickListener(e -> {
-			dialog.open();
-			editorForm.setResource(resource);
-		});
-
-		Span blank = new Span();
-
-		toolBar.add(recordCount, blank, createButton);
-		toolBar.setAlignItems(Alignment.CENTER);
-		toolBar.expand(blank);
-
-	}
-
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Resources");
+		titleDiv.add("Enquiries");
 	}
 
-	public void handleFilterEvent(ResourceFilterForm.FilterEvent event) {
+	public void handleFilterEvent(EnquiryFilterForm.FilterEvent event) {
 		filterParams = event.getFilterParams();
 		dataProvider.setFilterParams(filterParams);
 		reload();
 	}
 
-	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {
+	public void handleSaveEvent(EnquiryEditorForm.SaveEvent event) {
 		List<String> messages = new ArrayList<String>();
-		resource = event.getResource();
+		enquiry = event.getEnquiry();
 
-		if (resource.getId() > 0) {
-			// existing resource, hence update it
+		// new resource, hence create it
 
-			resource.setUpdatedBy(authUser.getId());
-			resource.setUpdatedAt(LocalDateTime.now());
+		LocalDateTime now = LocalDateTime.now();
 
-			boolean success = resourceService.updateResource(messages, resource);
-			if (success) {
-				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER);
-				reload();
-				resource = new Resource();
-				dialog.close();
-			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
-			}
+		enquiry.setCreatedAt(now);
+
+		int enquiryId = enquiryService.createEnquiry(messages, enquiry);
+		if (enquiryId > 0) {
+			Notification.show("Message sent successfully", 3000, Position.TOP_CENTER);
+			reload();
+			enquiry = new Enquiry();
+			editorForm.setEnquiry(enquiry);
 		} else {
-			// new resource, hence create it
-
-			LocalDateTime now = LocalDateTime.now();
-
-			resource.setCreatedBy(authUser.getId());
-			resource.setCreatedAt(now);
-
-			resource.setUpdatedBy(authUser.getId());
-			resource.setUpdatedAt(now);
-
-			int resourceId = resourceService.createResource(messages, resource);
-			if (resourceId > 0) {
-				Notification.show("Resource created successfully", 3000, Position.TOP_CENTER);
-				reload();
-				resource = new Resource();
-				editorForm.setResource(resource);
-			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
-			}
+			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
 		}
 	}
 
-	public void handleCancelEvent(ResourceEditorForm.CancelEvent event) {
+	public void handleCancelEvent(EnquiryEditorForm.CancelEvent event) {
 		dialog.close();
 	}
 

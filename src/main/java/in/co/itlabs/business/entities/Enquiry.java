@@ -1,5 +1,7 @@
 package in.co.itlabs.business.entities;
 
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,4 +13,5 @@ public class Enquiry {
 	private String phone;
 	private String emailId;
 	private String message;
+	private LocalDateTime createdAt;
 }

@@ -1,0 +1,280 @@
+package in.co.itlabs.business.services;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sql2o.Connection;
+import org.sql2o.Sql2o;
+
+import in.co.itlabs.Application;
+import in.co.itlabs.business.entities.Enquiry;
+import in.co.itlabs.business.entities.PlasmaDonor;
+import in.co.itlabs.business.entities.Resource;
+import in.co.itlabs.util.EnquiryFilterParams;
+import in.co.itlabs.util.PlasmaDonorFilterParams;
+
+public class EnquiryService {
+
+	private static final Logger logger = LoggerFactory.getLogger(EnquiryService.class);
+
+	private DatabaseService databaseService;
+
+	public EnquiryService() {
+		databaseService = Application.getDatabaseService();
+	}
+
+	// =================================================================================
+	// enquiries
+	// =================================================================================
+
+	// create
+	public int createEnquiry(List<String> messages, Enquiry resource) {
+
+		int newEnquiryId = 0;
+		Sql2o sql2o = databaseService.getSql2o();
+		String insertSql = "insert into enquiry (name, phone, emailId, message, createdAt)"
+				+ " values(:name, :phone, :emailId, :message, :createdAt)";
+
+		try (Connection con = sql2o.beginTransaction()) {
+			int resourceId = con.createQuery(insertSql).addParameter("name", resource.getName())
+					.addParameter("phone", resource.getPhone()).addParameter("emailId", resource.getEmailId())
+					.addParameter("message", resource.getMessage()).addParameter("createdAt", resource.getCreatedAt())
+					.executeUpdate().getKey(Integer.class);
+
+			con.commit();
+			newEnquiryId = resourceId;
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			messages.add(e.getMessage());
+		}
+		return newEnquiryId;
+	}
+
+	// read many
+
+	public int getEnquiriesCount(EnquiryFilterParams filterParams) {
+		int count = 0;
+
+		String sql = generateEnquirySql(filterParams, true);
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			count = con.createQuery(sql).executeScalar(Integer.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return count;
+	}
+
+	public List<Enquiry> getEnquiries(int offset, int limit, EnquiryFilterParams filterParams) {
+		List<Enquiry> enquiries = null;
+
+		String sql = generateEnquirySql(filterParams, false);
+		sql = sql + " order by createdAt desc limit " + limit + " offset " + offset;
+
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			enquiries = con.createQuery(sql).executeAndFetch(Enquiry.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return enquiries;
+	}
+
+	private String generateEnquirySql(EnquiryFilterParams filterParams, boolean countSql) {
+		String sql = "";
+		if (countSql) {
+			sql = "select count(id) from enquiry";
+		} else {
+			sql = "select * from enquiry";
+		}
+
+		if (filterParams.getQuery() != null) {
+			sql = sql + " where";
+
+			int clauseCount = 0;
+
+			if (filterParams.getQuery() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+
+				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
+				sql = sql + " (lower(name) like '" + queryString + "' or lower(phone) like '" + queryString + "')";
+			}
+		}
+
+		return sql;
+	}
+
+	// update
+	public boolean updateResource(List<String> messages, Resource resource) {
+
+		boolean success = false;
+		Sql2o sql2o = databaseService.getSql2o();
+		String insertSql = "update resource set cityId=:cityId, type=:type, name=:name, address=:address,"
+				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, status=:status,"
+				+ " createdBy=:createdBy, createdAt=:createdAt, updatedBy=:updatedBy, updatedAt=:updatedAt"
+				+ " where id=:id";
+
+		try (Connection con = sql2o.beginTransaction()) {
+			con.createQuery(insertSql).addParameter("cityId", resource.getCityId())
+					.addParameter("type", resource.getType()).addParameter("name", resource.getName())
+					.addParameter("address", resource.getAddress()).addParameter("phone1", resource.getPhone1())
+					.addParameter("phone2", resource.getPhone2()).addParameter("phone3", resource.getPhone3())
+					.addParameter("remark", resource.getRemark()).addParameter("status", resource.getStatus())
+					.addParameter("createdBy", resource.getCreatedBy())
+					.addParameter("createdAt", resource.getCreatedAt())
+					.addParameter("updatedBy", resource.getUpdatedBy())
+					.addParameter("updatedAt", resource.getUpdatedAt()).addParameter("id", resource.getId())
+					.executeUpdate();
+
+			con.commit();
+			success = true;
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			messages.add(e.getMessage());
+		}
+		return success;
+	}
+
+	// =================================================================================
+	// plasma donors
+	// =================================================================================
+
+	// create
+	public int createPlasmaDonor(List<String> messages, PlasmaDonor plasmaDonor) {
+
+		int newPlasmaDonorId = 0;
+		Sql2o sql2o = databaseService.getSql2o();
+		String insertSql = "insert into plasma_donor (bloodGroup, gender, name, age, phone, pincode, address,"
+				+ " infectionDate , recoveryDate, available, verified, remark, createdAt, updatedAt)"
+				+ " values(:bloodGroup, :gender, :name, :age, :phone, :pincode, :address,"
+				+ " :infectionDate, :recoveryDate, :available, :verified, :remark, :createdAt, :updatedAt)";
+
+		try (Connection con = sql2o.beginTransaction()) {
+			int resourceId = con.createQuery(insertSql).addParameter("bloodGroup", plasmaDonor.getBloodGroup())
+					.addParameter("gender", plasmaDonor.getGender()).addParameter("name", plasmaDonor.getName())
+					.addParameter("age", plasmaDonor.getAge()).addParameter("phone", plasmaDonor.getPhone())
+					.addParameter("pincode", plasmaDonor.getPincode()).addParameter("address", plasmaDonor.getAddress())
+					.addParameter("infectionDate", plasmaDonor.getInfectionDate())
+					.addParameter("recoveryDate", plasmaDonor.getRecoveryDate())
+					.addParameter("available", plasmaDonor.isAvailable())
+					.addParameter("verified", plasmaDonor.isVerified()).addParameter("remark", plasmaDonor.getRemark())
+					.addParameter("createdAt", plasmaDonor.getCreatedAt())
+					.addParameter("updatedAt", plasmaDonor.getUpdatedAt()).executeUpdate().getKey(Integer.class);
+
+			con.commit();
+			newPlasmaDonorId = resourceId;
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			messages.add(e.getMessage());
+		}
+		return newPlasmaDonorId;
+	}
+
+	// read many
+
+	public int getPlasmaDonorsCount(PlasmaDonorFilterParams filterParams) {
+		int count = 0;
+
+		String sql = generatePlasmaDonorSql(filterParams, true);
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			count = con.createQuery(sql).executeScalar(Integer.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return count;
+	}
+
+	public List<PlasmaDonor> getPlasmaDonors(int offset, int limit, PlasmaDonorFilterParams filterParams) {
+		List<PlasmaDonor> plasmaDonors = null;
+
+		String sql = generatePlasmaDonorSql(filterParams, false);
+
+		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			plasmaDonors = con.createQuery(sql).executeAndFetch(PlasmaDonor.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return plasmaDonors;
+	}
+
+	private String generatePlasmaDonorSql(PlasmaDonorFilterParams filterParams, boolean countSql) {
+		String sql = "";
+		if (countSql) {
+			sql = "select count(id) from plasma_donor";
+		} else {
+			sql = "select * from plasma_donor";
+		}
+
+		if (filterParams.getCity() != null || filterParams.getVerified() != null || filterParams.getVerified() != null
+				|| filterParams.getQuery() != null) {
+			sql = sql + " where";
+
+			int clauseCount = 0;
+			if (filterParams.getCity() != null) {
+				sql = sql + " cityId=" + filterParams.getCity().getId();
+				clauseCount++;
+			}
+
+			if (filterParams.getQuery() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+
+				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
+				sql = sql + " (lower(name) like '" + queryString + "' or lower(address) like '" + queryString + "')";
+			}
+
+		}
+
+		return sql;
+	}
+
+	// update
+	public boolean updatePlasmaDonor(List<String> messages, PlasmaDonor plasmaDonor) {
+
+		boolean success = false;
+//		Sql2o sql2o = databaseService.getSql2o();
+//		String insertSql = "update resource set cityId=:cityId, type=:type, name=:name, address=:address,"
+//				+ " phone1=:phone1, phone2=:phone2, phone3=:phone3, remark=:remark, verified=:verified,"
+//				+ " createdBy=:createdBy, createdAt=:createdAt, updatedBy=:updatedBy, updatedAt=:updatedAt"
+//				+ " where id=:id";
+
+//		try (Connection con = sql2o.beginTransaction()) {
+//			con.createQuery(insertSql).addParameter("cityId", plasmaDonor.getCityId())
+//					.addParameter("type", plasmaDonor.getType()).addParameter("name", plasmaDonor.getName())
+//					.addParameter("address", plasmaDonor.getAddress()).addParameter("phone1", plasmaDonor.getPhone1())
+//					.addParameter("phone2", plasmaDonor.getPhone2()).addParameter("phone3", plasmaDonor.getPhone3())
+//					.addParameter("remark", plasmaDonor.getRemark()).addParameter("verified", plasmaDonor.isVerified())
+//					.addParameter("createdBy", plasmaDonor.getCreatedBy())
+//					.addParameter("createdAt", plasmaDonor.getCreatedAt())
+//					.addParameter("updatedBy", plasmaDonor.getUpdatedBy())
+//					.addParameter("updatedAt", plasmaDonor.getUpdatedAt()).addParameter("id", plasmaDonor.getId())
+//					.executeUpdate();
+
+//			con.commit();
+//			success = true;
+//		} catch (Exception e) {
+//			logger.debug(e.getMessage());
+//			messages.add(e.getMessage());
+//		}
+		return success;
+	}
+}
