@@ -23,51 +23,51 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import in.co.itlabs.business.entities.Enquiry;
-import in.co.itlabs.business.services.EnquiryService;
-import in.co.itlabs.ui.components.EnquiryEditorForm;
-import in.co.itlabs.ui.components.EnquiryFilterForm;
+import in.co.itlabs.business.entities.Volunteer;
+import in.co.itlabs.business.services.VolunteerService;
+import in.co.itlabs.ui.components.VolunteerEditorForm;
+import in.co.itlabs.ui.components.VolunteerFilterForm;
 import in.co.itlabs.ui.layouts.AppLayout;
 import in.co.itlabs.util.DateUtil;
-import in.co.itlabs.util.EnquiryDataProvider;
-import in.co.itlabs.util.EnquiryFilterParams;
+import in.co.itlabs.util.VolunteerDataProvider;
+import in.co.itlabs.util.VolunteerFilterParams;
 
-@PageTitle(value = "Enquiries")
-@Route(value = "enquiries", layout = AppLayout.class)
-public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver {
+@PageTitle(value = "Volunteers - Ghaziabad Covid Support")
+@Route(value = "volunteers", layout = AppLayout.class)
+public class VolunteersView extends VerticalLayout implements BeforeEnterObserver {
 
-	private static final Logger logger = LoggerFactory.getLogger(EnquiriesView.class);
+	private static final Logger logger = LoggerFactory.getLogger(VolunteersView.class);
 
 	// ui
 	private Div titleDiv;
 //	private Button createButton;
-	private EnquiryEditorForm editorForm;
-	private EnquiryFilterForm filterForm;
+	private VolunteerEditorForm editorForm;
+	private VolunteerFilterForm filterForm;
 	private HorizontalLayout toolBar;
-	private Grid<Enquiry> grid;
+	private Grid<Volunteer> grid;
 	private Div recordCount;
 	private Dialog dialog;
 
 	// non-ui
-	private EnquiryService enquiryService;
+	private VolunteerService volunteerService;
 
-	private EnquiryFilterParams filterParams;
-	private EnquiryDataProvider dataProvider;
-	private Enquiry enquiry;
+	private VolunteerFilterParams filterParams;
+	private VolunteerDataProvider dataProvider;
+	private Volunteer volunteer;
 
-	public EnquiriesView() {
-		enquiryService = new EnquiryService();
+	public VolunteersView() {
+		volunteerService = new VolunteerService();
 
 		setAlignItems(Alignment.CENTER);
 
 		titleDiv = new Div();
 		buildTitle();
 
-		enquiry = new Enquiry();
+		volunteer = new Volunteer();
 
-		editorForm = new EnquiryEditorForm();
-		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
-		editorForm.addListener(EnquiryEditorForm.CancelEvent.class, this::handleCancelEvent);
+		editorForm = new VolunteerEditorForm();
+		editorForm.addListener(VolunteerEditorForm.SaveEvent.class, this::handleSaveEvent);
+		editorForm.addListener(VolunteerEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();
 		dialog.setModal(true);
@@ -75,11 +75,11 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		dialog.setWidth("500px");
 		dialog.add(editorForm);
 
-		filterParams = new EnquiryFilterParams();
+		filterParams = new VolunteerFilterParams();
 
-		filterForm = new EnquiryFilterForm();
+		filterForm = new VolunteerFilterForm();
 		filterForm.setFilterParams(filterParams);
-		filterForm.addListener(EnquiryFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.addListener(VolunteerFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCount = new Div();
 		recordCount.addClassName("small-text");
@@ -100,10 +100,10 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		toolBar.add(filterForm);
 //		toolBar.expand(blank);
 		
-		dataProvider = new EnquiryDataProvider(enquiryService);
+		dataProvider = new VolunteerDataProvider(volunteerService);
 		dataProvider.setFilterParams(filterParams);
 
-		grid = new Grid<>(Enquiry.class);
+		grid = new Grid<>(Volunteer.class);
 		configureGrid();
 
 		VerticalLayout main = new VerticalLayout();
@@ -120,20 +120,18 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 
 		grid.addColumn("name").setHeader("Name").setWidth("120px");
 		grid.addColumn("phone").setHeader("Mobile").setWidth("80px");
-		grid.addColumn("emailId").setHeader("Email").setWidth("120px");
-		grid.addColumn("message").setHeader("Message").setWidth("300px");
 		
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getCreatedAt());
-		}).setHeader("Submitted");
+		}).setHeader("Created");
 
-		grid.addComponentColumn(enquiry -> {
+		grid.addComponentColumn(volunteer -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL);
 			button.addClickListener(e -> {
 				dialog.open();
-				editorForm.setEnquiry(enquiry);
-				editorForm.setReadOnly();
+				editorForm.setVolunteer(volunteer);
+//				editorForm.setReadOnly();
 			});
 
 			return button;
@@ -144,37 +142,37 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Enquiries");
+		titleDiv.add("Volunteers");
 	}
 
-	public void handleFilterEvent(EnquiryFilterForm.FilterEvent event) {
+	public void handleFilterEvent(VolunteerFilterForm.FilterEvent event) {
 		filterParams = event.getFilterParams();
 		dataProvider.setFilterParams(filterParams);
 		reload();
 	}
 
-	public void handleSaveEvent(EnquiryEditorForm.SaveEvent event) {
+	public void handleSaveEvent(VolunteerEditorForm.SaveEvent event) {
 		List<String> messages = new ArrayList<String>();
-		enquiry = event.getEnquiry();
+		volunteer = event.getVolunteer();
 
 		// new resource, hence create it
 
 		LocalDateTime now = LocalDateTime.now();
 
-		enquiry.setCreatedAt(now);
+		volunteer.setCreatedAt(now);
 
-		int enquiryId = enquiryService.createEnquiry(messages, enquiry);
+		int enquiryId = volunteerService.createVolunteer(messages, volunteer);
 		if (enquiryId > 0) {
-			Notification.show("Message sent successfully", 3000, Position.TOP_CENTER);
+			Notification.show("Record saved successfully", 3000, Position.TOP_CENTER);
 			reload();
-			enquiry = new Enquiry();
-			editorForm.setEnquiry(enquiry);
+			volunteer = new Volunteer();
+			editorForm.setVolunteer(volunteer);
 		} else {
 			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
 		}
 	}
 
-	public void handleCancelEvent(EnquiryEditorForm.CancelEvent event) {
+	public void handleCancelEvent(VolunteerEditorForm.CancelEvent event) {
 		dialog.close();
 	}
 

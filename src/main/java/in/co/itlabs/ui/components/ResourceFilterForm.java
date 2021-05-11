@@ -117,7 +117,7 @@ public class ResourceFilterForm extends HorizontalLayout {
 	}
 
 	private void configureQueryField() {
-		queryField.setLabel("Provider");
+		queryField.setLabel("Specific provider");
 		queryField.setPlaceholder("Type name or address");
 		queryField.setWidth("150px");
 		queryField.setClearButtonVisible(true);

@@ -6,9 +6,13 @@ import java.util.List;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -23,11 +27,12 @@ import in.co.itlabs.ui.views.EnquiriesView;
 import in.co.itlabs.ui.views.PlasmaDonorsView;
 import in.co.itlabs.ui.views.ResourcesView;
 import in.co.itlabs.ui.views.UsersView;
+import in.co.itlabs.ui.views.VolunteersView;
 
 public class AppNavBar extends HorizontalLayout {
 
 	// ui
-	private HorizontalLayout menuBar;
+	private HorizontalLayout menuBarLayout;
 	private Button passwordButton;
 	private Button userButton;
 	private Button logoutButton;
@@ -52,7 +57,7 @@ public class AppNavBar extends HorizontalLayout {
 
 		addClassName("navbar");
 
-		menuBar = new HorizontalLayout();
+		menuBarLayout = new HorizontalLayout();
 		configureMenuBar();
 
 		User user = new User();
@@ -77,7 +82,7 @@ public class AppNavBar extends HorizontalLayout {
 
 		Span blank = new Span();
 
-		add(menuBar, blank, passwordButton, userButton, logoutButton);
+		add(menuBarLayout, blank, passwordButton, userButton, logoutButton);
 		expand(blank);
 	}
 
@@ -111,32 +116,70 @@ public class AppNavBar extends HorizontalLayout {
 //				UI.getCurrent().navigate(UsersView.class);
 			});
 
-			menuBar.add(usersButton, citiesButton);
+			menuBarLayout.add(usersButton, citiesButton);
 
 			break;
 
 		case Verifier:
-			Button resourcesButton = new Button("Resources", VaadinIcon.AMBULANCE.create());
-			resourcesButton.addClickListener(e -> {
+			MenuBar menuBar = new MenuBar();
+
+			menuBar.setOpenOnHover(true);
+			menuBar.addThemeVariants(MenuBarVariant.LUMO_PRIMARY);
+
+			MenuItem mainMenuItem = menuBar.addItem(VaadinIcon.MENU.create());
+			mainMenuItem.add("Menu");
+
+			SubMenu subMenu = mainMenuItem.getSubMenu();
+
+			subMenu.addItem("Resources", e -> {
 				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			Button plasmaDonorsButton = new Button("Plasma donors", VaadinIcon.DROP.create());
-			plasmaDonorsButton.addClickListener(e -> {
+			subMenu.addItem("Plasma donors", e -> {
 				UI.getCurrent().navigate(PlasmaDonorsView.class);
 			});
 
-			Button plasmaSeekersButton = new Button("Plasma requests", VaadinIcon.DROP.create());
-			plasmaSeekersButton.addClickListener(e -> {
-//				UI.getCurrent().navigate(ResourcesView.class);
+			subMenu.addItem("Plasma seekers", e -> {
+//				UI.getCurrent().navigate(plasmaseeResourcesView.class);
 			});
 
-			Button enquiriesButton = new Button("Enquiries", VaadinIcon.ENVELOPE.create());
-			enquiriesButton.addClickListener(e -> {
+			subMenu.addItem("Enquiries", e -> {
 				UI.getCurrent().navigate(EnquiriesView.class);
 			});
 
-			menuBar.add(resourcesButton, plasmaDonorsButton, plasmaSeekersButton, enquiriesButton);
+			subMenu.addItem("Volunteers", e -> {
+				UI.getCurrent().navigate(VolunteersView.class);
+			});
+
+			menuBarLayout.add(menuBar);
+
+//			Button resourcesButton = new Button("Resources", VaadinIcon.AMBULANCE.create());
+//			resourcesButton.addClickListener(e -> {
+//				UI.getCurrent().navigate(ResourcesView.class);
+//			});
+//
+//			Button plasmaDonorsButton = new Button("Plasma donors", VaadinIcon.DROP.create());
+//			plasmaDonorsButton.addClickListener(e -> {
+//				UI.getCurrent().navigate(PlasmaDonorsView.class);
+//			});
+//
+//			Button plasmaSeekersButton = new Button("Plasma requests", VaadinIcon.DROP.create());
+//			plasmaSeekersButton.addClickListener(e -> {
+////				UI.getCurrent().navigate(ResourcesView.class);
+//			});
+//
+//			Button enquiriesButton = new Button("Enquiries", VaadinIcon.ENVELOPE.create());
+//			enquiriesButton.addClickListener(e -> {
+//				UI.getCurrent().navigate(EnquiriesView.class);
+//			});
+//
+//			Button volunteersButton = new Button("Volunteers", VaadinIcon.ENVELOPE.create());
+//			volunteersButton.addClickListener(e -> {
+//				UI.getCurrent().navigate(VolunteersView.class);
+//			});
+//
+//			menuBarLayout.add(resourcesButton, plasmaDonorsButton, plasmaSeekersButton, enquiriesButton,
+//					volunteersButton);
 
 			break;
 

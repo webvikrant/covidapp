@@ -4,19 +4,16 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
-import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.util.VolunteerFilterParams;
 
-public class VolunteerFilterForm extends VerticalLayout {
+public class VolunteerFilterForm extends HorizontalLayout {
 
 	// ui
 	private TextField queryField;
@@ -27,15 +24,10 @@ public class VolunteerFilterForm extends VerticalLayout {
 	// non-ui
 	private Binder<VolunteerFilterParams> binder;
 
-	private ResourceService resourceService;
-
 	public VolunteerFilterForm() {
 
-		resourceService = new ResourceService();
-
-		Div titleDiv = new Div();
-		titleDiv.setText("Filter");
-
+		setAlignItems(Alignment.END);
+		
 		queryField = new TextField();
 		configureQueryField();
 
@@ -50,7 +42,7 @@ public class VolunteerFilterForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(titleDiv, queryField, buttonBar);
+		add(queryField, buttonBar);
 	}
 
 	private void buildButtonBar(HorizontalLayout root) {

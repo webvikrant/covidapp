@@ -135,7 +135,7 @@ public class ResourceService {
 
 				User user = con.createQuery(userSql).addParameter("id", resource.getUpdatedBy())
 						.executeAndFetchFirst(User.class);
-				
+
 				resource.setCity(city);
 				resource.setUpdatedByUser(user);
 			}
@@ -278,6 +278,7 @@ public class ResourceService {
 		int count = 0;
 
 		String sql = generatePlasmaDonorSql(filterParams, true);
+		
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
@@ -296,10 +297,20 @@ public class ResourceService {
 		String sql = generatePlasmaDonorSql(filterParams, false);
 
 		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
+		String citySql = "select * from city where id=:id";
+		
 		Sql2o sql2o = databaseService.getSql2o();
 
 		try (Connection con = sql2o.open()) {
 			plasmaDonors = con.createQuery(sql).executeAndFetch(PlasmaDonor.class);
+			
+			for (PlasmaDonor plasmaDonor : plasmaDonors) {
+				City city = con.createQuery(citySql).addParameter("id", plasmaDonor.getCityId())
+						.executeAndFetchFirst(City.class);
+
+				plasmaDonor.setCity(city);
+			}
+			
 			con.close();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -316,11 +327,33 @@ public class ResourceService {
 			sql = "select * from plasma_donor";
 		}
 
-		if (filterParams.getCity() != null || filterParams.getVerified() != null || filterParams.getVerified() != null
+		if (filterParams.getBloodGroup() != null || filterParams.getGender() != null || filterParams.getCity() != null
+				|| filterParams.getVerified() != null || filterParams.getAvailable() != null
 				|| filterParams.getQuery() != null) {
 			sql = sql + " where";
 
 			int clauseCount = 0;
+
+			if (filterParams.getBloodGroup() != null) {
+				sql = sql + " bloodGroup='" + filterParams.getBloodGroup().name() + "'";
+				clauseCount++;
+			}
+
+			if (filterParams.getGender() != null) {
+				sql = sql + " gender='" + filterParams.getGender().name() + "'";
+				clauseCount++;
+			}
+
+//			if (filterParams.getVerified() != null) {
+//				sql = sql + " verified=" + filterParams.getGender();
+//				clauseCount++;
+//			}
+//
+//			if (filterParams.getAvailable() != null) {
+//				sql = sql + " available=" + filterParams.getAvailable();
+//				clauseCount++;
+//			}
+
 			if (filterParams.getCity() != null) {
 				sql = sql + " cityId=" + filterParams.getCity().getId();
 				clauseCount++;

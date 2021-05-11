@@ -118,6 +118,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		configureGrid();
 
 		add(titleDiv, toolBar, grid, recordCount);
+		
 		setAlignSelf(Alignment.START, recordCount);
 
 		reload();

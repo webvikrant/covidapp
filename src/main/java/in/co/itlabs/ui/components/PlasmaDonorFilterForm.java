@@ -5,22 +5,23 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.services.ResourceService;
+import in.co.itlabs.util.BloodGroup;
+import in.co.itlabs.util.Gender;
 import in.co.itlabs.util.PlasmaDonorFilterParams;
 
-public class PlasmaDonorFilterForm extends VerticalLayout {
+public class PlasmaDonorFilterForm extends HorizontalLayout {
 
 	// ui
+	private ComboBox<BloodGroup> bloodGroupCombo;
+	private ComboBox<Gender> genderCombo;
 	private ComboBox<City> cityCombo;
 
 	private TextField queryField;
@@ -35,10 +36,15 @@ public class PlasmaDonorFilterForm extends VerticalLayout {
 
 	public PlasmaDonorFilterForm() {
 
+		setAlignItems(Alignment.END);
+
 		resourceService = new ResourceService();
 
-		Div titleDiv = new Div();
-		titleDiv.setText("Filter");
+		bloodGroupCombo = new ComboBox<BloodGroup>();
+		configureBloodGroupCombo();
+
+		genderCombo = new ComboBox<Gender>();
+		configureGenderCombo();
 
 		cityCombo = new ComboBox<>();
 		configureCityCombo();
@@ -48,46 +54,54 @@ public class PlasmaDonorFilterForm extends VerticalLayout {
 
 		okButton = new Button("Filter", VaadinIcon.FILTER.create());
 		cancelButton = new Button("Clear", VaadinIcon.CLOSE.create());
+		configureButtons();
 
 		binder = new Binder<>(PlasmaDonorFilterParams.class);
 
+		binder.forField(bloodGroupCombo).bind("bloodGroup");
+		binder.forField(genderCombo).bind("gender");
 		binder.forField(cityCombo).bind("city");
 		binder.forField(queryField).bind("query");
 
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidthFull();
-		buildButtonBar(buttonBar);
-
-		add(titleDiv, cityCombo, queryField, buttonBar);
+		add(bloodGroupCombo, genderCombo, cityCombo, queryField, okButton, cancelButton);
 	}
 
-	private void buildButtonBar(HorizontalLayout root) {
+	private void configureButtons() {
 		okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		okButton.setWidthFull();
 		okButton.addClickListener(e -> {
 			if (binder.validate().isOk()) {
 				fireEvent(new FilterEvent(this, binder.getBean()));
 			}
 		});
 
+		cancelButton.setWidthFull();
 		cancelButton.addClickListener(e -> {
 			clearForm();
 			fireEvent(new FilterEvent(this, binder.getBean()));
 		});
-
-		Span blank = new Span();
-		root.add(okButton, blank, cancelButton);
-		root.expand(blank);
 	}
 
-	private void clearForm() {
-		cityCombo.clear();
-		queryField.clear();
+	private void configureGenderCombo() {
+		genderCombo.setLabel("Gender");
+		genderCombo.setWidth("130px");
+		genderCombo.setPlaceholder("Select a gender");
+		genderCombo.setClearButtonVisible(true);
+		genderCombo.setItems(Gender.values());
+	}
+
+	private void configureBloodGroupCombo() {
+		bloodGroupCombo.setLabel("Blood group");
+		bloodGroupCombo.setPlaceholder("Select a blood group");
+		bloodGroupCombo.setWidth("130px");
+		bloodGroupCombo.setClearButtonVisible(true);
+		bloodGroupCombo.setItems(BloodGroup.values());
 	}
 
 	private void configureCityCombo() {
 		cityCombo.setLabel("City");
 		cityCombo.setPlaceholder("Select a city");
-		cityCombo.setWidthFull();
+		cityCombo.setWidth("130px");
 		cityCombo.setClearButtonVisible(true);
 		cityCombo.setItemLabelGenerator(city -> {
 			return city.getName();
@@ -96,10 +110,17 @@ public class PlasmaDonorFilterForm extends VerticalLayout {
 	}
 
 	private void configureQueryField() {
-		queryField.setLabel("Provider");
+		queryField.setLabel("Specific donor");
 		queryField.setPlaceholder("Type name or address");
 		queryField.setWidthFull();
 		queryField.setClearButtonVisible(true);
+	}
+
+	private void clearForm() {
+		bloodGroupCombo.clear();
+		genderCombo.clear();
+		cityCombo.clear();
+		queryField.clear();
 	}
 
 	public void setFilterParams(PlasmaDonorFilterParams filterParams) {

@@ -19,7 +19,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -44,6 +43,7 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 
 	// ui
 	private Div titleDiv;
+	private Button createButton;
 	private PlasmaDonorEditorForm editorForm;
 	private PlasmaDonorFilterForm filterForm;
 	private HorizontalLayout toolBar;
@@ -95,9 +95,20 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 		recordCount.addClassName("small-text");
 		recordCount.setWidth("150px");
 
+		createButton = new Button("New", VaadinIcon.PLUS.create());
+		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+		createButton.addClickListener(e -> {
+			dialog.open();
+			editorForm.setPlasmaDonor(plasmaDonor);
+		});
+
 		toolBar = new HorizontalLayout();
 		toolBar.setWidthFull();
-		buildToolBar();
+		toolBar.setAlignItems(Alignment.END);
+
+		Span blank = new Span();
+		toolBar.add(filterForm, blank, createButton);
+		toolBar.expand(blank);
 
 		dataProvider = new PlasmaDonorDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
@@ -108,13 +119,15 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 		VerticalLayout main = new VerticalLayout();
 		main.add(toolBar, grid);
 
-		SplitLayout splitLayout = new SplitLayout();
-		splitLayout.setWidthFull();
-		splitLayout.setSplitterPosition(25);
-		splitLayout.addToPrimary(filterForm);
-		splitLayout.addToSecondary(main);
+//		SplitLayout splitLayout = new SplitLayout();
+//		splitLayout.setWidthFull();
+//		splitLayout.setSplitterPosition(25);
+//		splitLayout.addToPrimary(filterForm);
+//		splitLayout.addToSecondary(main);
 
-		add(titleDiv, splitLayout);
+		add(titleDiv, toolBar, grid, recordCount);
+
+		setAlignSelf(Alignment.START, recordCount);
 
 		reload();
 	}
@@ -122,11 +135,17 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 	private void configureGrid() {
 		grid.removeAllColumns();
 
-		grid.addColumn("name").setHeader("Name").setWidth("140px");
 		grid.addColumn("bloodGroup").setHeader("Blood Group").setWidth("100px");
 		grid.addColumn("gender").setHeader("Gender").setWidth("80px");
-		grid.addColumn("address").setHeader("Address").setWidth("100px");
 
+		grid.addColumn(resource -> {
+			return resource.getCity().getName();
+		}).setHeader("City").setWidth("100px");
+
+		grid.addColumn("name").setHeader("Name").setWidth("140px");
+		grid.addColumn("address").setHeader("Address").setWidth("100px");
+		grid.addColumn("pincode").setHeader("Pincode").setWidth("80px");
+		
 		grid.addComponentColumn(plasmaDonor -> {
 			Button button = new Button();
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
@@ -142,6 +161,22 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 			return button;
 
 		}).setHeader("Status").setWidth("90px");
+
+		grid.addComponentColumn(plasmaDonor -> {
+			Button button = new Button();
+			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
+
+			if (plasmaDonor.isAvailable()) {
+				button.setText("Yes");
+				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+			} else {
+				button.setText("No");
+				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			}
+			return button;
+
+		}).setHeader("Available").setWidth("80px");
 
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getUpdatedAt());
@@ -159,25 +194,6 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 		}).setHeader("More");
 
 		grid.setDataProvider(dataProvider);
-	}
-
-	private void buildToolBar() {
-		toolBar.setAlignItems(Alignment.END);
-
-		Button createButton = new Button("New", VaadinIcon.PLUS.create());
-		createButton.setWidth("100px");
-		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-		createButton.addClickListener(e -> {
-			dialog.open();
-			editorForm.setPlasmaDonor(plasmaDonor);
-		});
-
-		Span blank = new Span();
-
-		toolBar.add(recordCount, blank, createButton);
-		toolBar.setAlignItems(Alignment.CENTER);
-		toolBar.expand(blank);
-
 	}
 
 	private void buildTitle() {

@@ -49,7 +49,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 		phoneField = new TextField("Phone");
 		phoneField.setWidthFull();
 
-		hoursField = new IntegerField("Hours");
+		hoursField = new IntegerField("How many hours can you devote per day?");
 		hoursField.setWidth("100px");
 
 		serviceRadio = new RadioButtonGroup<Volunteer.Service>();
