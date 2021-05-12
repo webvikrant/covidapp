@@ -24,7 +24,7 @@ import in.co.itlabs.ui.components.GuestResourceFilterForm;
 import in.co.itlabs.ui.components.ResourceEditorForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
 import in.co.itlabs.util.DateUtil;
-import in.co.itlabs.util.ResourceDataProvider;
+import in.co.itlabs.util.GuestResourceDataProvider;
 import in.co.itlabs.util.ResourceFilterParams;
 
 @PageTitle(value = "Ghaziabad Covid Support")
@@ -45,7 +45,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 	private ResourceService resourceService;
 
 	private ResourceFilterParams filterParams;
-	private ResourceDataProvider dataProvider;
+	private GuestResourceDataProvider dataProvider;
 
 	public IndexView() {
 
@@ -82,7 +82,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		recordCount.addClassName("small-text");
 //		recordCount.setWidth("150px");
 
-		dataProvider = new ResourceDataProvider(resourceService);
+		dataProvider = new GuestResourceDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
 
 		listBox = new ListBox<Resource>();
@@ -107,8 +107,16 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			root.setWidthFull();
 			root.addClassName("card");
 
-			Button updatedAtButton = new Button("Verified " + DateUtil.humanize(resource.getUpdatedAt()));
-			updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+//			Button updatedAtButton = new Button("Verified " + DateUtil.humanize(resource.getUpdatedAt()));
+			Button updatedAtButton = new Button();
+
+			if (resource.getStatus() == Status.Verified) {
+				updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
+				updatedAtButton.setText("Verified, updated " + DateUtil.humanize(resource.getUpdatedAt()));
+			} else if (resource.getStatus() == Status.Pending) {
+				updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+				updatedAtButton.setText("Not verified, updated " + DateUtil.humanize(resource.getUpdatedAt()));
+			}
 
 			TextField nameField = new TextField(resource.getType().toString());
 			nameField.setValue(resource.getName());

@@ -153,20 +153,20 @@ public class ResourceEditorForm extends VerticalLayout {
 			phone2Field.setWidthFull();
 			phone3Field.setWidthFull();
 
-			add(typeCombo, cityCombo, nameField, addressField, remarkField, phone1Field, phone2Field, phone3Field,
+			add(typeCombo, nameField, addressField, cityCombo, remarkField, phone1Field, phone2Field, phone3Field,
 					guestNameField, guestPhoneField, buttonBar);
 		} else {
 			// desktop ui
-			HorizontalLayout cityTypeBar = new HorizontalLayout();
-			cityTypeBar.setWidthFull();
-			cityTypeBar.add(cityCombo, typeCombo);
+//			HorizontalLayout cityTypeBar = new HorizontalLayout();
+//			cityTypeBar.setWidthFull();
+//			cityTypeBar.add(cityCombo, typeCombo);
 
 			FlexLayout phoneBar = new FlexLayout();
 			configurePhoneBar(phoneBar);
 			phoneBar.add(phone1Field, phone2Field, phone3Field);
 
-			add(updatedDiv, cityTypeBar, nameField, addressField, remarkField, phoneBar, statusCombo, guestNameField,
-					guestPhoneField, buttonBar);
+			add(updatedDiv, typeCombo, nameField, addressField, cityCombo, remarkField, phoneBar, statusCombo,
+					guestNameField, guestPhoneField, buttonBar);
 			guestNameField.setReadOnly(true);
 			guestPhoneField.setReadOnly(true);
 			guestNameField.setLabel("Guest submitter's name");

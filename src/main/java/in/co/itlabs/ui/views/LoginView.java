@@ -17,6 +17,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -129,8 +130,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 				authUser = authService.authenticate(messages, binder.getBean());
 
 				if (authUser == null) {
-					Notification.show(messages.toString(), 5000, Position.TOP_CENTER);
+					Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				} else {
+					Notification.show("Login successful", 5000, Position.TOP_CENTER)
+							.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+
 					VaadinSession.getCurrent().setAttribute(AuthenticatedUser.class, authUser);
 					switch (authUser.getRole()) {
 					case Admin:

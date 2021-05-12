@@ -16,6 +16,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -118,7 +119,7 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 		configureGrid();
 
 		add(titleDiv, toolBar, grid, recordCount);
-		
+
 		setAlignSelf(Alignment.START, recordCount);
 
 		reload();
@@ -216,12 +217,14 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 
 			boolean success = resourceService.updateResource(messages, resource);
 			if (success) {
-				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER);
+				Notification.show("Resource updated successfully", 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				resource = new Resource();
 				dialog.close();
 			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		} else {
 			// new resource, hence create it
@@ -234,16 +237,20 @@ public class ResourcesView extends VerticalLayout implements BeforeEnterObserver
 			resource.setUpdatedBy(authUser.getId());
 			resource.setUpdatedAt(now);
 
-			resource.setStatus(Status.Pending);
+			if (resource.getStatus() == null) {
+				resource.setStatus(Status.Pending);
+			}
 
 			int resourceId = resourceService.createResource(messages, resource);
 			if (resourceId > 0) {
-				Notification.show("Resource created successfully", 3000, Position.TOP_CENTER);
+				Notification.show("Resource created successfully", 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				resource = new Resource();
 				editorForm.setResource(resource);
 			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		}
 	}

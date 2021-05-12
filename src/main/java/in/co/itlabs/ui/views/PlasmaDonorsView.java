@@ -16,6 +16,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -145,7 +146,7 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 		grid.addColumn("name").setHeader("Name").setWidth("140px");
 		grid.addColumn("address").setHeader("Address").setWidth("100px");
 		grid.addColumn("pincode").setHeader("Pincode").setWidth("80px");
-		
+
 		grid.addComponentColumn(plasmaDonor -> {
 			Button button = new Button();
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
@@ -218,12 +219,14 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 
 			boolean success = resourceService.updatePlasmaDonor(messages, plasmaDonor);
 			if (success) {
-				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER);
+				Notification.show("Resource updated successfully", 3000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				plasmaDonor = new PlasmaDonor();
 				dialog.close();
 			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+				Notification.show(messages.toString(), 3000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		} else {
 			// new resource, hence create it
@@ -235,12 +238,14 @@ public class PlasmaDonorsView extends VerticalLayout implements BeforeEnterObser
 
 			int plasmaDonorId = resourceService.createPlasmaDonor(messages, plasmaDonor);
 			if (plasmaDonorId > 0) {
-				Notification.show("Plasma Donor created successfully", 3000, Position.TOP_CENTER);
+				Notification.show("Plasma Donor created successfully", 3000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				plasmaDonor = new PlasmaDonor();
 				editorForm.setPlasmaDonor(plasmaDonor);
 			} else {
-				Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+				Notification.show(messages.toString(), 3000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		}
 	}

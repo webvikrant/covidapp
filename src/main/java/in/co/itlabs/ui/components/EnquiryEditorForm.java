@@ -59,7 +59,7 @@ public class EnquiryEditorForm extends VerticalLayout {
 
 		binder.forField(emailIdField)
 				.withValidator(new RegexpValidator("Only valid email allowed", "^$|^[A-Za-z0-9+_.-]+@(.+)$"))
-				.bind("phone");
+				.bind("emailId");
 
 		binder.forField(messageField).asRequired("Message can not be blank").bind("message");
 

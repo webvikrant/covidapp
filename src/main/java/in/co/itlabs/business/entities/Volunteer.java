@@ -17,6 +17,7 @@ public class Volunteer {
 	private String name;
 	private Integer age;
 	private String phone;
+	private String emailId;
 	private Integer hours;
 	private Service service;
 	private String otherService;

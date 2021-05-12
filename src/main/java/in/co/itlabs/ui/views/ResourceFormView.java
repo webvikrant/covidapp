@@ -7,6 +7,7 @@ import java.util.List;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -47,10 +48,10 @@ public class ResourceFormView extends VerticalLayout implements BeforeEnterObser
 		buildTitle();
 
 		resource = new Resource();
-		
+
 		editorForm = new ResourceEditorForm(resourceService);
 		editorForm.setResource(resource);
-		
+
 		editorForm.addListener(ResourceEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(ResourceEditorForm.CancelEvent.class, this::handleCancelEvent);
 		editorForm.addClassName("card");
@@ -78,14 +79,16 @@ public class ResourceFormView extends VerticalLayout implements BeforeEnterObser
 		resource.setUpdatedAt(now);
 
 		resource.setStatus(Status.Pending);
-		
+
 		int resourceId = resourceService.createResource(messages, resource);
 		if (resourceId > 0) {
-			Notification.show("Lead submitted successfully", 3000, Position.TOP_CENTER);
+			Notification.show("Lead submitted successfully", 3000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 			resource = new Resource();
 			editorForm.setResource(resource);
 		} else {
-			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+			Notification.show(messages.toString(), 3000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.List;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -74,11 +75,14 @@ public class EnquiryFormView extends VerticalLayout implements BeforeEnterObserv
 
 		int enquiryId = enquiryService.createEnquiry(messages, enquiry);
 		if (enquiryId > 0) {
-			Notification.show("Message sent successfully", 3000, Position.TOP_CENTER);
+			Notification.show("Message sent successfully", 5000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+			;
 			enquiry = new Enquiry();
 			editorForm.setEnquiry(enquiry);
 		} else {
-			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+			Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		}
 	}
 

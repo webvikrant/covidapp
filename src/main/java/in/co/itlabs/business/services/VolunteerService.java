@@ -33,13 +33,14 @@ public class VolunteerService {
 
 		int newVolunteerId = 0;
 		Sql2o sql2o = databaseService.getSql2o();
-		String insertSql = "insert into volunteer (name, age, phone, hours, service, otherService, createdAt)"
-				+ " values(:name, :age, :phone, :hours, :service, :otherService, :createdAt)";
+		String insertSql = "insert into volunteer (name, age, phone, emailId, hours, service, otherService, createdAt)"
+				+ " values(:name, :age, :phone, :emailId, :hours, :service, :otherService, :createdAt)";
 
 		try (Connection con = sql2o.beginTransaction()) {
 			int volunteerId = con.createQuery(insertSql).addParameter("name", volunteer.getName())
 					.addParameter("age", volunteer.getAge()).addParameter("phone", volunteer.getPhone())
-					.addParameter("hours", volunteer.getHours()).addParameter("service", volunteer.getService())
+					.addParameter("emailId", volunteer.getEmailId()).addParameter("hours", volunteer.getHours())
+					.addParameter("service", volunteer.getService())
 					.addParameter("otherService", volunteer.getOtherService())
 					.addParameter("createdAt", volunteer.getCreatedAt()).executeUpdate().getKey(Integer.class);
 
@@ -107,7 +108,8 @@ public class VolunteerService {
 				}
 
 				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
-				sql = sql + " (lower(name) like '" + queryString + "' or lower(phone) like '" + queryString + "')";
+				sql = sql + " (lower(name) like '" + queryString + "' or lower(phone) like '" + queryString
+						+ "' or lower(emailId) like '" + queryString + "')";
 			}
 		}
 

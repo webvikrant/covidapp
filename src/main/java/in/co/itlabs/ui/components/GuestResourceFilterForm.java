@@ -75,7 +75,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 //	}
 
 	private void configureCityCombo() {
-		cityCombo.setLabel("City (Optional)");
+		cityCombo.setLabel("City (optional)");
 		cityCombo.setPlaceholder("Select a city");
 		cityCombo.setWidthFull();
 		cityCombo.setClearButtonVisible(true);
@@ -86,7 +86,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	}
 
 	private void configureTypeCombo() {
-		typeCombo.setLabel("Resource (Optional)");
+		typeCombo.setLabel("Resource (optional)");
 		typeCombo.setPlaceholder("Select a resource");
 		typeCombo.setClearButtonVisible(true);
 		typeCombo.setWidthFull();
@@ -94,7 +94,7 @@ public class GuestResourceFilterForm extends VerticalLayout {
 	}
 
 	private void configureQueryField() {
-		queryField.setLabel("Service provider's details (optional)");
+		queryField.setLabel("Specific service provider's details (optional)");
 		queryField.setPlaceholder("Type provider's name or address or phone");
 		queryField.setWidthFull();
 		queryField.setClearButtonVisible(true);

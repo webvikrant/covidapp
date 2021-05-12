@@ -179,21 +179,106 @@ public class ResourceService {
 					sql = sql + " and";
 				}
 				sql = sql + " status='" + filterParams.getStatus() + "'";
-
-//				LocalDateTime now = LocalDateTime.now();
-//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//				String nowString = now.format(formatter);
-
-//				if (filterParams.getStatus() == Status.Not_Verified) {
-//					sql = sql + " verified=false";
-//				} else if (filterParams.getStatus() == Status.Verified) {
-//					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 <=24";
-//				} else if (filterParams.getStatus() == Status.Stale) {
-//					sql = sql + " verified=true and time_to_sec(timediff('" + nowString + "', updatedAt))/3600 >24";
-//				}
 				clauseCount++;
 			}
 
+			if (filterParams.getQuery() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+
+				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
+				sql = sql + " (lower(name) like '" + queryString + "' or lower(address) like '" + queryString + "')";
+			}
+
+		}
+
+		return sql;
+	}
+
+	public int getResourcesCountForGuests(ResourceFilterParams filterParams) {
+		int count = 0;
+
+		String sql = generateResourceSqlForGuests(filterParams, true);
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			count = con.createQuery(sql).executeScalar(Integer.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return count;
+	}
+
+	public List<Resource> getResourcesForGuests(int offset, int limit, ResourceFilterParams filterParams) {
+		List<Resource> resources = null;
+
+		String sql = generateResourceSqlForGuests(filterParams, false);
+		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
+
+		String citySql = "select * from city where id=:id";
+		String userSql = "select * from user where id=:id";
+
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			resources = con.createQuery(sql).executeAndFetch(Resource.class);
+			con.close();
+
+			for (Resource resource : resources) {
+				City city = con.createQuery(citySql).addParameter("id", resource.getCityId())
+						.executeAndFetchFirst(City.class);
+
+				User user = con.createQuery(userSql).addParameter("id", resource.getUpdatedBy())
+						.executeAndFetchFirst(User.class);
+
+				resource.setCity(city);
+				resource.setUpdatedByUser(user);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return resources;
+	}
+
+	private String generateResourceSqlForGuests(ResourceFilterParams filterParams, boolean countSql) {
+		String sql = "";
+		if (countSql) {
+			sql = "select count(id) from resource";
+		} else {
+			sql = "select * from resource";
+		}
+
+		if (filterParams.getCity() != null || filterParams.getType() != null || filterParams.getStatus() != null
+				|| filterParams.getQuery() != null) {
+			sql = sql + " where";
+
+			int clauseCount = 0;
+			if (filterParams.getCity() != null) {
+				sql = sql + " cityId=" + filterParams.getCity().getId();
+				clauseCount++;
+			}
+
+			if (filterParams.getType() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+				sql = sql + " type='" + filterParams.getType() + "'";
+				clauseCount++;
+			}
+
+			// status - verified or pending, created by guest or user
+			if (clauseCount > 0) {
+				sql = sql + " and";
+			}
+			sql = sql + " ( (createdBy=0 and status='Verified')"
+					+ " or  (createdBy>0 and (status='Pending' or status='Verified')) )";
+			clauseCount++;
+
+			// user
 			if (filterParams.getQuery() != null) {
 				if (clauseCount > 0) {
 					sql = sql + " and";

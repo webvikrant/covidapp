@@ -61,7 +61,7 @@ public class VolunteersView extends VerticalLayout implements BeforeEnterObserve
 		volunteer = new Volunteer();
 
 		editorForm = new VolunteerEditorForm();
-		editorForm.addListener(VolunteerEditorForm.SaveEvent.class, this::handleSaveEvent);
+//		editorForm.addListener(VolunteerEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(VolunteerEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();
@@ -113,8 +113,9 @@ public class VolunteersView extends VerticalLayout implements BeforeEnterObserve
 	private void configureGrid() {
 		grid.removeAllColumns();
 
-		grid.addColumn("name").setHeader("Name").setWidth("120px");
+		grid.addColumn("name").setHeader("Name").setWidth("150px");
 		grid.addColumn("phone").setHeader("Mobile").setWidth("80px");
+		grid.addColumn("emailId").setHeader("Email").setWidth("150px");
 		
 		grid.addColumn(resource -> {
 			return DateUtil.humanize(resource.getCreatedAt());

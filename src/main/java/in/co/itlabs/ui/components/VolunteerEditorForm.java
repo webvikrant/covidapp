@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -25,6 +26,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 	private TextField nameField;
 	private IntegerField ageField;
 	private TextField phoneField;
+	private EmailField emailIdField;
 	private IntegerField hoursField;
 	private RadioButtonGroup<Service> serviceRadio;
 	private TextField otherServiceField;
@@ -49,6 +51,9 @@ public class VolunteerEditorForm extends VerticalLayout {
 		phoneField = new TextField("Phone");
 		phoneField.setWidthFull();
 
+		emailIdField = new EmailField("Email");
+		emailIdField.setWidthFull();
+
 		hoursField = new IntegerField("How many hours can you devote per day?");
 		hoursField.setWidthFull();
 
@@ -72,6 +77,10 @@ public class VolunteerEditorForm extends VerticalLayout {
 				.withValidator(phone -> phone.length() == 10, "Mobile number must have 10 digits")
 				.withValidator(new RegexpValidator("Only 0-9 allowed", "^\\d{10}$")).bind("phone");
 
+		binder.forField(emailIdField).asRequired("Email can not be blank")
+				.withValidator(new RegexpValidator("Only valid email allowed", "^$|^[A-Za-z0-9+_.-]+@(.+)$"))
+				.bind("emailId");
+
 		binder.forField(hoursField).asRequired("Hours can not be blank")
 				.withValidator(hours -> (hours >= 1 && hours <= 8), "Min hours is 1 and max hours are 8").bind("hours");
 
@@ -86,7 +95,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 		agePhoneBar.setWidthFull();
 		agePhoneBar.add(ageField, phoneField);
 
-		add(nameField, agePhoneBar, hoursField, serviceRadio, otherServiceField, buttonBar);
+		add(nameField, agePhoneBar, emailIdField, hoursField, serviceRadio, otherServiceField, buttonBar);
 	}
 
 	private void configureOtherServiceField() {
@@ -144,6 +153,7 @@ public class VolunteerEditorForm extends VerticalLayout {
 		nameField.setReadOnly(true);
 		ageField.setReadOnly(true);
 		phoneField.setReadOnly(true);
+		emailIdField.setReadOnly(true);
 		hoursField.setReadOnly(true);
 		serviceRadio.setReadOnly(true);
 		otherServiceField.setReadOnly(true);

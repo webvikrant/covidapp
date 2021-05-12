@@ -61,7 +61,7 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		enquiry = new Enquiry();
 
 		editorForm = new EnquiryEditorForm();
-		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
+//		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(EnquiryEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();

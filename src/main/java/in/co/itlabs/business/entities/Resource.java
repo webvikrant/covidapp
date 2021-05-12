@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 public class Resource {
 
 	public enum Type {
-		Ambulance, Doctor_On_Call, Hospital_Beds, Home_Nursing_and_ICU, Medicine, Oxygen, Plasma_BloodBank,
-		Food_Services, Funeral_Services
+		Ambulance, Doctor_On_Call, Hospital_Beds, Home_Nursing_and_ICU, Covid_Care_Center, Medicine, Oxygen,
+		Plasma_BloodBank, Food_Services, Funeral_Services
 	}
 
 	public enum Status {
@@ -50,14 +50,23 @@ public class Resource {
 	public String getPhones() {
 		String phones = "";
 
-		if (phone1 != null) {
+		if (phone1 != null && !phone1.isEmpty()) {
 			phones = phone1;
 		}
-		if (phone2 != null) {
-			phones = phones + ", " + phone2;
+		if (phone2 != null && !phone2.isEmpty()) {
+			if (phones.length() > 0) {
+				phones = phones + ", " + phone2;
+			} else {
+				phones = phone2;
+			}
 		}
-		if (phone3 != null) {
-			phones = phones + ", " + phone3;
+		if (phone3 != null && !phone3.isEmpty()) {
+			if (phones.length() > 0) {
+				phones = phones + ", " + phone3;
+			} else {
+				phones = phone3;
+			}
+
 		}
 
 		return phones;
