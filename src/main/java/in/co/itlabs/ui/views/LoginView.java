@@ -143,6 +143,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 						break;
 
+					case Manager:
+						UI.getCurrent().navigate(ResourcesView.class);
+
+						break;
+
 					case Verifier:
 						UI.getCurrent().navigate(ResourcesView.class);
 

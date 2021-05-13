@@ -13,5 +13,6 @@ public class Enquiry {
 	private String phone;
 	private String emailId;
 	private String message;
+	private Boolean actionTaken;
 	private LocalDateTime createdAt;
 }

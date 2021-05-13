@@ -107,16 +107,23 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			root.setWidthFull();
 			root.addClassName("card");
 
-//			Button updatedAtButton = new Button("Verified " + DateUtil.humanize(resource.getUpdatedAt()));
-			Button updatedAtButton = new Button();
+			Button verifiedButton = new Button();
 
 			if (resource.getStatus() == Status.Verified) {
-				updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
-				updatedAtButton.setText("Verified, updated " + DateUtil.humanize(resource.getUpdatedAt()));
+				verifiedButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
+				verifiedButton.setText("Verified");
 			} else if (resource.getStatus() == Status.Pending) {
-				updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-				updatedAtButton.setText("Not verified, updated " + DateUtil.humanize(resource.getUpdatedAt()));
+				verifiedButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+				verifiedButton.setText("Verification awaited");
 			}
+
+//			Button updatedAtButton = new Button();
+//			updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+//			updatedAtButton.setText("Updated " + DateUtil.humanize(resource.getUpdatedAt()));
+			Div updatedDiv = new Div();
+			updatedDiv.getStyle().set("fontSize", "small");
+			updatedDiv.getStyle().set("color", "gray");
+			updatedDiv.setText("Updated " + DateUtil.humanize(resource.getUpdatedAt()));
 
 			TextField nameField = new TextField(resource.getType().toString());
 			nameField.setValue(resource.getName());
@@ -138,7 +145,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			remarkField.setWidthFull();
 			remarkField.setReadOnly(true);
 
-			root.add(updatedAtButton, nameField, phonesField, addressField, remarkField);
+			root.add(verifiedButton, updatedDiv, nameField, phonesField, addressField, remarkField);
 			return root;
 
 		}));

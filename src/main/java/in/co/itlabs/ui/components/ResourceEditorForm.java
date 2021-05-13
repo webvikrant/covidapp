@@ -23,6 +23,7 @@ import in.co.itlabs.business.entities.City;
 import in.co.itlabs.business.entities.Resource;
 import in.co.itlabs.business.services.ResourceService;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
+import in.co.itlabs.business.services.AuthService.Role;
 import in.co.itlabs.util.DateUtil;
 
 public class ResourceEditorForm extends VerticalLayout {
@@ -54,14 +55,14 @@ public class ResourceEditorForm extends VerticalLayout {
 	private Binder<Resource> binder;
 
 	// non-ui
-
+	private AuthenticatedUser authUser;
 	private ResourceService resourceService;
 
 	public ResourceEditorForm(ResourceService resourceService) {
 
 		this.resourceService = resourceService;
 
-		AuthenticatedUser authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
+		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
 
 		setAlignItems(Alignment.START);
 
@@ -171,6 +172,7 @@ public class ResourceEditorForm extends VerticalLayout {
 			guestPhoneField.setReadOnly(true);
 			guestNameField.setLabel("Guest submitter's name");
 			guestPhoneField.setLabel("Guest submitter's phone");
+
 		}
 	}
 
@@ -246,6 +248,29 @@ public class ResourceEditorForm extends VerticalLayout {
 			updatedDiv.setVisible(false);
 		}
 		binder.setBean(resource);
+
+		// for logged in user
+		// enable save button is authUser is manager or is the creator of the record,
+		// else diable
+
+		if (authUser != null) {
+			boolean enabled = false;
+
+			if (authUser.getRole() == Role.Manager) {
+				enabled = true;
+			} else {
+				if (resource.getCreatedBy() != 0) {
+					if (resource.getCreatedBy() == authUser.getId()) {
+						enabled = true;
+					} else {
+						enabled = false;
+					}
+				} else {
+					enabled = true;
+				}
+			}
+			saveButton.setEnabled(enabled);
+		}
 	}
 
 	private void buildButtonBar(HorizontalLayout root) {

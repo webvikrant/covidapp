@@ -4,6 +4,7 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -25,6 +26,7 @@ public class EnquiryEditorForm extends VerticalLayout {
 	private TextField phoneField;
 	private EmailField emailIdField;
 	private TextArea messageField;
+	private Checkbox actionTakenCheck;
 
 	private Button saveButton;
 	private Button cancelButton;
@@ -49,6 +51,8 @@ public class EnquiryEditorForm extends VerticalLayout {
 		messageField = new TextArea("Your message");
 		configureMessageField();
 
+		actionTakenCheck = new Checkbox("Action taken");
+
 		binder = new Binder<>(Enquiry.class);
 
 		binder.forField(nameField).asRequired("Name can not be blank").bind("name");
@@ -62,6 +66,7 @@ public class EnquiryEditorForm extends VerticalLayout {
 				.bind("emailId");
 
 		binder.forField(messageField).asRequired("Message can not be blank").bind("message");
+		binder.forField(actionTakenCheck).bind("actionTaken");
 
 		binder.setBean(new Enquiry());
 
@@ -72,7 +77,7 @@ public class EnquiryEditorForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(nameField, phoneField, emailIdField, messageField, buttonBar);
+		add(nameField, phoneField, emailIdField, messageField, actionTakenCheck, buttonBar);
 	}
 
 	private void configureNameField() {
@@ -116,13 +121,10 @@ public class EnquiryEditorForm extends VerticalLayout {
 	}
 
 	public void setReadOnly() {
-
 		nameField.setReadOnly(true);
 		phoneField.setReadOnly(true);
 		emailIdField.setReadOnly(true);
 		messageField.setReadOnly(true);
-
-		saveButton.setVisible(false);
 	}
 
 	public static abstract class EnquiryEditorFormEvent extends ComponentEvent<EnquiryEditorForm> {

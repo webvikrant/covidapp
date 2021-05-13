@@ -22,7 +22,7 @@ public class GuestResourceDataProvider extends AbstractBackEndDataProvider<Resou
 	}
 
 	public int getCount() {
-		return resourceService.getResourcesCount(filterParams);
+		return resourceService.getResourcesCountForGuests(filterParams);
 	}
 
 	@Override

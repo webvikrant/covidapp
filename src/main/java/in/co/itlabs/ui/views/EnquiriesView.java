@@ -1,6 +1,5 @@
 package in.co.itlabs.ui.views;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -12,6 +11,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -61,7 +61,7 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		enquiry = new Enquiry();
 
 		editorForm = new EnquiryEditorForm();
-//		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
+		editorForm.addListener(EnquiryEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(EnquiryEditorForm.CancelEvent.class, this::handleCancelEvent);
 
 		dialog = new Dialog();
@@ -86,7 +86,7 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 //			dialog.open();
 //			editorForm.setEnquiry(enquiry);
 //		});
-		
+
 		toolBar = new HorizontalLayout();
 		toolBar.setWidthFull();
 		toolBar.setAlignItems(Alignment.END);
@@ -94,7 +94,7 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 //		Span blank = new Span();
 		toolBar.add(filterForm);
 //		toolBar.expand(blank);
-		
+
 		dataProvider = new EnquiryDataProvider(enquiryService);
 		dataProvider.setFilterParams(filterParams);
 
@@ -117,9 +117,22 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		grid.addColumn("phone").setHeader("Mobile").setWidth("80px");
 		grid.addColumn("emailId").setHeader("Email").setWidth("120px");
 		grid.addColumn("message").setHeader("Message").setWidth("300px");
-		
-		grid.addColumn(resource -> {
-			return DateUtil.humanize(resource.getCreatedAt());
+
+		grid.addComponentColumn(enquiry -> {
+			Button button = new Button();
+			button.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+			if (enquiry.getActionTaken() == null || enquiry.getActionTaken() == false) {
+				button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+				button.setText("No");
+			} else {
+				button.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+				button.setText("Yes");
+			}
+			return button;
+		}).setHeader("Action taken");
+
+		grid.addColumn(enquiry -> {
+			return DateUtil.humanize(enquiry.getCreatedAt());
 		}).setHeader("Submitted");
 
 		grid.addComponentColumn(enquiry -> {
@@ -152,20 +165,18 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 		List<String> messages = new ArrayList<String>();
 		enquiry = event.getEnquiry();
 
-		// new resource, hence create it
-
-		LocalDateTime now = LocalDateTime.now();
-
-		enquiry.setCreatedAt(now);
-
-		int enquiryId = enquiryService.createEnquiry(messages, enquiry);
-		if (enquiryId > 0) {
-			Notification.show("Message sent successfully", 3000, Position.TOP_CENTER);
-			reload();
-			enquiry = new Enquiry();
-			editorForm.setEnquiry(enquiry);
-		} else {
-			Notification.show(messages.toString(), 3000, Position.TOP_CENTER);
+		if (enquiry.getId() > 0) {
+			// update
+			boolean success = enquiryService.updateEnquiry(messages, enquiry);
+			if (success) {
+				Notification.show("Enquiry updated successfully", 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				reload();
+				dialog.close();
+			} else {
+				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
 		}
 	}
 
@@ -174,10 +185,6 @@ public class EnquiriesView extends VerticalLayout implements BeforeEnterObserver
 	}
 
 	public void reload() {
-//		List<Resource> resources = resourceService.getResources();
-// 		recordCount.setText("Record(s) found: " + resources.size());
-//		grid.setItems(resources);
-
 		dataProvider.refreshAll();
 		recordCount.setText("Record(s) found: " + dataProvider.getCount());
 	}

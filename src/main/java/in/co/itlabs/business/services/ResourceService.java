@@ -252,8 +252,7 @@ public class ResourceService {
 			sql = "select * from resource";
 		}
 
-		if (filterParams.getCity() != null || filterParams.getType() != null || filterParams.getStatus() != null
-				|| filterParams.getQuery() != null) {
+		if (filterParams.getCity() != null || filterParams.getType() != null || filterParams.getQuery() != null) {
 			sql = sql + " where";
 
 			int clauseCount = 0;
@@ -270,6 +269,16 @@ public class ResourceService {
 				clauseCount++;
 			}
 
+			// user
+			if (filterParams.getQuery() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
+				sql = sql + " (lower(name) like '" + queryString + "' or lower(address) like '" + queryString + "')";
+				clauseCount++;
+			}
+
 			// status - verified or pending, created by guest or user
 			if (clauseCount > 0) {
 				sql = sql + " and";
@@ -277,16 +286,6 @@ public class ResourceService {
 			sql = sql + " ( (createdBy=0 and status='Verified')"
 					+ " or  (createdBy>0 and (status='Pending' or status='Verified')) )";
 			clauseCount++;
-
-			// user
-			if (filterParams.getQuery() != null) {
-				if (clauseCount > 0) {
-					sql = sql + " and";
-				}
-
-				String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
-				sql = sql + " (lower(name) like '" + queryString + "' or lower(address) like '" + queryString + "')";
-			}
 
 		}
 
@@ -427,6 +426,9 @@ public class ResourceService {
 			}
 
 			if (filterParams.getGender() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
 				sql = sql + " gender='" + filterParams.getGender().name() + "'";
 				clauseCount++;
 			}
@@ -442,6 +444,9 @@ public class ResourceService {
 //			}
 
 			if (filterParams.getCity() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
 				sql = sql + " cityId=" + filterParams.getCity().getId();
 				clauseCount++;
 			}
@@ -456,6 +461,105 @@ public class ResourceService {
 			}
 
 		}
+
+		return sql;
+	}
+
+	// plasma donors for guest
+	public int getPlasmaDonorsCountForGuests(PlasmaDonorFilterParams filterParams) {
+		int count = 0;
+
+		String sql = generatePlasmaDonorSqlForGuests(filterParams, true);
+
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			count = con.createQuery(sql).executeScalar(Integer.class);
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return count;
+	}
+
+	public List<PlasmaDonor> getPlasmaDonorsForGuests(int offset, int limit, PlasmaDonorFilterParams filterParams) {
+		List<PlasmaDonor> plasmaDonors = null;
+
+		String sql = generatePlasmaDonorSqlForGuests(filterParams, false);
+
+		sql = sql + " order by updatedAt desc limit " + limit + " offset " + offset;
+		String citySql = "select * from city where id=:id";
+
+		Sql2o sql2o = databaseService.getSql2o();
+
+		try (Connection con = sql2o.open()) {
+			plasmaDonors = con.createQuery(sql).executeAndFetch(PlasmaDonor.class);
+
+			for (PlasmaDonor plasmaDonor : plasmaDonors) {
+				City city = con.createQuery(citySql).addParameter("id", plasmaDonor.getCityId())
+						.executeAndFetchFirst(City.class);
+
+				plasmaDonor.setCity(city);
+			}
+
+			con.close();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return plasmaDonors;
+	}
+
+	private String generatePlasmaDonorSqlForGuests(PlasmaDonorFilterParams filterParams, boolean countSql) {
+		String sql = "";
+		if (countSql) {
+			sql = "select count(id) from plasma_donor";
+		} else {
+			sql = "select * from plasma_donor";
+		}
+
+//		if (filterParams.getBloodGroup() != null && filterParams.getGender() != null) {
+		sql = sql + " where";
+
+		int clauseCount = 0;
+
+		if (filterParams.getBloodGroup() != null) {
+			sql = sql + " bloodGroup='" + filterParams.getBloodGroup().name() + "'";
+		} else {
+			sql = sql + " bloodGroup=null";
+		}
+		clauseCount++;
+
+		if (clauseCount > 0) {
+			sql = sql + " and";
+		}
+		if (filterParams.getGender() != null) {
+			sql = sql + " gender='" + filterParams.getGender().name() + "'";
+		} else {
+			sql = sql + " gender=null";
+
+		}
+		clauseCount++;
+
+		if (filterParams.getCity() != null) {
+			if (clauseCount > 0) {
+				sql = sql + " and";
+			}
+			sql = sql + " cityId=" + filterParams.getCity().getId();
+			clauseCount++;
+		}
+
+		if (filterParams.getQuery() != null) {
+			if (clauseCount > 0) {
+				sql = sql + " and";
+			}
+
+			String queryString = "%" + filterParams.getQuery().trim().toLowerCase() + "%";
+			sql = sql + " (lower(name) like '" + queryString + "' or lower(address) like '" + queryString + "')";
+		}
+
+//		}
 
 		return sql;
 	}

@@ -10,7 +10,7 @@ import in.co.itlabs.ui.views.AboutUsView;
 import in.co.itlabs.ui.views.EnquiryFormView;
 import in.co.itlabs.ui.views.IndexView;
 import in.co.itlabs.ui.views.PlasmaDonorFormView;
-import in.co.itlabs.ui.views.PlasmaSeekerFormView;
+import in.co.itlabs.ui.views.PlasmaSeekerIndexView;
 import in.co.itlabs.ui.views.ResourceFormView;
 import in.co.itlabs.ui.views.VolunteerFormView;
 
@@ -81,7 +81,7 @@ public class GuestNavBar extends VerticalLayout {
 		});
 
 		seekersButton.addClickListener(e -> {
-			UI.getCurrent().navigate(PlasmaSeekerFormView.class);
+			UI.getCurrent().navigate(PlasmaSeekerIndexView.class);
 		});
 		
 		volunteersButton.addClickListener(e -> {

@@ -20,7 +20,7 @@ public class AuthService {
 	private Argon2 argon2 = Argon2Factory.create();
 
 	public enum Role {
-		Admin, Verifier
+		Admin, Manager, Verifier
 	}
 
 	@Getter
@@ -138,11 +138,11 @@ public class AuthService {
 
 					if (success) {
 						authUser = new AuthenticatedUser(user.getId(), user.getName(), user.getRole());
-					}else {
+					} else {
 						messages.add("Invalid username or password");
 					}
 				}
-			}else {
+			} else {
 				messages.add("Invalid username or password");
 			}
 			con.close();
