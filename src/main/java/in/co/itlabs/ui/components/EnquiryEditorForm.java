@@ -14,9 +14,11 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.RegexpValidator;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
 import in.co.itlabs.business.entities.Enquiry;
+import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 
 public class EnquiryEditorForm extends VerticalLayout {
 
@@ -34,8 +36,11 @@ public class EnquiryEditorForm extends VerticalLayout {
 	private Binder<Enquiry> binder;
 
 	// non-ui
+	private AuthenticatedUser authUser;
 
 	public EnquiryEditorForm() {
+
+		authUser = VaadinSession.getCurrent().getAttribute(AuthenticatedUser.class);
 
 		setAlignItems(Alignment.START);
 
@@ -77,7 +82,12 @@ public class EnquiryEditorForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(nameField, phoneField, emailIdField, messageField, actionTakenCheck, buttonBar);
+		if (authUser != null) {
+			add(nameField, phoneField, emailIdField, messageField, actionTakenCheck, buttonBar);
+		} else {
+			add(nameField, phoneField, emailIdField, messageField, buttonBar);
+		}
+
 	}
 
 	private void configureNameField() {
