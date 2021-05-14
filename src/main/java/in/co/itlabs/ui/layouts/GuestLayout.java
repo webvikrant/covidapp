@@ -4,6 +4,10 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.googleanalytics.tracking.EnableGoogleAnalytics;
+import org.vaadin.googleanalytics.tracking.TrackerConfigurator;
+import org.vaadin.googleanalytics.tracking.EnableGoogleAnalytics.SendMode;
+import org.vaadin.googleanalytics.tracking.TrackerConfiguration;
 
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -26,7 +30,8 @@ import in.co.itlabs.ui.components.GuestNavBar;
 @CssImport("./styles/shared-styles.css")
 @Push(PushMode.MANUAL)
 @PWA(name = "Covid Support App", shortName = "CovidApp", enableInstallPrompt = true)
-public class GuestLayout extends VerticalLayout implements RouterLayout, BeforeEnterObserver {
+@EnableGoogleAnalytics(value = "UA-197046056-1", sendMode = SendMode.ALWAYS)
+public class GuestLayout extends VerticalLayout implements RouterLayout, BeforeEnterObserver, TrackerConfigurator {
 
 	// ui
 
@@ -41,9 +46,9 @@ public class GuestLayout extends VerticalLayout implements RouterLayout, BeforeE
 	public GuestLayout() {
 
 		logger.info("GuestLayout() invoked...");
-		
+
 		addClassName("guest-layout");
-		
+
 		setMargin(false);
 		setPadding(true);
 
@@ -85,5 +90,11 @@ public class GuestLayout extends VerticalLayout implements RouterLayout, BeforeE
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
+	}
+
+	@Override
+	public void configureTracker(TrackerConfiguration configuration) {
+		configuration.setCreateField("allowAnchor", Boolean.FALSE);
+		configuration.setInitialValue("transport", "beacon");
 	}
 }

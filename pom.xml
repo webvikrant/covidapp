@@ -170,6 +170,11 @@
 			<version>6.5.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>googleanalyticstracker</artifactId>
+			<version>4.0.1</version>
+		</dependency>
 
 	</dependencies>
 
