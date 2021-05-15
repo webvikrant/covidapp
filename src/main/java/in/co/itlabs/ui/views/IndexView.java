@@ -4,12 +4,12 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -37,8 +37,9 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 	// ui
 	private Div titleDiv;
 	private GuestResourceFilterForm filterForm;
-	private ListBox<Resource> listBox;
-	private Div recordCount;
+//	private ListBox<Resource> listBox;
+	private Grid<Resource> grid;
+	private Div recordCountDiv;
 	private Dialog dialog;
 
 	// non-ui
@@ -78,25 +79,33 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 		filterForm.setFilterParams(filterParams);
 		filterForm.addListener(GuestResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
 
-		recordCount = new Div();
-		recordCount.addClassName("small-text");
+		recordCountDiv = new Div();
+		recordCountDiv.addClassName("small-text");
 //		recordCount.setWidth("150px");
 
 		dataProvider = new GuestResourceDataProvider(resourceService);
 		dataProvider.setFilterParams(filterParams);
 
-		listBox = new ListBox<Resource>();
-		configureListBox();
+//		listBox = new ListBox<Resource>();
+//		configureListBox();
 
-		add(titleDiv, filterForm, recordCount, listBox);
+		grid = new Grid<>(Resource.class);
+		configureGrid();
+
+		add(titleDiv, filterForm, grid);
 
 		reload();
 	}
 
-	private void configureListBox() {
+	private void configureGrid() {
 
-		listBox.setWidthFull();
-		listBox.setRenderer(new ComponentRenderer<VerticalLayout, Resource>(resource -> {
+		grid.removeAllColumns();
+		grid.setWidthFull();
+		grid.setHeight("420px");
+
+		grid.setPageSize(10);
+
+		grid.addComponentColumn(resource -> {
 			VerticalLayout root = new VerticalLayout();
 
 			root.setMargin(false);
@@ -148,9 +157,9 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 			root.add(verifiedButton, updatedDiv, nameField, phonesField, addressField, remarkField);
 			return root;
 
-		}));
+		}).setHeader(recordCountDiv).setTextAlign(ColumnTextAlign.CENTER);
 
-		listBox.setDataProvider(dataProvider);
+		grid.setDataProvider(dataProvider);
 	}
 
 	private void buildTitle() {
@@ -173,7 +182,7 @@ public class IndexView extends VerticalLayout implements BeforeEnterObserver {
 
 	public void reload() {
 		dataProvider.refreshAll();
-		recordCount.setText("Record(s) found: " + dataProvider.getCount());
+		recordCountDiv.setText("Record(s) found: " + dataProvider.getCount());
 	}
 
 	@Override
