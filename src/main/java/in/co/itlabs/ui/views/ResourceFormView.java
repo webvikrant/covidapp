@@ -61,7 +61,7 @@ public class ResourceFormView extends VerticalLayout implements BeforeEnterObser
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Submit Lead");
+		titleDiv.add("Resource Information Form");
 	}
 
 	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {

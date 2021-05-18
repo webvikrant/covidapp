@@ -23,7 +23,7 @@ import in.co.itlabs.util.GuestPlasmaDonorDataProvider;
 import in.co.itlabs.util.PlasmaDonorFilterParams;
 
 @PageTitle(value = "Plasma seeker - Ghaziabad Covid Support")
-@Route(value = "plasma-seeker", layout = GuestLayout.class)
+@Route(value = "plasma-seeker-removed", layout = GuestLayout.class)
 @CssImport("./styles/shared-styles.css")
 public class PlasmaSeekerIndexView extends VerticalLayout implements BeforeEnterObserver {
 

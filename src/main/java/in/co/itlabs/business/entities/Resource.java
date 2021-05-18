@@ -11,7 +11,7 @@ public class Resource {
 
 	public enum Type {
 		Ambulance, Doctor_On_Call, Hospital_Beds, Home_Nursing_and_ICU, Covid_Care_Center, Medicine, Oxygen,
-		Plasma_BloodBank, Food_Services, Funeral_Services
+		Plasma_BloodBank, Food_Services, Sanitization_Services, Funeral_Services
 	}
 
 	public enum Status {

@@ -2,31 +2,32 @@ package in.co.itlabs.ui.components;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 
 import in.co.itlabs.ui.views.AboutUsView;
 import in.co.itlabs.ui.views.EnquiryFormView;
 import in.co.itlabs.ui.views.IndexView;
-import in.co.itlabs.ui.views.PlasmaDonorFormView;
-import in.co.itlabs.ui.views.PlasmaSeekerIndexView;
 import in.co.itlabs.ui.views.ResourceFormView;
 import in.co.itlabs.ui.views.VolunteerFormView;
 
-public class GuestNavBar extends VerticalLayout {
+public class GuestNavBar extends VerticalLayout implements AfterNavigationObserver {
 
 	// ui
 	private Button homeButton;
 	private Button aboutButton;
-	private Button contactButton;
+	private Button enquiryButton;
 
 	private Button leadsButton;
-	private Button donorsButton;
-	private Button seekersButton;
+//	private Button donorsButton;
+//	private Button seekersButton;
 
 	private Button volunteersButton;
-	
+
 	// non-ui
 
 	public GuestNavBar() {
@@ -37,25 +38,25 @@ public class GuestNavBar extends VerticalLayout {
 
 		homeButton = new Button(VaadinIcon.HOME.create());
 		aboutButton = new Button("About us", VaadinIcon.INFO_CIRCLE.create());
-		contactButton = new Button("Contact us", VaadinIcon.ENVELOPE.create());
+		enquiryButton = new Button("Contact us", VaadinIcon.ENVELOPE.create());
 
-		leadsButton = new Button("Leads", VaadinIcon.HAND.create());
-		donorsButton = new Button("Donors", VaadinIcon.DROP.create());
-		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
+		leadsButton = new Button("Submit resource info", VaadinIcon.PAPERPLANE.create());
+//		donorsButton = new Button("Donors", VaadinIcon.DROP.create());
+//		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
 
 		volunteersButton = new Button("Volunteer", VaadinIcon.HANDS_UP.create());
-		
+
 		configureButtons();
 
 		HorizontalLayout topBar = new HorizontalLayout();
 		HorizontalLayout middleBar = new HorizontalLayout();
-		HorizontalLayout bottomBar = new HorizontalLayout();
-		
-		topBar.add(homeButton, aboutButton, contactButton);
-		middleBar.add(leadsButton, donorsButton, seekersButton);
-		bottomBar.add(volunteersButton);
+//		HorizontalLayout bottomBar = new HorizontalLayout();
 
-		add(topBar, middleBar, bottomBar);
+		topBar.add(homeButton, aboutButton, enquiryButton);
+		middleBar.add(leadsButton, volunteersButton);
+//		bottomBar.add(volunteersButton);
+
+		add(topBar, middleBar);
 	}
 
 	private void configureButtons() {
@@ -68,7 +69,7 @@ public class GuestNavBar extends VerticalLayout {
 			UI.getCurrent().navigate(AboutUsView.class);
 		});
 
-		contactButton.addClickListener(e -> {
+		enquiryButton.addClickListener(e -> {
 			UI.getCurrent().navigate(EnquiryFormView.class);
 		});
 
@@ -76,17 +77,53 @@ public class GuestNavBar extends VerticalLayout {
 			UI.getCurrent().navigate(ResourceFormView.class);
 		});
 
-		donorsButton.addClickListener(e -> {
-			UI.getCurrent().navigate(PlasmaDonorFormView.class);
-		});
+//		donorsButton.addClickListener(e -> {
+//			UI.getCurrent().navigate(PlasmaDonorFormView.class);
+//		});
 
-		seekersButton.addClickListener(e -> {
-			UI.getCurrent().navigate(PlasmaSeekerIndexView.class);
-		});
-		
+//		seekersButton.addClickListener(e -> {
+//			UI.getCurrent().navigate(PlasmaSeekerIndexView.class);
+//		});
+
 		volunteersButton.addClickListener(e -> {
 			UI.getCurrent().navigate(VolunteerFormView.class);
 		});
-		
+
+	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		homeButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		aboutButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		enquiryButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		leadsButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		volunteersButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+		String location = event.getLocation().getFirstSegment();
+
+		switch (location) {
+		case "":
+			homeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		case "about-us":
+			aboutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		case "enquiry":
+			enquiryButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		case "resource-form":
+			leadsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		case "volunteer-form":
+			volunteersButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		default:
+			break;
+		}
 	}
 }
