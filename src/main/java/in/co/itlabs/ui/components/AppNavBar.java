@@ -24,8 +24,8 @@ import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
 import in.co.itlabs.business.services.AuthService.Role;
 import in.co.itlabs.ui.components.PasswordEditorForm.SaveEvent;
 import in.co.itlabs.ui.components.PasswordEditorForm.CancelEvent;
+import in.co.itlabs.ui.views.CircularsView;
 import in.co.itlabs.ui.views.EnquiriesView;
-import in.co.itlabs.ui.views.PlasmaDonorsView;
 import in.co.itlabs.ui.views.ResourcesView;
 import in.co.itlabs.ui.views.UsersView;
 import in.co.itlabs.ui.views.VolunteersView;
@@ -133,13 +133,17 @@ public class AppNavBar extends HorizontalLayout {
 				UI.getCurrent().navigate(ResourcesView.class);
 			});
 
-			subMenu.addItem("Plasma donors", e -> {
-				UI.getCurrent().navigate(PlasmaDonorsView.class);
+			subMenu.addItem("Circulars", e -> {
+				UI.getCurrent().navigate(CircularsView.class);
 			});
 
-			subMenu.addItem("Plasma seekers", e -> {
-//				UI.getCurrent().navigate(plasmaseeResourcesView.class);
-			});
+//			subMenu.addItem("Plasma donors", e -> {
+//				UI.getCurrent().navigate(PlasmaDonorsView.class);
+//			});
+
+//			subMenu.addItem("Plasma seekers", e -> {
+////				UI.getCurrent().navigate(plasmaseeResourcesView.class);
+//			});
 
 			subMenu.addItem("Enquiries", e -> {
 				UI.getCurrent().navigate(EnquiriesView.class);
