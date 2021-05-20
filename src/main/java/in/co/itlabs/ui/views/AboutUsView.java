@@ -2,7 +2,11 @@ package in.co.itlabs.ui.views;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -24,7 +28,8 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 //	private Span name;
 //	private Span post;
 	private Div bodyDiv;
-
+	private FlexLayout techTeam;
+//	private FlexLayout nonTechTeam;
 	// non-ui
 
 	public AboutUsView() {
@@ -64,10 +69,29 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 
 		bodyDiv.add(para1, para2, para3);
 
+		techTeam = new FlexLayout();
+		techTeam.setWidthFull();
+		techTeam.setFlexWrap(FlexWrap.WRAP);
+
+		techTeam.add(buildCard("images/team/piyush-goyal.jpeg", "Piyush G."));
+		techTeam.add(buildCard("images/team/vikrant-thakur.jpeg", "Vikrant T."));
+		techTeam.add(buildCard("images/team/gaurav-makkar.jpeg", "Gaurav M."));
+		
+		techTeam.add(buildCard("images/team/puneet.jpeg", "Puneet"));
+		techTeam.add(buildCard("images/team/pankaj-munjal.jpeg", "Pankaj M."));
+		techTeam.add(buildCard("images/team/avishek.jpeg", "Avishek"));
+		
+		techTeam.add(buildCard("images/team/avinash.jpeg", "Avinash"));
+		techTeam.add(buildCard("images/team/gaurav-singhal.jpeg", "Gaurav S."));
+		techTeam.add(buildCard("images/team/sanjay-gupta.jpeg", "Sanjay G."));
+		
+		techTeam.add(buildCard("images/team/santosh-kaushik.jpeg", "Santosh K."));
+
 		VerticalLayout main = new VerticalLayout();
 		main.setAlignItems(Alignment.CENTER);
 		main.addClassName("card");
 		main.add(bodyDiv);
+		main.add(techTeam);
 
 		add(titleDiv, main);
 	}
@@ -75,6 +99,31 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
 		titleDiv.add("About Us");
+	}
+
+	private VerticalLayout buildCard(String imageUrl, String name) {
+		VerticalLayout root = new VerticalLayout();
+		
+		root.setMargin(false);
+		root.setPadding(true);
+		root.setSpacing(false);
+		
+		root.setWidth("100px");
+		root.setAlignItems(Alignment.CENTER);
+
+		Image image = new Image(imageUrl, name);
+		image.setWidthFull();
+		image.addClassName("photo");
+		image.getStyle().set("objectFit", "contain");
+
+		Span nameSpan = new Span(name);
+
+		nameSpan.getStyle().set("fontSize", "small");
+		nameSpan.getStyle().set("color", "gray");
+
+		root.add(image, nameSpan);
+
+		return root;
 	}
 
 	@Override

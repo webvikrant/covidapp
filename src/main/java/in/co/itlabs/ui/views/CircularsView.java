@@ -32,6 +32,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Circular;
 import in.co.itlabs.business.services.AuthService.AuthenticatedUser;
+import in.co.itlabs.business.services.AuthService.Role;
 import in.co.itlabs.business.services.CircularService;
 import in.co.itlabs.ui.components.CircularEditorForm;
 import in.co.itlabs.ui.components.CircularFilterForm;
@@ -105,6 +106,10 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 			circular = new Circular();
 			editorForm.setCircular(circular);
 		});
+		
+		if(authUser.getRole()!=Role.Manager) {
+			createButton.setEnabled(false);
+		}
 
 		toolBar = new HorizontalLayout();
 		toolBar.setWidthFull();
