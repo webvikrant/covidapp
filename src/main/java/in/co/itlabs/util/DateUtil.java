@@ -1,9 +1,19 @@
 package in.co.itlabs.util;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class DateUtil {
+	public static String ddMMMyyyy(LocalDateTime dateTime) {
+		String string = "";
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM, yyyy");
+		string = dateTime.format(formatter);
+
+		return string;
+	}
+
 	public static String humanize(LocalDateTime dateTime) {
 		String string = "";
 
@@ -45,9 +55,9 @@ public class DateUtil {
 			string = string + "  " + minutes + "mins";
 		}
 
-		if(!string.isEmpty()) {
-			string = string + " ago";	
-		}else {
+		if (!string.isEmpty()) {
+			string = string + " ago";
+		} else {
 			string = "Just now";
 		}
 

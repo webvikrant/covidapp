@@ -60,7 +60,7 @@ public class CircularEditorForm extends VerticalLayout {
 		binder = new Binder<>(Circular.class);
 
 		binder.forField(subjectField).asRequired("Subject can not be blank")
-				.withValidator(address -> address.length() < 1000, "").bind("subject");
+				.withValidator(address -> address.length() < 2000, "").bind("subject");
 
 		saveButton = new Button("Save", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
@@ -86,7 +86,7 @@ public class CircularEditorForm extends VerticalLayout {
 		Upload upload = fileField.getUpload();
 		upload.setAutoUpload(true);
 		upload.setMaxFiles(1);
-		upload.setDropLabel(new Span("Upload a 1024 KB file (JPEG or PNG)"));
+		upload.setDropLabel(new Span("Upload a 512 KB file (JPEG or PNG)"));
 		upload.setAcceptedFileTypes("image/jpeg", "image/png", "application/pdf");
 		upload.setMaxFileSize(1024 * 512);
 	}
@@ -94,16 +94,22 @@ public class CircularEditorForm extends VerticalLayout {
 	public void setCircular(Circular circular) {
 		if (circular.getId() > 0) {
 			createdDiv.setVisible(true);
-			createdDiv.setText("Uploaded " + DateUtil.humanize(circular.getCreatedAt()));
+			createdDiv.setText("Created " + DateUtil.humanize(circular.getCreatedAt()));
 
 			// existing media file
 			byte[] fileBytes = circular.getFileBytes();
-			StreamResource resource = new StreamResource(circular.getFileName(),
-					() -> new ByteArrayInputStream(fileBytes));
-			fileField.setResource(resource, circular.getFileMime(), circular.getFileName());
+			String fileName = circular.getFileName();
+			String fileMime = circular.getFileMime();
+
+			if (fileName != null && fileMime != null && fileBytes != null) {
+				StreamResource resource = new StreamResource(circular.getFileName(),
+						() -> new ByteArrayInputStream(fileBytes));
+				fileField.setResource(resource, circular.getFileMime(), circular.getFileName());
+			}
 
 		} else {
 			createdDiv.setVisible(false);
+			fileField.setResource(null, null, null);
 		}
 
 		binder.setBean(circular);
@@ -128,7 +134,11 @@ public class CircularEditorForm extends VerticalLayout {
 					enabled = true;
 				}
 			}
+			
+			subjectField.setReadOnly(!enabled);
+			fileField.setReadOnly(!enabled);
 			saveButton.setEnabled(enabled);
+			
 		}
 	}
 

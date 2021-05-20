@@ -12,7 +12,7 @@ public class Circular {
 	private int id;
 
 	private String subject;
-	
+
 	private String fileName;
 	private String fileMime;
 	private byte[] fileBytes;
@@ -21,6 +21,13 @@ public class Circular {
 	private LocalDateTime createdAt;
 
 	// transient
-	private User updatedByUser;
+	private User createdByUser;
 
+	public boolean isImage() {
+		boolean isImage = false;
+		if (fileMime.equalsIgnoreCase("image/jpeg") || fileMime.equalsIgnoreCase("image/png")) {
+			isImage = true;
+		}
+		return isImage;
+	}
 }

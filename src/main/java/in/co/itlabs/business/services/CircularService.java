@@ -93,10 +93,26 @@ public class CircularService {
 			sql = "select * from circular";
 		}
 
-		if (filterParams.getQuery() != null) {
+		if (filterParams.getQuery() != null || filterParams.getFromDate() != null || filterParams.getToDate() != null) {
 			sql = sql + " where";
 
 			int clauseCount = 0;
+
+			if (filterParams.getFromDate() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+				sql = sql + " date_format(createdAt,'%Y-%m-%d') >='" + filterParams.getFromDate() + "'";
+				clauseCount++;
+			}
+
+			if (filterParams.getToDate() != null) {
+				if (clauseCount > 0) {
+					sql = sql + " and";
+				}
+				sql = sql + " date_format(createdAt,'%Y-%m-%d') <='" + filterParams.getToDate() + "'";
+				clauseCount++;
+			}
 
 			if (filterParams.getQuery() != null) {
 				if (clauseCount > 0) {
@@ -110,4 +126,27 @@ public class CircularService {
 
 		return sql;
 	}
+
+	// update
+	public boolean updateCircular(List<String> messages, Circular circular) {
+
+		boolean success = false;
+		Sql2o sql2o = databaseService.getSql2o();
+		String sql = "update circular set subject=:subject, fileName=:fileName, fileMime=:fileMime, fileBytes=:fileBytes where id=:id";
+
+		try (Connection con = sql2o.beginTransaction()) {
+			con.createQuery(sql).addParameter("subject", circular.getSubject())
+					.addParameter("fileName", circular.getFileName()).addParameter("fileMime", circular.getFileMime())
+					.addParameter("fileBytes", circular.getFileBytes()).addParameter("id", circular.getId())
+					.executeUpdate();
+
+			con.commit();
+			success = true;
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			messages.add(e.getMessage());
+		}
+		return success;
+	}
+
 }

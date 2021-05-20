@@ -1,5 +1,6 @@
 package in.co.itlabs.ui.views;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -12,7 +13,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -24,6 +27,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 
 import in.co.itlabs.business.entities.Circular;
@@ -74,8 +78,6 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 		titleDiv = new Div();
 		buildTitle();
 
-		circular = new Circular();
-
 		editorForm = new CircularEditorForm();
 		editorForm.addListener(CircularEditorForm.SaveEvent.class, this::handleSaveEvent);
 		editorForm.addListener(CircularEditorForm.CancelEvent.class, this::handleCancelEvent);
@@ -100,6 +102,7 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 		createButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 		createButton.addClickListener(e -> {
 			dialog.open();
+			circular = new Circular();
 			editorForm.setCircular(circular);
 		});
 
@@ -129,9 +132,56 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 
 		grid.addColumn("subject").setHeader("Subject").setWidth("300px");
 
+		grid.addComponentColumn(media -> {
+
+			if (media != null) {
+				// attachment found
+				if (media.isImage()) {
+					// attachment is image
+					Image photo = new Image();
+					photo.addClassName("photo");
+					photo.getStyle().set("objectFit", "contain");
+					photo.setHeight("50px");
+
+					byte[] imageBytes = media.getFileBytes();
+					StreamResource resource = new StreamResource(media.getFileName(),
+							() -> new ByteArrayInputStream(imageBytes));
+					photo.setSrc(resource);
+					return photo;
+				} else {
+					// attachment is not an image
+					Div div = new Div();
+					div.setText("PDF file");
+					return div;
+				}
+			} else {
+				// attachment not found
+				Div div = new Div();
+				div.setText("No attachment");
+				return div;
+			}
+
+		}).setHeader("Attachment").setWidth("80px");
+
+		grid.addComponentColumn(media -> {
+			Anchor downloadLink = new Anchor();
+
+			byte[] imageBytes = media.getFileBytes();
+			StreamResource resource = new StreamResource(media.getFileName(),
+					() -> new ByteArrayInputStream(imageBytes));
+
+			downloadLink.setText(media.getFileName());
+			downloadLink.setHref(resource);
+			downloadLink.setTarget("_blank");
+			downloadLink.getElement().setAttribute("download", true);
+
+			return downloadLink;
+
+		}).setHeader("Attachment URL").setWidth("150px");
+
 		grid.addColumn(resource -> {
-			return DateUtil.humanize(resource.getCreatedAt());
-		}).setHeader("Uploaded");
+			return DateUtil.ddMMMyyyy(resource.getCreatedAt());
+		}).setHeader("Created");
 
 		grid.addComponentColumn(circular -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
@@ -165,17 +215,17 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 		if (circular.getId() > 0) {
 			// existing resource, hence update it
 
-//			boolean success = circularService.updateResource(messages, circular);
-//			if (success) {
-//				Notification.show("Resource updated successfully", 5000, Position.TOP_CENTER)
-//						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-//				reload();
-//				circular = new Resource();
-//				dialog.close();
-//			} else {
-//				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
-//						.addThemeVariants(NotificationVariant.LUMO_ERROR);
-//			}
+			boolean success = circularService.updateCircular(messages, circular);
+			if (success) {
+				Notification.show("Resource updated successfully", 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				reload();
+				circular = new Circular();
+				dialog.close();
+			} else {
+				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
 		} else {
 			// new resource, hence create it
 

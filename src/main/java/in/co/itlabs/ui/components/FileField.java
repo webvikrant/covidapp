@@ -14,9 +14,9 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.server.StreamResource;
 
 public class FileField extends VerticalLayout {
-	private final Image image;
-	private final MemoryBuffer buffer;
-	private final Upload upload;
+	private Image image;
+	private MemoryBuffer buffer;
+	private Upload upload;
 	private byte[] fileBytes;
 	private String fileMime;
 	private String fileName;
@@ -55,6 +55,8 @@ public class FileField extends VerticalLayout {
 				if (fileMime.equalsIgnoreCase("image/jpeg") || fileMime.equalsIgnoreCase("image/png")) {
 					image.setSrc(resource);
 					image.setVisible(true);
+				}else {
+					image.setVisible(false);
 				}
 
 			} catch (IOException e) {
@@ -70,7 +72,7 @@ public class FileField extends VerticalLayout {
 		image.setWidthFull();
 		image.setHeight("100px");
 		image.getStyle().set("objectFit", "contain");
-		
+
 		image.setVisible(false);
 	}
 
@@ -80,10 +82,13 @@ public class FileField extends VerticalLayout {
 
 	public void setResource(StreamResource resource, String mime, String name) {
 		if (resource != null) {
+			image.setVisible(true);
 			image.setSrc(resource);
 			if (name != null) {
 				image.setAlt(name);
 			}
+		}else {
+			image.setVisible(false);
 		}
 	}
 
