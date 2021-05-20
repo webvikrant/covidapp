@@ -25,8 +25,10 @@ public class Circular {
 
 	public boolean isImage() {
 		boolean isImage = false;
-		if (fileMime.equalsIgnoreCase("image/jpeg") || fileMime.equalsIgnoreCase("image/png")) {
-			isImage = true;
+		if (fileMime != null) {
+			if (fileMime.equalsIgnoreCase("image/jpeg") || fileMime.equalsIgnoreCase("image/png")) {
+				isImage = true;
+			}
 		}
 		return isImage;
 	}

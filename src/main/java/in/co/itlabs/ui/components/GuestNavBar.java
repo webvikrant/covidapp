@@ -11,6 +11,7 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 
 import in.co.itlabs.ui.views.AboutUsView;
 import in.co.itlabs.ui.views.EnquiryFormView;
+import in.co.itlabs.ui.views.GuestCircularsView;
 import in.co.itlabs.ui.views.IndexView;
 import in.co.itlabs.ui.views.ResourceFormView;
 import in.co.itlabs.ui.views.VolunteerFormView;
@@ -27,6 +28,7 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 //	private Button seekersButton;
 
 	private Button volunteersButton;
+	private Button circularsButton;
 
 	// non-ui
 
@@ -45,18 +47,20 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 //		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
 
 		volunteersButton = new Button("Volunteer", VaadinIcon.HANDS_UP.create());
-
+		
+		circularsButton = new Button("Govt. circulars", VaadinIcon.DIPLOMA.create());
+		
 		configureButtons();
 
 		HorizontalLayout topBar = new HorizontalLayout();
 		HorizontalLayout middleBar = new HorizontalLayout();
-//		HorizontalLayout bottomBar = new HorizontalLayout();
+		HorizontalLayout bottomBar = new HorizontalLayout();
 
 		topBar.add(homeButton, aboutButton, enquiryButton);
 		middleBar.add(leadsButton, volunteersButton);
-//		bottomBar.add(volunteersButton);
+		bottomBar.add(circularsButton);
 
-		add(topBar, middleBar);
+		add(topBar, middleBar, bottomBar);
 	}
 
 	private void configureButtons() {
@@ -89,6 +93,10 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 			UI.getCurrent().navigate(VolunteerFormView.class);
 		});
 
+		circularsButton.addClickListener(e -> {
+			UI.getCurrent().navigate(GuestCircularsView.class);
+		});
+
 	}
 
 	@Override
@@ -98,6 +106,7 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 		enquiryButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		leadsButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		volunteersButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		circularsButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		String location = event.getLocation().getFirstSegment();
 
@@ -120,6 +129,10 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 
 		case "volunteer-form":
 			volunteersButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			break;
+
+		case "public-circulars":
+			circularsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 			break;
 
 		default:

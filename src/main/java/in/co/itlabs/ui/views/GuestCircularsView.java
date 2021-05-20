@@ -1,12 +1,14 @@
 package in.co.itlabs.ui.views;
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
+import java.io.ByteArrayInputStream;
+
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,18 +16,15 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 
-import in.co.itlabs.business.entities.City;
-import in.co.itlabs.business.entities.Resource;
-import in.co.itlabs.business.entities.Resource.Status;
-import in.co.itlabs.business.entities.Resource.Type;
-import in.co.itlabs.business.services.ResourceService;
-import in.co.itlabs.ui.components.GuestResourceFilterForm;
-import in.co.itlabs.ui.components.ResourceEditorForm;
+import in.co.itlabs.business.entities.Circular;
+import in.co.itlabs.business.services.CircularService;
+import in.co.itlabs.ui.components.GuestCircularFilterForm;
 import in.co.itlabs.ui.layouts.GuestLayout;
+import in.co.itlabs.util.CircularDataProvider;
+import in.co.itlabs.util.CircularFilterParams;
 import in.co.itlabs.util.DateUtil;
-import in.co.itlabs.util.GuestResourceDataProvider;
-import in.co.itlabs.util.ResourceFilterParams;
 
 @PageTitle(value = "Ghaziabad Covid Support")
 @Route(value = "public-circulars", layout = GuestLayout.class)
@@ -36,21 +35,21 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 
 	// ui
 	private Div titleDiv;
-	private GuestResourceFilterForm filterForm;
+	private GuestCircularFilterForm filterForm;
 //	private ListBox<Resource> listBox;
-	private Grid<Resource> grid;
+	private Grid<Circular> grid;
 	private Div recordCountDiv;
 	private Dialog dialog;
 
 	// non-ui
-	private ResourceService resourceService;
+	private CircularService circularService;
 
-	private ResourceFilterParams filterParams;
-	private GuestResourceDataProvider dataProvider;
+	private CircularFilterParams filterParams;
+	private CircularDataProvider dataProvider;
 
 	public GuestCircularsView() {
 
-		resourceService = new ResourceService();
+		circularService = new CircularService();
 
 		setMargin(false);
 		setPadding(false);
@@ -64,32 +63,25 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 		dialog.setDraggable(true);
 		dialog.setWidth("75%");
 
-		filterParams = new ResourceFilterParams();
+		filterParams = new CircularFilterParams();
 
-		City city = resourceService.getCityById(1);
-		Type type = Type.Oxygen;
-
-		filterParams.setCity(city);
-		filterParams.setType(type);
-		filterParams.setStatus(Status.Verified);
-
-		filterForm = new GuestResourceFilterForm();
+		filterForm = new GuestCircularFilterForm();
 //		filterForm.setWidth("87%");
 		filterForm.addClassName("card");
 		filterForm.setFilterParams(filterParams);
-		filterForm.addListener(GuestResourceFilterForm.FilterEvent.class, this::handleFilterEvent);
+		filterForm.addListener(GuestCircularFilterForm.FilterEvent.class, this::handleFilterEvent);
 
 		recordCountDiv = new Div();
 		recordCountDiv.addClassName("small-text");
 //		recordCount.setWidth("150px");
 
-		dataProvider = new GuestResourceDataProvider(resourceService);
+		dataProvider = new CircularDataProvider(circularService);
 		dataProvider.setFilterParams(filterParams);
 
 //		listBox = new ListBox<Resource>();
 //		configureListBox();
 
-		grid = new Grid<>(Resource.class);
+		grid = new Grid<>(Circular.class);
 		configureGrid();
 
 		add(titleDiv, filterForm, grid);
@@ -105,56 +97,79 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 
 		grid.setPageSize(10);
 
-		grid.addComponentColumn(resource -> {
+		grid.addComponentColumn(circular -> {
 			VerticalLayout root = new VerticalLayout();
 
 			root.setMargin(false);
 			root.setPadding(true);
-			root.setSpacing(false);
+			root.setSpacing(true);
 
 			root.setAlignItems(Alignment.CENTER);
 			root.setWidthFull();
 			root.addClassName("card");
+			root.getStyle().set("backgroundColor", "#fcfcfc");
 
-			Button verifiedButton = new Button();
+			root.getStyle().set("marginTop", "6px");
+			root.getStyle().set("marginBottom", "6px");
 
-			if (resource.getStatus() == Status.Verified) {
-				verifiedButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
-				verifiedButton.setText("Verified");
-			} else if (resource.getStatus() == Status.Pending) {
-				verifiedButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-				verifiedButton.setText("Verification awaited");
+			Div createdDiv = new Div();
+			createdDiv.getStyle().set("fontSize", "small");
+			createdDiv.getStyle().set("color", "gray");
+			createdDiv.setText("Uploaded on:  " + DateUtil.ddMMMyyyyhhmm(circular.getCreatedAt()));
+
+			TextArea subjectField = new TextArea("Subject");
+			subjectField.setValue(circular.getSubject());
+			subjectField.setWidthFull();
+			subjectField.setReadOnly(true);
+
+			root.add(createdDiv, subjectField);
+
+			if (circular.isImage()) {
+				Image photo = new Image();
+				photo.addClassName("photo");
+				photo.getStyle().set("objectFit", "contain");
+//				photo.setHeight("100px");
+				photo.setWidth("100%");
+
+				byte[] imageBytes = circular.getFileBytes();
+				StreamResource resource = new StreamResource(circular.getFileName(),
+						() -> new ByteArrayInputStream(imageBytes));
+				photo.setSrc(resource);
+
+				root.add(photo);
+			} else {
+				TextField attachmentField = new TextField("Attachment");
+				attachmentField.setWidthFull();
+
+				String value = "None";
+				if (circular.getFileName() != null) {
+					value = circular.getFileName();
+				}
+				attachmentField.setValue(value);
+				attachmentField.setReadOnly(true);
+
+				root.add(attachmentField);
 			}
 
-//			Button updatedAtButton = new Button();
-//			updatedAtButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
-//			updatedAtButton.setText("Updated " + DateUtil.humanize(resource.getUpdatedAt()));
-			Div updatedDiv = new Div();
-			updatedDiv.getStyle().set("fontSize", "small");
-			updatedDiv.getStyle().set("color", "gray");
-			updatedDiv.setText("Updated " + DateUtil.humanize(resource.getUpdatedAt()));
+			if (circular.getFileName() != null) {
+				byte[] imageBytes = circular.getFileBytes();
+				StreamResource resource = new StreamResource(circular.getFileName(),
+						() -> new ByteArrayInputStream(imageBytes));
 
-			TextField nameField = new TextField(resource.getType().toString());
-			nameField.setValue(resource.getName());
-			nameField.setWidthFull();
-			nameField.setReadOnly(true);
+				Anchor downloadLink = new Anchor();
+				downloadLink.setHref(resource);
+				downloadLink.setTarget("_blank");
+				downloadLink.getElement().setAttribute("download", true);
 
-			TextField phonesField = new TextField("Phones");
-			phonesField.setValue(resource.getPhones());
-			phonesField.setWidthFull();
-			phonesField.setReadOnly(true);
+				if (circular.isImage()) {
+					downloadLink.setText("Show full-size image");
+				} else {
+					downloadLink.setText("Download attachment");
+				}
 
-			TextArea addressField = new TextArea("Address");
-			addressField.setValue(resource.getAddress());
-			addressField.setWidthFull();
-			addressField.setReadOnly(true);
+				root.add(downloadLink);
+			}
 
-			TextArea remarkField = new TextArea("Remark");
-			remarkField.setValue(resource.getRemark());
-			remarkField.setWidthFull();
-			remarkField.setReadOnly(true);
-
-			root.add(verifiedButton, updatedDiv, nameField, phonesField, addressField, remarkField);
 			return root;
 
 		}).setHeader(recordCountDiv).setTextAlign(ColumnTextAlign.CENTER);
@@ -164,20 +179,13 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Home");
+		titleDiv.add("Govt. Circulars");
 	}
 
-	public void handleFilterEvent(GuestResourceFilterForm.FilterEvent event) {
+	public void handleFilterEvent(GuestCircularFilterForm.FilterEvent event) {
 		filterParams = event.getFilterParams();
 		dataProvider.setFilterParams(filterParams);
 		reload();
-	}
-
-	public void handleSaveEvent(ResourceEditorForm.SaveEvent event) {
-	}
-
-	public void handleCancelEvent(ResourceEditorForm.CancelEvent event) {
-		dialog.close();
 	}
 
 	public void reload() {

@@ -14,6 +14,15 @@ public class DateUtil {
 		return string;
 	}
 
+	public static String ddMMMyyyyhhmm(LocalDateTime dateTime) {
+		String string = "";
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM, yyyy hh:mm a");
+		string = dateTime.format(formatter);
+
+		return string;
+	}
+
 	public static String humanize(LocalDateTime dateTime) {
 		String string = "";
 

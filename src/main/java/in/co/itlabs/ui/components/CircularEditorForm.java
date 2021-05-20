@@ -9,9 +9,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
-import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -134,11 +131,11 @@ public class CircularEditorForm extends VerticalLayout {
 					enabled = true;
 				}
 			}
-			
+
 			subjectField.setReadOnly(!enabled);
 			fileField.setReadOnly(!enabled);
 			saveButton.setEnabled(enabled);
-			
+
 		}
 	}
 
@@ -151,16 +148,11 @@ public class CircularEditorForm extends VerticalLayout {
 				String fileMime = fileField.getFileMime();
 				byte[] fileBytes = fileField.getFileBytes();
 
-				if (fileName != null && fileMime != null && fileBytes != null) {
-					binder.getBean().setFileName(fileName);
-					binder.getBean().setFileMime(fileMime);
-					binder.getBean().setFileBytes(fileBytes);
+				binder.getBean().setFileName(fileName);
+				binder.getBean().setFileMime(fileMime);
+				binder.getBean().setFileBytes(fileBytes);
 
-					fireEvent(new SaveEvent(this, binder.getBean()));
-				} else {
-					Notification.show("Please upload a file", 3000, Position.TOP_CENTER)
-							.addThemeVariants(NotificationVariant.LUMO_ERROR);
-				}
+				fireEvent(new SaveEvent(this, binder.getBean()));
 			}
 		});
 

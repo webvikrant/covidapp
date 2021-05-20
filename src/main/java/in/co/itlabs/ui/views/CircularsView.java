@@ -132,19 +132,19 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 
 		grid.addColumn("subject").setHeader("Subject").setWidth("300px");
 
-		grid.addComponentColumn(media -> {
+		grid.addComponentColumn(circular -> {
 
-			if (media != null) {
+			if (circular != null) {
 				// attachment found
-				if (media.isImage()) {
+				if (circular.isImage()) {
 					// attachment is image
 					Image photo = new Image();
 					photo.addClassName("photo");
 					photo.getStyle().set("objectFit", "contain");
 					photo.setHeight("50px");
 
-					byte[] imageBytes = media.getFileBytes();
-					StreamResource resource = new StreamResource(media.getFileName(),
+					byte[] imageBytes = circular.getFileBytes();
+					StreamResource resource = new StreamResource(circular.getFileName(),
 							() -> new ByteArrayInputStream(imageBytes));
 					photo.setSrc(resource);
 					return photo;
@@ -163,24 +163,28 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 
 		}).setHeader("Attachment").setWidth("80px");
 
-		grid.addComponentColumn(media -> {
+		grid.addComponentColumn(circular -> {
 			Anchor downloadLink = new Anchor();
 
-			byte[] imageBytes = media.getFileBytes();
-			StreamResource resource = new StreamResource(media.getFileName(),
-					() -> new ByteArrayInputStream(imageBytes));
+			if (circular.getFileName() != null) {
+				byte[] imageBytes = circular.getFileBytes();
+				StreamResource resource = new StreamResource(circular.getFileName(),
+						() -> new ByteArrayInputStream(imageBytes));
 
-			downloadLink.setText(media.getFileName());
-			downloadLink.setHref(resource);
-			downloadLink.setTarget("_blank");
-			downloadLink.getElement().setAttribute("download", true);
+				downloadLink.setText(circular.getFileName());
+				downloadLink.setHref(resource);
+				downloadLink.setTarget("_blank");
+				downloadLink.getElement().setAttribute("download", true);
+			}else {
+				downloadLink.setEnabled(false);
+			}
 
 			return downloadLink;
 
 		}).setHeader("Attachment URL").setWidth("150px");
 
-		grid.addColumn(resource -> {
-			return DateUtil.ddMMMyyyy(resource.getCreatedAt());
+		grid.addColumn(circular -> {
+			return DateUtil.ddMMMyyyy(circular.getCreatedAt());
 		}).setHeader("Created");
 
 		grid.addComponentColumn(circular -> {

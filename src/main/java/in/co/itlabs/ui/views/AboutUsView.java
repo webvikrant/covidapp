@@ -74,7 +74,7 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("About us");
+		titleDiv.add("About Us");
 	}
 
 	@Override

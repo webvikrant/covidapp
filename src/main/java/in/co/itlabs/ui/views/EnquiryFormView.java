@@ -61,7 +61,7 @@ public class EnquiryFormView extends VerticalLayout implements BeforeEnterObserv
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Contact us");
+		titleDiv.add("Contact Us");
 	}
 
 	public void handleSaveEvent(EnquiryEditorForm.SaveEvent event) {
