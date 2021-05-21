@@ -1,15 +1,17 @@
 package in.co.itlabs.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class DateUtil {
-	public static String ddMMMyyyy(LocalDateTime dateTime) {
+	
+	public static String ddMMMyyyy(LocalDate date) {
 		String string = "";
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM, yyyy");
-		string = dateTime.format(formatter);
+		string = date.format(formatter);
 
 		return string;
 	}

@@ -106,8 +106,8 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 			circular = new Circular();
 			editorForm.setCircular(circular);
 		});
-		
-		if(authUser.getRole()!=Role.Manager) {
+
+		if (authUser.getRole() != Role.Manager) {
 			createButton.setEnabled(false);
 		}
 
@@ -139,7 +139,7 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 
 		grid.addComponentColumn(circular -> {
 
-			if (circular != null) {
+			if (circular.getFileName() != null) {
 				// attachment found
 				if (circular.isImage()) {
 					// attachment is image
@@ -180,7 +180,7 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 				downloadLink.setHref(resource);
 				downloadLink.setTarget("_blank");
 				downloadLink.getElement().setAttribute("download", true);
-			}else {
+			} else {
 				downloadLink.setEnabled(false);
 			}
 
@@ -189,8 +189,8 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 		}).setHeader("Attachment URL").setWidth("150px");
 
 		grid.addColumn(circular -> {
-			return DateUtil.ddMMMyyyy(circular.getCreatedAt());
-		}).setHeader("Created");
+			return DateUtil.ddMMMyyyy(circular.getDate());
+		}).setHeader("Date");
 
 		grid.addComponentColumn(circular -> {
 			Button button = new Button("More", VaadinIcon.ELLIPSIS_DOTS_H.create());
@@ -226,7 +226,7 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 
 			boolean success = circularService.updateCircular(messages, circular);
 			if (success) {
-				Notification.show("Resource updated successfully", 5000, Position.TOP_CENTER)
+				Notification.show("Circular updated successfully", 5000, Position.TOP_CENTER)
 						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				circular = new Circular();
@@ -249,7 +249,9 @@ public class CircularsView extends VerticalLayout implements BeforeEnterObserver
 						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				reload();
 				circular = new Circular();
-				editorForm.setCircular(circular);
+				dialog.close();
+//				circular = new Circular();
+//				editorForm.setCircular(circular);
 			} else {
 				Notification.show(messages.toString(), 5000, Position.TOP_CENTER)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);

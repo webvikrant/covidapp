@@ -20,16 +20,11 @@ import in.co.itlabs.ui.layouts.GuestLayout;
 @CssImport("./styles/shared-styles.css")
 public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 
-//	private static final Logger logger = LoggerFactory.getLogger(IndexView.class);
-
 	// ui
 	private Div titleDiv;
-//	private Image image;
-//	private Span name;
-//	private Span post;
 	private Div bodyDiv;
 	private FlexLayout techTeam;
-//	private FlexLayout nonTechTeam;
+
 	// non-ui
 
 	public AboutUsView() {
@@ -46,19 +41,6 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 		bodyDiv.getStyle().set("fontSize", "10pt");
 		bodyDiv.getStyle().set("textAlign", "justify");
 		bodyDiv.getStyle().set("color", "gray");
-
-//		image = new Image("images/nagar-ayukt-shri-mahender-singh-tanwar.jpeg",
-//				"Nagar Ayukt, Shri Mahender Singh Tanwar, IAS");
-//		image.setHeight("100px");
-//		image.addClassName("photo");
-//
-//		name = new Span("Shri Mahender Singh Tanwar, IAS");
-//		name.getStyle().set("fontSize", "small");
-//		name.getStyle().set("color", "dark-gray");
-//
-//		post = new Span("(Nagar Ayukt, Ghaziabad Nagar Nigam)");
-//		post.getStyle().set("fontSize", "small");
-//		post.getStyle().set("color", "gray");
 
 		Paragraph para1 = new Paragraph(
 				"World is passing through pandemic and everyone is facing a different challenge of life and struggling for survival.");
@@ -108,7 +90,7 @@ public class AboutUsView extends VerticalLayout implements BeforeEnterObserver {
 		root.setPadding(true);
 		root.setSpacing(false);
 		
-		root.setWidth("100px");
+		root.setWidth("103px");
 		root.setAlignItems(Alignment.CENTER);
 
 		Image image = new Image(imageUrl, name);

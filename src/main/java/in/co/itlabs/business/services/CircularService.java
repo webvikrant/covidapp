@@ -30,13 +30,13 @@ public class CircularService {
 
 		int newCircularId = 0;
 		Sql2o sql2o = databaseService.getSql2o();
-		String sql = "insert into circular (subject, fileName, fileMime, fileBytes, createdBy, createdAt)"
-				+ " values(:subject, :fileName, :fileMime, :fileBytes, :createdBy, :createdAt)";
+		String sql = "insert into circular (date, subject, fileName, fileMime, fileBytes, createdBy, createdAt)"
+				+ " values(:date, :subject, :fileName, :fileMime, :fileBytes, :createdBy, :createdAt)";
 
 		try (Connection con = sql2o.beginTransaction()) {
-			int circularId = con.createQuery(sql).addParameter("subject", circular.getSubject())
-					.addParameter("fileName", circular.getFileName()).addParameter("fileMime", circular.getFileMime())
-					.addParameter("fileBytes", circular.getFileBytes())
+			int circularId = con.createQuery(sql).addParameter("date", circular.getDate())
+					.addParameter("subject", circular.getSubject()).addParameter("fileName", circular.getFileName())
+					.addParameter("fileMime", circular.getFileMime()).addParameter("fileBytes", circular.getFileBytes())
 					.addParameter("createdBy", circular.getCreatedBy())
 					.addParameter("createdAt", circular.getCreatedAt()).executeUpdate().getKey(Integer.class);
 
@@ -71,7 +71,7 @@ public class CircularService {
 		List<Circular> circulars = null;
 
 		String sql = generateCircularSql(filterParams, false);
-		sql = sql + " order by createdAt desc limit " + limit + " offset " + offset;
+		sql = sql + " order by date desc limit " + limit + " offset " + offset;
 
 		Sql2o sql2o = databaseService.getSql2o();
 
@@ -102,7 +102,7 @@ public class CircularService {
 				if (clauseCount > 0) {
 					sql = sql + " and";
 				}
-				sql = sql + " date_format(createdAt,'%Y-%m-%d') >='" + filterParams.getFromDate() + "'";
+				sql = sql + " date >='" + filterParams.getFromDate() + "'";
 				clauseCount++;
 			}
 
@@ -110,7 +110,7 @@ public class CircularService {
 				if (clauseCount > 0) {
 					sql = sql + " and";
 				}
-				sql = sql + " date_format(createdAt,'%Y-%m-%d') <='" + filterParams.getToDate() + "'";
+				sql = sql + " date <='" + filterParams.getToDate() + "'";
 				clauseCount++;
 			}
 
@@ -132,13 +132,13 @@ public class CircularService {
 
 		boolean success = false;
 		Sql2o sql2o = databaseService.getSql2o();
-		String sql = "update circular set subject=:subject, fileName=:fileName, fileMime=:fileMime, fileBytes=:fileBytes where id=:id";
+		String sql = "update circular set date=:date, subject=:subject, fileName=:fileName, fileMime=:fileMime, fileBytes=:fileBytes where id=:id";
 
 		try (Connection con = sql2o.beginTransaction()) {
-			con.createQuery(sql).addParameter("subject", circular.getSubject())
-					.addParameter("fileName", circular.getFileName()).addParameter("fileMime", circular.getFileMime())
-					.addParameter("fileBytes", circular.getFileBytes()).addParameter("id", circular.getId())
-					.executeUpdate();
+			con.createQuery(sql).addParameter("date", circular.getDate())
+					.addParameter("subject", circular.getSubject()).addParameter("fileName", circular.getFileName())
+					.addParameter("fileMime", circular.getFileMime()).addParameter("fileBytes", circular.getFileBytes())
+					.addParameter("id", circular.getId()).executeUpdate();
 
 			con.commit();
 			success = true;

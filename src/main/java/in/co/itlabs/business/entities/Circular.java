@@ -1,5 +1,6 @@
 package in.co.itlabs.business.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -11,6 +12,7 @@ public class Circular {
 
 	private int id;
 
+	private LocalDate date;
 	private String subject;
 
 	private String fileName;

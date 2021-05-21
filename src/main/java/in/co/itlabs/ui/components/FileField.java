@@ -8,6 +8,7 @@ import com.google.common.io.ByteStreams;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -33,19 +34,27 @@ public class FileField extends VerticalLayout {
 
 		// listeners
 		upload.addStartedListener(event -> {
-			System.out.println("Started");
+			System.out.println("FileField...Started");
 		});
 
 		upload.addFinishedListener(event -> {
-			System.out.println("Finished");
+			System.out.println("FileField...Finished");
 		});
 
 		upload.addFailedListener(event -> {
-			System.out.println("Failed - " + event.getReason().getMessage());
+			System.out.println("FileField...Failed");
+			Notification.show(event.getReason().getMessage(), 5000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		});
+
+		upload.addFileRejectedListener(event -> {
+			System.out.println("FileField...Failed");
+			Notification.show(event.getErrorMessage(), 5000, Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		});
 
 		upload.addSucceededListener(event -> {
-			System.out.println("Succeeded");
+			System.out.println("FileField...Succeeded");
 			try {
 				fileBytes = ByteStreams.toByteArray(buffer.getInputStream());
 				StreamResource resource = new StreamResource(buffer.getFileName(),
@@ -55,16 +64,15 @@ public class FileField extends VerticalLayout {
 				if (fileMime.equalsIgnoreCase("image/jpeg") || fileMime.equalsIgnoreCase("image/png")) {
 					image.setSrc(resource);
 					image.setVisible(true);
-				}else {
+				} else {
 					image.setVisible(false);
 				}
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Notification.show(e.getMessage(), 3000, Position.TOP_CENTER);
+				Notification.show(e.getMessage(), 5000, Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		});
-
 	}
 
 	private void configureImage() {
@@ -87,7 +95,10 @@ public class FileField extends VerticalLayout {
 			if (name != null) {
 				image.setAlt(name);
 			}
-		}else {
+		} else {
+			fileName = null;
+			fileMime = null;
+			fileBytes = null;
 			image.setVisible(false);
 		}
 	}
@@ -99,9 +110,6 @@ public class FileField extends VerticalLayout {
 				image.setAlt(name);
 			}
 		}
-	}
-
-	public void clear() {
 	}
 
 	public Upload getUpload() {

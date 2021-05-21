@@ -179,7 +179,7 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 
 	private void buildTitle() {
 		titleDiv.addClassName("view-title");
-		titleDiv.add("Govt. Circulars");
+		titleDiv.add("Circulars / Notifications");
 	}
 
 	public void handleFilterEvent(GuestCircularFilterForm.FilterEvent event) {

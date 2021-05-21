@@ -39,16 +39,16 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 		setAlignItems(Alignment.CENTER);
 
 		homeButton = new Button(VaadinIcon.HOME.create());
-		aboutButton = new Button("About us", VaadinIcon.INFO_CIRCLE.create());
-		enquiryButton = new Button("Contact us", VaadinIcon.ENVELOPE.create());
+		aboutButton = new Button("About Us", VaadinIcon.INFO_CIRCLE.create());
+		enquiryButton = new Button("Contact Us", VaadinIcon.ENVELOPE.create());
 
-		leadsButton = new Button("Submit resource info", VaadinIcon.PAPERPLANE.create());
+		leadsButton = new Button("Submit Resource Info", VaadinIcon.PAPERPLANE.create());
 //		donorsButton = new Button("Donors", VaadinIcon.DROP.create());
 //		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
 
 		volunteersButton = new Button("Volunteer", VaadinIcon.HANDS_UP.create());
 		
-		circularsButton = new Button("Govt. circulars", VaadinIcon.DIPLOMA.create());
+		circularsButton = new Button("Circulars / Notifications", VaadinIcon.DIPLOMA.create());
 		
 		configureButtons();
 

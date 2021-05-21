@@ -1,11 +1,14 @@
 package in.co.itlabs.ui.components;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
+import java.util.Locale;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -29,9 +32,11 @@ public class CircularEditorForm extends VerticalLayout {
 
 	private Div createdDiv;
 
+	private DatePicker dateField;
 	private TextArea subjectField;
 	private FileField fileField;
 
+	private Button removeFileButton;
 	private Button saveButton;
 	private Button cancelButton;
 
@@ -48,6 +53,9 @@ public class CircularEditorForm extends VerticalLayout {
 
 		createdDiv = new Div();
 
+		dateField = new DatePicker();
+		configureDateField();
+
 		subjectField = new TextArea();
 		configureSubjectField();
 
@@ -56,9 +64,13 @@ public class CircularEditorForm extends VerticalLayout {
 
 		binder = new Binder<>(Circular.class);
 
+		binder.forField(dateField).asRequired("Date can not be blank")
+				.withValidator(date -> !date.isAfter(LocalDate.now()), "Date can not be in future").bind("date");
+
 		binder.forField(subjectField).asRequired("Subject can not be blank")
 				.withValidator(address -> address.length() < 2000, "").bind("subject");
 
+		removeFileButton = new Button("Remove file", VaadinIcon.MINUS.create());
 		saveButton = new Button("Save", VaadinIcon.CHECK.create());
 		cancelButton = new Button("Cancel", VaadinIcon.CLOSE.create());
 
@@ -66,7 +78,14 @@ public class CircularEditorForm extends VerticalLayout {
 		buttonBar.setWidthFull();
 		buildButtonBar(buttonBar);
 
-		add(createdDiv, subjectField, fileField, buttonBar);
+		add(createdDiv, dateField, subjectField, removeFileButton, fileField, buttonBar);
+	}
+
+	private void configureDateField() {
+		dateField.setWidth("150px");
+		dateField.setLabel("Date");
+		dateField.setPlaceholder("Select date");
+		dateField.setLocale(new Locale("in"));
 	}
 
 	private void configureSubjectField() {
@@ -83,7 +102,7 @@ public class CircularEditorForm extends VerticalLayout {
 		Upload upload = fileField.getUpload();
 		upload.setAutoUpload(true);
 		upload.setMaxFiles(1);
-		upload.setDropLabel(new Span("Upload a 512 KB file (JPEG or PNG)"));
+		upload.setDropLabel(new Span("Upload file (JPEG/PNG/PDF, max size: 512 KB)"));
 		upload.setAcceptedFileTypes("image/jpeg", "image/png", "application/pdf");
 		upload.setMaxFileSize(1024 * 512);
 	}
@@ -91,7 +110,7 @@ public class CircularEditorForm extends VerticalLayout {
 	public void setCircular(Circular circular) {
 		if (circular.getId() > 0) {
 			createdDiv.setVisible(true);
-			createdDiv.setText("Created " + DateUtil.humanize(circular.getCreatedAt()));
+			createdDiv.setText("Created " + DateUtil.ddMMMyyyyhhmm(circular.getCreatedAt()));
 
 			// existing media file
 			byte[] fileBytes = circular.getFileBytes();
@@ -102,10 +121,15 @@ public class CircularEditorForm extends VerticalLayout {
 				StreamResource resource = new StreamResource(circular.getFileName(),
 						() -> new ByteArrayInputStream(fileBytes));
 				fileField.setResource(resource, circular.getFileMime(), circular.getFileName());
+				removeFileButton.setVisible(true);
+			} else {
+				fileField.setResource(null, null, null);
+				removeFileButton.setVisible(false);
 			}
 
 		} else {
 			createdDiv.setVisible(false);
+			removeFileButton.setVisible(false);
 			fileField.setResource(null, null, null);
 		}
 
@@ -140,6 +164,12 @@ public class CircularEditorForm extends VerticalLayout {
 	}
 
 	private void buildButtonBar(HorizontalLayout root) {
+
+		removeFileButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+		removeFileButton.addClickListener(e -> {
+			fileField.setResource(null, null, null);
+			removeFileButton.setVisible(false);
+		});
 
 		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		saveButton.addClickListener(e -> {
