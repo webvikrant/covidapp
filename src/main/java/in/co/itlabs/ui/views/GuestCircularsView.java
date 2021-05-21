@@ -115,7 +115,7 @@ public class GuestCircularsView extends VerticalLayout implements BeforeEnterObs
 			Div createdDiv = new Div();
 			createdDiv.getStyle().set("fontSize", "small");
 			createdDiv.getStyle().set("color", "gray");
-			createdDiv.setText("Uploaded on:  " + DateUtil.ddMMMyyyyhhmm(circular.getCreatedAt()));
+			createdDiv.setText(DateUtil.ddMMMyyyy(circular.getDate()));
 
 			TextArea subjectField = new TextArea("Subject");
 			subjectField.setValue(circular.getSubject());
