@@ -3,6 +3,9 @@ package in.co.itlabs.ui.components;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.details.DetailsVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -30,6 +33,8 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 	private Button volunteersButton;
 	private Button circularsButton;
 
+	private Div disclaimerDiv;
+
 	// non-ui
 
 	public GuestNavBar() {
@@ -37,6 +42,10 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 		addClassName("navbar");
 		setJustifyContentMode(JustifyContentMode.CENTER);
 		setAlignItems(Alignment.CENTER);
+		
+		setPadding(false);
+		setMargin(false);
+		setSpacing(false);
 
 		homeButton = new Button(VaadinIcon.HOME.create());
 		aboutButton = new Button("About Us", VaadinIcon.INFO_CIRCLE.create());
@@ -47,20 +56,44 @@ public class GuestNavBar extends VerticalLayout implements AfterNavigationObserv
 //		seekersButton = new Button("Seekers", VaadinIcon.DROP.create());
 
 		volunteersButton = new Button("Volunteer", VaadinIcon.HANDS_UP.create());
-		
+
 		circularsButton = new Button("Circulars / Notifications", VaadinIcon.DIPLOMA.create());
-		
+
 		configureButtons();
 
 		HorizontalLayout topBar = new HorizontalLayout();
 		HorizontalLayout middleBar = new HorizontalLayout();
 		HorizontalLayout bottomBar = new HorizontalLayout();
 
+		topBar.setMargin(false);
+		topBar.setPadding(false);
+		
+		middleBar.setMargin(false);
+		middleBar.setPadding(false);
+		
+		bottomBar.setMargin(false);
+		bottomBar.setPadding(false);
+		
 		topBar.add(homeButton, aboutButton, enquiryButton);
 		middleBar.add(leadsButton, volunteersButton);
 		bottomBar.add(circularsButton);
 
-		add(topBar, middleBar, bottomBar);
+		disclaimerDiv = new Div();
+		disclaimerDiv.setText(
+				"This is to notify that Team100-Ghaziabad is providing free service and there is no financial involvement either from service seeker or service provider. It is solely and wholely the responsibility of service seekers and service providers for any mutual transaction for exchange of any service. - Team100 Ghaziabad");
+		disclaimerDiv.getStyle().set("fontSize", "10pt");
+		disclaimerDiv.getStyle().set("fontWeight", "300");
+		disclaimerDiv.getStyle().set("color", "red");
+		disclaimerDiv.getStyle().set("textJustify", "auto");
+		
+		Details disclaimer = new Details("Disclaimer",
+		        disclaimerDiv);
+		disclaimer.addThemeVariants(DetailsVariant.SMALL);
+		disclaimer.setOpened(true);
+		add(disclaimer);
+		
+		add(topBar, middleBar, bottomBar, disclaimer);
+		setAlignSelf(Alignment.START, disclaimer);
 	}
 
 	private void configureButtons() {
